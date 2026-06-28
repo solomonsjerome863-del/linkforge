@@ -18,6 +18,8 @@ import {
   BookOpen,
   Layers,
   Sparkles,
+  CreditCard,
+  FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +31,8 @@ import { Phase3RAG } from "@/components/blueprint/phase-3-rag";
 import { Phase4Anchor } from "@/components/blueprint/phase-4-anchor";
 import { Phase5Schema } from "@/components/blueprint/phase-5-schema";
 import { Phase6Roadmap } from "@/components/blueprint/phase-6-roadmap";
+import { PricingSection } from "@/components/blueprint/pricing-section";
+import { MarketTestSection } from "@/components/blueprint/market-test-section";
 
 const navItems = [
   { id: "phase-1", label: "Architecture", icon: <Globe className="w-4 h-4" /> },
@@ -37,6 +41,8 @@ const navItems = [
   { id: "phase-4", label: "Anchor Text", icon: <MessageSquare className="w-4 h-4" /> },
   { id: "phase-5", label: "DB Schema", icon: <Database className="w-4 h-4" /> },
   { id: "phase-6", label: "Roadmap", icon: <Rocket className="w-4 h-4" /> },
+  { id: "pricing", label: "Pricing", icon: <CreditCard className="w-4 h-4" /> },
+  { id: "market-test", label: "A/Z Test", icon: <FlaskConical className="w-4 h-4" /> },
 ];
 
 const stats = [
@@ -313,6 +319,16 @@ export default function BlueprintPage() {
           <Phase5Schema />
           <Phase6Roadmap />
         </div>
+
+        <Separator className="max-w-6xl mx-auto" />
+
+        {/* Pricing Section */}
+        <PricingSection />
+
+        <Separator className="max-w-7xl mx-auto" />
+
+        {/* A/Z Market Test Section */}
+        <MarketTestSection />
       </main>
 
       {/* Footer */}

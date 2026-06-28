@@ -1,0 +1,487 @@
+   250→   250→          pValue: newPValue,
+   251→   251→          status,
+   252→   252→        };
+   253→   253→      }).sort((a, b) => b.convRate - a.convRate),
+   254→   254→    );
+   255→   255→
+   256→   256→    setFunnel((prev) =>
+   257→   257→      prev.map((stage, i) => {
+   258→   258→        const increment = Math.floor(Math.random() * 8) + 2;
+   259→   259→        return { ...stage, count: stage.count + increment };
+   260→   260→      }),
+   261→   261→    );
+   262→   262→
+   263→   263→    setRevenue((prev) =>
+   264→   264→      prev.map((tier) => ({
+   265→   265→        ...tier,
+   266→   266→        mrr: Math.max(2000, tier.mrr + Math.floor((Math.random() - 0.35) * 120)),
+   267→   267→      })),
+   268→   268→    );
+   269→   269→
+   270→   270→    setTick((t) => t + 1);
+   271→   271→  }, []);
+   272→   272→
+   273→   273→  useEffect(() => {
+   274→   274→    const interval = setInterval(updateData, 2500);
+   275→   275→    return () => clearInterval(interval);
+   276→   276→  }, [updateData]);
+   277→   277→
+   278→   278→  const displayedVariants = useMemo(
+   279→   279→    () => (showAll ? variants : variants.slice(0, 8)),
+   280→   280→    [variants, showAll],
+   281→   281→  );
+   282→   282→
+   283→   283→  const topPerformer = variants[0];
+   284→   284→  const maxFunnel = funnel[0]?.count ?? 1;
+   285→   285→  const maxRevenue = Math.max(...revenue.map((r) => r.mrr));
+   286→   286→
+   287→   287→  const kpiCards = [
+   288→   288→    {
+   289→   289→      label: "Total Visitors",
+   290→   290→      value: kpi.visitors.toLocaleString(),
+   291→   291→      delta: kpi.visitorsDelta,
+   292→   292→      icon: <Users className="w-4 h-4 text-orange-500" />,
+   293→   293→      iconBg: "bg-orange-500/10",
+   294→   294→    },
+   295→   295→    {
+   296→   296→      label: "Conversions",
+   297→   297→      value: kpi.conversions.toLocaleString(),
+   298→   298→      delta: kpi.convDelta,
+   299→   299→      icon: <Activity className="w-4 h-4 text-amber-500" />,
+   300→   300→      iconBg: "bg-amber-500/10",
+   301→   301→    },
+   302→   302→    {
+   303→   303→      label: "Conversion Rate",
+   304→   304→      value: `${kpi.rate}%`,
+   305→   305→      delta: kpi.rateDelta,
+   306→   306→      icon: <TrendingUp className="w-4 h-4 text-teal-500" />,
+   307→   307→      iconBg: "bg-teal-500/10",
+   308→   308→    },
+   309→   309→    {
+   310→   310→      label: "Projected MRR",
+   311→   311→      value: `$${kpi.revenue.toLocaleString()}`,
+   312→   312→      delta: kpi.revDelta,
+   313→   313→      icon: <DollarSign className="w-4 h-4 text-rose-500" />,
+   314→   314→      iconBg: "bg-rose-500/10",
+   315→   315→    },
+   316→   316→  ];
+   317→   317→
+   318→   318→  return (
+   319→   319→    <section className="scroll-mt-24 py-12 sm:py-16">
+   320→   320→      {/* Section header */}
+   321→   321→      <motion.div
+   322→   322→        initial={{ opacity: 0, y: 20 }}
+   323→   323→        whileInView={{ opacity: 1, y: 0 }}
+   324→   324→        viewport={{ once: true }}
+   325→   325→        className="mb-8"
+   326→   326→      >
+   327→   327→        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-2">
+   328→   328→          <div className="flex items-center gap-3">
+   329→   329→            <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shadow-lg shadow-teal-500/20">
+   330→   330→              <FlaskConical className="w-5 h-5" />
+   331→   331→            </div>
+   332→   332→            <div>
+   333→   333→              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+   334→   334→                A/Z Market Readiness Test — Live
+   335→   335→              </h2>
+   336→   336→              <p className="mt-1 text-muted-foreground text-sm sm:text-base max-w-2xl">
+   337→   337→                26 pricing page variants running concurrently. Real-time conversion, revenue, and engagement metrics.
+   338→   338→              </p>
+   339→   339→            </div>
+   340→   340→          </div>
+   341→   341→          <div className="flex items-center gap-2 sm:ml-auto flex-shrink-0">
+   342→   342→            <span className="relative flex h-2.5 w-2.5">
+   343→   343→              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+   344→   344→              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+   345→   345→            </span>
+   346→   346→            <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/15">
+   347→   347→              LIVE
+   348→   348→            </Badge>
+   349→   349→            <Badge variant="outline" className="text-muted-foreground font-normal">
+   350→   350→              Tick #{tick}
+   351→   351→            </Badge>
+   352→   352→          </div>
+   353→   353→        </div>
+   354→   354→      </motion.div>
+   355→   355→
+   356→   356→      {/* ── KPI Row ─────────────────────────────────────────────────── */}
+   357→   357→      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+   358→   358→        {kpiCards.map((card, i) => (
+   359→   359→          <motion.div
+   360→   360→            key={card.label}
+   361→   361→            initial={{ opacity: 0, y: 16 }}
+   362→   362→            whileInView={{ opacity: 1, y: 0 }}
+   363→   363→            viewport={{ once: true }}
+   364→   364→            transition={{ delay: i * 0.08 }}
+   365→   365→          >
+   366→   366→            <Card className="border-border/60 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow">
+   367→   367→              <CardContent className="p-4 sm:p-5">
+   368→   368→                <div className="flex items-center justify-between mb-3">
+   369→   369→                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBg}`}>
+   370→   370→                    {card.icon}
+   371→   371→                  </div>
+   372→   372→                  <div className={`flex items-center gap-0.5 text-xs font-medium ${card.delta >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+   373→   373→                    {card.delta >= 0 ? (
+   374→   374→                      <ArrowUpRight className="w-3.5 h-3.5" />
+   375→   375→                    ) : (
+   376→   376→                      <ArrowDownRight className="w-3.5 h-3.5" />
+   377→   377→                    )}
+   378→   378→                    {Math.abs(card.delta).toFixed(1)}%
+   379→   379→                  </div>
+   380→   380→                </div>
+   381→   381→                <p className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">{card.value}</p>
+   382→   382→                <p className="text-xs text-muted-foreground mt-0.5">{card.label}</p>
+   383→   383→              </CardContent>
+   384→   384→            </Card>
+   385→   385→          </motion.div>
+   386→   386→        ))}
+   387→   387→      </div>
+   388→   388→
+   389→   389→      {/* ── Tabs for sub-sections ───────────────────────────────────── */}
+   390→   390→      <Tabs defaultValue="variants" className="w-full">
+   391→   391→        <TabsList className="mb-6">
+   392→   392→          <TabsTrigger value="variants" className="gap-1.5">
+   393→   393→            <Zap className="w-3.5 h-3.5" />
+   394→   394→            <span className="hidden sm:inline">A/Z Variants</span>
+   395→   395→            <span className="sm:hidden">Variants</span>
+   396→   396→          </TabsTrigger>
+   397→   397→          <TabsTrigger value="funnel" className="gap-1.5">
+   398→   398→            <Eye className="w-3.5 h-3.5" />
+   399→   399→            <span className="hidden sm:inline">Conversion Funnel</span>
+   400→   400→            <span className="sm:hidden">Funnel</span>
+   401→   401→          </TabsTrigger>
+   402→   402→          <TabsTrigger value="revenue" className="gap-1.5">
+   403→   403→            <BarChart3 className="w-3.5 h-3.5" />
+   404→   404→            <span className="hidden sm:inline">Revenue</span>
+   405→   405→            <span className="sm:hidden">Revenue</span>
+   406→   406→          </TabsTrigger>
+   407→   407→          <TabsTrigger value="significance" className="gap-1.5">
+   408→   408→            <Activity className="w-3.5 h-3.5" />
+   409→   409→            <span className="hidden sm:inline">Significance</span>
+   410→   410→            <span className="sm:hidden">Stats</span>
+   411→   411→          </TabsTrigger>
+   412→   412→        </TabsList>
+   413→   413→
+   414→   414→        {/* ── Tab: Variants ─────────────────────────────────────────── */}
+   415→   415→        <TabsContent value="variants">
+   416→   416→          <motion.div
+   417→   417→            initial={{ opacity: 0, y: 12 }}
+   418→   418→            animate={{ opacity: 1, y: 0 }}
+   419→   419→            transition={{ duration: 0.3 }}
+   420→   420→          >
+   421→   421→            <div className="flex items-center justify-between mb-4">
+   422→   422→              <p className="text-sm text-muted-foreground">
+   423→   423→                Showing {showAll ? 26 : 8} of 26 variants, sorted by conversion rate
+   424→   424→              </p>
+   425→   425→              <Button
+   426→   426→                variant="outline"
+   427→   427→                size="sm"
+   428→   428→                onClick={() => setShowAll(!showAll)}
+   429→   429→                className="text-xs"
+   430→   430→              >
+   431→   431→                {showAll ? "Show Top 8" : "Show All 26 Variants"}
+   432→   432→              </Button>
+   433→   433→            </div>
+   434→   434→
+   435→   435→            <div className="max-h-[500px] overflow-y-auto space-y-2.5 pr-1 scrollbar-thin">
+   436→   436→              {displayedVariants.map((v, i) => {
+   437→   437→                const isWinner = topPerformer?.letter === v.letter;
+   438→   438→                return (
+   439→   439→                  <motion.div
+   440→   440→                    key={v.letter}
+   441→   441→                    initial={{ opacity: 0, x: -8 }}
+   442→   442→                    animate={{ opacity: 1, x: 0 }}
+   443→   443→                    transition={{ delay: i * 0.03 }}
+   444→   444→                  >
+   445→   445→                    <Card
+   446→   446→                      className={`border-border/60 bg-card/60 backdrop-blur-sm hover:shadow-md transition-all ${
+   447→   447→                        isWinner ? "ring-1 ring-teal-500/30 shadow-teal-500/10" : ""
+   448→   448→                      }`}
+   449→   449→                    >
+   450→   450→                      <CardContent className="p-3 sm:p-4">
+   451→   451→                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+   452→   452→                          {/* Letter + Label */}
+   453→   453→                          <div className="flex items-center gap-2.5 min-w-0 flex-shrink-0 sm:w-52">
+   454→   454→                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+   455→   455→                              isWinner
+   456→   456→                                ? "bg-gradient-to-br from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/25"
+   457→   457→                                : "bg-muted text-muted-foreground"
+   458→   458→                            }`}>
+   459→   459→                              {v.letter}
+   460→   460→                            </div>
+   461→   461→                            <div className="min-w-0">
+   462→   462→                              <div className="flex items-center gap-1.5">
+   463→   463→                                <span className="text-sm font-medium text-foreground truncate">
+   464→   464→                                  {v.label}
+   465→   465→                                </span>
+   466→   466→                                {isWinner && (
+   467→   467→                                  <Badge className="bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20 text-[10px] px-1.5 py-0">
+   468→   468→                                    Winning
+   469→   469→                                  </Badge>
+   470→   470→                                )}
+   471→   471→                              </div>
+   472→   472→                            </div>
+   473→   473→                          </div>
+   474→   474→
+   475→   475→                          {/* Metrics row */}
+   476→   476→                          <div className="flex items-center gap-4 sm:gap-6 flex-1 flex-wrap text-xs">
+   477→   477→                            <div className="flex items-center gap-1.5">
+   478→   478→                              <Users className="w-3 h-3 text-muted-foreground" />
+   479→   479→                              <span className="text-muted-foreground">Visitors:</span>
+   480→   480→                              <span className="font-medium text-foreground tabular-nums">{v.visitors.toLocaleString()}</span>
+   481→   481→                            </div>
+   482→   482→                            <div className="flex items-center gap-1.5">
+   483→   483→                              <Activity className="w-3 h-3 text-muted-foreground" />
+   484→   484→                              <span className="text-muted-foreground">Conv:</span>
+   485→   485→                              <span className="font-medium text-foreground tabular-nums">{v.conversions}</span>
+   486→   486→                            </div>
+   487→   487→                            <div className="flex items-center gap-1.5">
+   488→   488→                              <TrendingUp className="w-3 h-3 text-muted-foreground" />
+   489→   489→                              <span className="text-muted-foreground">Rate:</span>
+   490→   490→                              <span className={`font-semibold tabular-nums ${rateColor(v.convRate)}`}>
+   491→   491→                                {v.convRate}%
+   492→   492→                              </span>
+   493→   493→                            </div>
+   494→   494→                            <div className="flex items-center gap-1.5">
+   495→   495→                              <DollarSign className="w-3 h-3 text-muted-foreground" />
+   496→   496→                              <span className="text-muted-foreground">Rev:</span>
+   497→   497→                              <span className="font-medium text-foreground tabular-nums">${v.revenue.toLocaleString()}</span>
+   498→   498→                            </div>
+   499→   499→                          </div>
+   500→   500→
+   501→   501→                          {/* Confidence bar */}
+   502→   502→                          <div className="flex items-center gap-2.5 min-w-0 sm:w-44 flex-shrink-0">
+   503→   503→                            <Progress
+   504→   504→                              value={v.confidence}
+   505→   505→                              className="h-2 flex-1 [&>div]:bg-gradient-to-r [&>div]:from-teal-500 [&>div]:to-emerald-400"
+   506→   506→                            />
+   507→   507→                            <span className="text-[11px] font-medium text-muted-foreground tabular-nums w-10 text-right">
+   508→   508→                              {v.confidence.toFixed(1)}%
+   509→   509→                            </span>
+   510→   510→                          </div>
+   511→   511→                        </div>
+   512→   512→                      </CardContent>
+   513→   513→                    </Card>
+   514→   514→                  </motion.div>
+   515→   515→                );
+   516→   516→              })}
+   517→   517→            </div>
+   518→   518→          </motion.div>
+   519→   519→        </TabsContent>
+   520→   520→
+   521→   521→        {/* ── Tab: Conversion Funnel ────────────────────────────────── */}
+   522→   522→        <TabsContent value="funnel">
+   523→   523→          <motion.div
+   524→   524→            initial={{ opacity: 0, y: 12 }}
+   525→   525→            animate={{ opacity: 1, y: 0 }}
+   526→   526→            transition={{ duration: 0.3 }}
+   527→   527→          >
+   528→   528→            <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+   529→   529→              <CardContent className="p-4 sm:p-6">
+   530→   530→                <h3 className="text-base font-semibold text-foreground mb-1">Conversion Funnel</h3>
+   531→   531→                <p className="text-xs text-muted-foreground mb-6">Real-time drop-off analysis across the pricing flow</p>
+   532→   532→
+   533→   533→                <div className="space-y-3">
+   534→   534→                  {funnel.map((stage, i) => {
+   535→   535→                    const widthPct = (stage.count / maxFunnel) * 100;
+   536→   536→                    return (
+   537→   537→                      <motion.div
+   538→   538→                        key={stage.name}
+   539→   539→                        initial={{ opacity: 0, x: -12 }}
+   540→   540→                        animate={{ opacity: 1, x: 0 }}
+   541→   541→                        transition={{ delay: i * 0.08 }}
+   542→   542→                        className="space-y-1.5"
+   543→   543→                      >
+   544→   544→                        <div className="flex items-center justify-between text-xs">
+   545→   545→                          <div className="flex items-center gap-2">
+   546→   546→                            <span className="font-medium text-foreground">{stage.name}</span>
+   547→   547→                            {i > 0 && stage.dropoff > 0 && (
+   548→   548→                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-rose-600 dark:text-rose-400 border-rose-500/20">
+   549→   549→                                -{stage.dropoff}% drop
+   550→   550→                              </Badge>
+   551→   551→                            )}
+   552→   552→                          </div>
+   553→   553→                          <span className="font-semibold text-foreground tabular-nums">
+   554→   554→                            {stage.count.toLocaleString()}
+   555→   555→                          </span>
+   556→   556→                        </div>
+   557→   557→                        <div className="h-7 rounded-lg bg-muted/50 overflow-hidden relative">
+   558→   558→                          <motion.div
+   559→   559→                            className={`h-full rounded-lg bg-gradient-to-r ${stage.color}`}
+   560→   560→                            initial={{ width: 0 }}
+   561→   561→                            animate={{ width: `${widthPct}%` }}
+   562→   562→                            transition={{ duration: 0.8, ease: "easeOut" }}
+   563→   563→                          />
+   564→   564→                          <div className="absolute inset-0 flex items-center justify-end pr-3">
+   565→   565→                            <span className="text-[10px] font-medium text-white/90 tabular-nums drop-shadow-sm">
+   566→   566→                              {widthPct.toFixed(1)}%
+   567→   567→                            </span>
+   568→   568→                          </div>
+   569→   569→                        </div>
+   570→   570→                      </motion.div>
+   571→   571→                    );
+   572→   572→                  })}
+   573→   573→                </div>
+   574→   574→              </CardContent>
+   575→   575→            </Card>
+   576→   576→          </motion.div>
+   577→   577→        </TabsContent>
+   578→   578→
+   579→   579→        {/* ── Tab: Revenue Distribution ─────────────────────────────── */}
+   580→   580→        <TabsContent value="revenue">
+   581→   581→          <motion.div
+   582→   582→            initial={{ opacity: 0, y: 12 }}
+   583→   583→            animate={{ opacity: 1, y: 0 }}
+   584→   584→            transition={{ duration: 0.3 }}
+   585→   585→          >
+   586→   586→            <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+   587→   587→              <CardContent className="p-4 sm:p-6">
+   588→   588→                <h3 className="text-base font-semibold text-foreground mb-1">MRR by Tier</h3>
+   589→   589→                <p className="text-xs text-muted-foreground mb-6">
+   590→   590→                  Projected monthly recurring revenue distribution across pricing tiers
+   591→   591→                </p>
+   592→   592→
+   593→   593→                <div className="space-y-4">
+   594→   594→                  {revenue.map((tier, i) => {
+   595→   595→                    const widthPct = (tier.mrr / maxRevenue) * 100;
+   596→   596→                    return (
+   597→   597→                      <motion.div
+   598→   598→                        key={tier.name}
+   599→   599→                        initial={{ opacity: 0, x: -12 }}
+   600→   600→                        animate={{ opacity: 1, x: 0 }}
+   601→   601→                        transition={{ delay: i * 0.1 }}
+   602→   602→                        className="space-y-1.5"
+   603→   603→                      >
+   604→   604→                        <div className="flex items-center justify-between text-xs">
+   605→   605→                          <span className="font-medium text-foreground">{tier.name}</span>
+   606→   606→                          <span className={`font-semibold tabular-nums ${tier.color}`}>
+   607→   607→                            ${tier.mrr.toLocaleString()}/mo
+   608→   608→                          </span>
+   609→   609→                        </div>
+   610→   610→                        <div className="h-6 rounded-md bg-muted/50 overflow-hidden">
+   611→   611→                          <motion.div
+   612→   612→                            className={`h-full rounded-md ${tier.barColor}`}
+   613→   613→                            initial={{ width: 0 }}
+   614→   614→                            animate={{ width: `${widthPct}%` }}
+   615→   615→                            transition={{ duration: 0.8, ease: "easeOut" }}
+   616→   616→                          />
+   617→   617→                        </div>
+   618→   618→                        <div className="text-[10px] text-muted-foreground tabular-nums text-right">
+   619→   619→                          {((tier.mrr / revenue.reduce((s, r) => s + r.mrr, 0)) * 100).toFixed(1)}% of total
+   620→   620→                        </div>
+   621→   621→                      </motion.div>
+   622→   622→                    );
+   623→   623→                  })}
+   624→   624→                </div>
+   625→   625→
+   626→   626→                {/* Total */}
+   627→   627→                <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
+   628→   628→                  <span className="text-sm font-semibold text-foreground">Total Projected MRR</span>
+   629→   629→                  <span className="text-lg font-bold text-foreground tabular-nums">
+   630→   630→                    ${revenue.reduce((s, r) => s + r.mrr, 0).toLocaleString()}
+   631→   631→                  </span>
+   632→   632→                </div>
+   633→   633→              </CardContent>
+   634→   634→            </Card>
+   635→   635→          </motion.div>
+   636→   636→        </TabsContent>
+   637→   637→
+   638→   638→        {/* ── Tab: Statistical Significance ─────────────────────────── */}
+   639→   639→        <TabsContent value="significance">
+   640→   640→          <motion.div
+   641→   641→            initial={{ opacity: 0, y: 12 }}
+   642→   642→            animate={{ opacity: 1, y: 0 }}
+   643→   643→            transition={{ duration: 0.3 }}
+   644→   644→          >
+   645→   645→            <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+   646→   646→              <CardContent className="p-4 sm:p-6">
+   647→   647→                <div className="flex items-center gap-3 mb-1">
+   648→   648→                  <h3 className="text-base font-semibold text-foreground">Statistical Significance</h3>
+   649→   649→                  <Badge variant="outline" className="text-[10px] font-normal">
+   650→   650→                    α = 0.05
+   651→   651→                  </Badge>
+   652→   652→                </div>
+   653→   653→                <p className="text-xs text-muted-foreground mb-5">
+   654→   654→                  Variants that have reached or are approaching 95% confidence level
+   655→   655→                </p>
+   656→   656→
+   657→   657→                {/* Summary badges */}
+   658→   658→                <div className="flex flex-wrap gap-2 mb-5">
+   659→   659→                  {(() => {
+   660→   660→                    const sig = variants.filter((v) => v.status === "significant").length;
+   661→   661→                    const run = variants.filter((v) => v.status === "running").length;
+   662→   662→                    const inc = variants.filter((v) => v.status === "inconclusive").length;
+   663→   663→                    return (
+   664→   664→                      <>
+   665→   665→                        <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20">
+   666→   666→                          <CheckCircle2 className="w-3 h-3 mr-1" />
+   667→   667→                          {sig} Significant
+   668→   668→                        </Badge>
+   669→   669→                        <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20">
+   670→   670→                          <Clock className="w-3 h-3 mr-1" />
+   671→   671→                          {run} Running
+   672→   672→                        </Badge>
+   673→   673→                        <Badge className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20">
+   674→   674→                          <AlertCircle className="w-3 h-3 mr-1" />
+   675→   675→                          {inc} Inconclusive
+   676→   676→                        </Badge>
+   677→   677→                      </>
+   678→   678→                    );
+   679→   679→                  })()}
+   680→   680→                </div>
+   681→   681→
+   682→   682→                {/* Significance list */}
+   683→   683→                <div className="max-h-[380px] overflow-y-auto space-y-2 pr-1">
+   684→   684→                  {variants.map((v, i) => (
+   685→   685→                    <motion.div
+   686→   686→                      key={v.letter}
+   687→   687→                      initial={{ opacity: 0 }}
+   688→   688→                      animate={{ opacity: 1 }}
+   689→   689→                      transition={{ delay: i * 0.02 }}
+   690→   690→                      className="flex items-center gap-3 p-2.5 rounded-lg border border-border/40 bg-muted/20 hover:bg-muted/40 transition-colors"
+   691→   691→                    >
+   692→   692→                      <div className={`w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+   693→   693→                        v.status === "significant"
+   694→   694→                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+   695→   695→                          : v.status === "running"
+   696→   696→                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+   697→   697→                            : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+   698→   698→                      }`}>
+   699→   699→                        {v.letter}
+   700→   700→                      </div>
+   701→   701→                      <div className="flex-1 min-w-0">
+   702→   702→                        <p className="text-xs font-medium text-foreground truncate">{v.label}</p>
+   703→   703→                      </div>
+   704→   704→                      <div className="hidden sm:flex items-center gap-1.5 text-xs tabular-nums">
+   705→   705→                        <span className="text-muted-foreground">p =</span>
+   706→   706→                        <span className="font-medium text-foreground">{v.pValue.toFixed(3)}</span>
+   707→   707→                      </div>
+   708→   708→                      <div className="hidden sm:flex items-center gap-1.5 text-xs tabular-nums w-16 justify-end">
+   709→   709→                        <span className="text-muted-foreground">CI:</span>
+   710→   710→                        <span className="font-medium text-foreground">{v.confidence.toFixed(1)}%</span>
+   711→   711→                      </div>
+   712→   712→                      <Badge
+   713→   713→                        className={`text-[10px] px-2 py-0.5 border ${
+   714→   714→                          v.status === "significant"
+   715→   715→                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+   716→   716→                            : v.status === "running"
+   717→   717→                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+   718→   718→                              : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
+   719→   719→                        }`}
+   720→   720→                      >
+   721→   721→                        {v.status === "significant" && <CheckCircle2 className="w-3 h-3 mr-0.5" />}
+   722→   722→                        {v.status === "running" && <Clock className="w-3 h-3 mr-0.5" />}
+   723→   723→                        {v.status === "inconclusive" && <AlertCircle className="w-3 h-3 mr-0.5" />}
+   724→   724→                        {v.status === "significant" ? "Significant" : v.status === "running" ? "Running" : "Inconclusive"}
+   725→   725→                      </Badge>
+   726→   726→                    </motion.div>
+   727→   727→                  ))}
+   728→   728→                </div>
+   729→   729→              </CardContent>
+   730→   730→            </Card>
+   731→   731→          </motion.div>
+   732→   732→        </TabsContent>
+   733→   733→      </Tabs>
+   734→   734→    </section>
+   735→   735→  );
+   736→   736→}
