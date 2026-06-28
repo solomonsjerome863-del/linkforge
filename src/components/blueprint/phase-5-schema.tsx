@@ -163,7 +163,7 @@ export function Phase5Schema() {
       title="Database Schema Design"
       subtitle="Three-table relational schema with computed scores, generated columns, and database-level guards against self-links and hallucinated URLs."
       icon={<Database className="w-6 h-6" />}
-      accentColor="violet"
+      accentColor="sky"
     >
       {/* Schema Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -172,21 +172,21 @@ export function Phase5Schema() {
             icon: <FileText className="w-5 h-5" />,
             name: "Posts",
             desc: "Content metadata, URL registry, link metrics, and CMS sync state. Single source of truth for what exists.",
-            color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+            color: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
             count: "15 columns",
           },
           {
             icon: <Key className="w-5 h-5" />,
             name: "Embeddings",
             desc: "Chunk metadata layer with heading context. Actual vectors live in Vector DB; this table stores the reference keys.",
-            color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+            color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
             count: "11 columns",
           },
           {
             icon: <Link2 className="w-5 h-5" />,
             name: "Link Suggestions",
             desc: "Generated suggestions with anchor text, dual scoring (vector + LLM), and full lifecycle status tracking.",
-            color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+            color: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
             count: "18 columns",
           },
         ].map((table, i) => (

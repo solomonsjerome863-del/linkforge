@@ -12,14 +12,14 @@ const flowSteps = [
     icon: <Globe className="w-5 h-5" />,
     label: "CMS Source",
     sublabel: "Sitemap / REST API / GraphQL",
-    color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    color: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
   },
   {
     id: "chunk",
     icon: <Layers className="w-5 h-5" />,
     label: "Chunker",
     sublabel: "Paragraph-based + metadata extraction",
-    color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
+    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
   },
   {
     id: "embed",
@@ -33,7 +33,7 @@ const flowSteps = [
     icon: <Database className="w-5 h-5" />,
     label: "Vector DB",
     sublabel: "Pinecone / Qdrant (HNSW index)",
-    color: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20",
+    color: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
   },
   {
     id: "retrieval",
@@ -59,13 +59,13 @@ export function Phase1Architecture() {
       title="High-Level System Architecture"
       subtitle="End-to-end data flow from CMS ingestion through vector storage to intelligent link suggestion and automated CMS updates."
       icon={<Globe className="w-6 h-6" />}
-      accentColor="emerald"
+      accentColor="teal"
     >
       {/* Flow Diagram */}
       <Card className="border-border/60 bg-card/50 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <ArrowRight className="w-4 h-4 text-emerald-500" />
+            <ArrowRight className="w-4 h-4 text-teal-500" />
             Data Flow Pipeline
           </CardTitle>
         </CardHeader>
@@ -111,7 +111,7 @@ export function Phase1Architecture() {
         <Card className="border-border/60 bg-card/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Shield className="w-4 h-4 text-emerald-500" />
+              <Shield className="w-4 h-4 text-teal-500" />
               Ingestion Path
             </CardTitle>
           </CardHeader>
@@ -130,7 +130,7 @@ export function Phase1Architecture() {
         <Card className="border-border/60 bg-card/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Zap className="w-4 h-4 text-emerald-500" />
+              <Zap className="w-4 h-4 text-teal-500" />
               Suggestion Path (Query Time)
             </CardTitle>
           </CardHeader>

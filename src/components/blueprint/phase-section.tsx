@@ -10,16 +10,23 @@ interface PhaseSectionProps {
   icon: React.ReactNode;
   children: React.ReactNode;
   className?: string;
-  accentColor?: "emerald" | "amber" | "rose" | "violet" | "cyan" | "orange";
+  accentColor?: "teal" | "orange" | "amber" | "rose" | "sky" | "emerald";
 }
 
 const accentMap = {
-  emerald: {
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
-    icon: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    line: "bg-emerald-500",
-    dot: "bg-emerald-500",
-    glow: "shadow-emerald-500/20",
+  teal: {
+    badge: "bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20",
+    icon: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
+    line: "bg-teal-500",
+    dot: "bg-teal-500",
+    glow: "shadow-teal-500/20",
+  },
+  orange: {
+    badge: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
+    icon: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+    line: "bg-orange-500",
+    dot: "bg-orange-500",
+    glow: "shadow-orange-500/20",
   },
   amber: {
     badge: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
@@ -35,26 +42,19 @@ const accentMap = {
     dot: "bg-rose-500",
     glow: "shadow-rose-500/20",
   },
-  violet: {
-    badge: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/20",
-    icon: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-    line: "bg-violet-500",
-    dot: "bg-violet-500",
-    glow: "shadow-violet-500/20",
+  sky: {
+    badge: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20",
+    icon: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+    line: "bg-sky-500",
+    dot: "bg-sky-500",
+    glow: "shadow-sky-500/20",
   },
-  cyan: {
-    badge: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/20",
-    icon: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-    line: "bg-cyan-500",
-    dot: "bg-cyan-500",
-    glow: "shadow-cyan-500/20",
-  },
-  orange: {
-    badge: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
-    icon: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-    line: "bg-orange-500",
-    dot: "bg-orange-500",
-    glow: "shadow-orange-500/20",
+  emerald: {
+    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
+    icon: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    line: "bg-emerald-500",
+    dot: "bg-emerald-500",
+    glow: "shadow-emerald-500/20",
   },
 };
 
@@ -66,7 +66,7 @@ export function PhaseSection({
   icon,
   children,
   className,
-  accentColor = "emerald",
+  accentColor = "teal",
 }: PhaseSectionProps) {
   const colors = accentMap[accentColor];
 
@@ -111,23 +111,19 @@ interface InsightCardProps {
 
 const insightStyles = {
   warning: {
-    container: "border-amber-500/30 bg-amber-50 dark:bg-amber-500/5",
-    icon: "text-amber-600 dark:text-amber-400",
+    container: "border-amber-500/30 bg-amber-50/80 dark:bg-amber-500/5",
     title: "text-amber-800 dark:text-amber-300",
   },
   info: {
-    container: "border-cyan-500/30 bg-cyan-50 dark:bg-cyan-500/5",
-    icon: "text-cyan-600 dark:text-cyan-400",
-    title: "text-cyan-800 dark:text-cyan-300",
+    container: "border-sky-500/30 bg-sky-50/80 dark:bg-sky-500/5",
+    title: "text-sky-800 dark:text-sky-300",
   },
   tip: {
-    container: "border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/5",
-    icon: "text-emerald-600 dark:text-emerald-400",
-    title: "text-emerald-800 dark:text-emerald-300",
+    container: "border-teal-500/30 bg-teal-50/80 dark:bg-teal-500/5",
+    title: "text-teal-800 dark:text-teal-300",
   },
   critical: {
-    container: "border-rose-500/30 bg-rose-50 dark:bg-rose-500/5",
-    icon: "text-rose-600 dark:text-rose-400",
+    container: "border-rose-500/30 bg-rose-50/80 dark:bg-rose-500/5",
     title: "text-rose-800 dark:text-rose-300",
   },
 };

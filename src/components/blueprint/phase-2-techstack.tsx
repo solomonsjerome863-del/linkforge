@@ -49,7 +49,7 @@ function TechCard({ icon, name, category, categoryColor, choices, recommended, j
             </div>
             <div>
               <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">Recommended</p>
-              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{recommended}</span>
+              <span className="text-sm font-semibold text-orange-700 dark:text-orange-400">{recommended}</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">{justification}</p>
           </div>
@@ -64,7 +64,7 @@ const techStack: TechCardProps[] = [
     icon: <Monitor className="w-5 h-5" />,
     name: "Frontend Dashboard",
     category: "Presentation Layer",
-    categoryColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    categoryColor: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
     choices: ["Next.js", "Nuxt", "SvelteKit", "Remix"],
     recommended: "Next.js 15 (App Router)",
     justification: "Server components reduce client bundle. Built-in API routes for BFF pattern. Excellent DX with TypeScript. shadcn/ui for rapid, accessible component development. SEO-optimized for our own marketing site.",
@@ -74,7 +74,7 @@ const techStack: TechCardProps[] = [
     icon: <Server className="w-5 h-5" />,
     name: "Backend API",
     category: "Service Layer",
-    categoryColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+    categoryColor: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
     choices: ["FastAPI", "Express", "NestJS", "Go Fiber", "Rust Actix"],
     recommended: "Python FastAPI + Celery",
     justification: "Native async support. Pydantic for strict request/response validation. Celery for reliable background task processing. Massive ML/AI ecosystem (sentence-transformers, torch). Type hints make it self-documenting.",
@@ -84,7 +84,7 @@ const techStack: TechCardProps[] = [
     icon: <Database className="w-5 h-5" />,
     name: "Vector Database",
     category: "Embedding Storage",
-    categoryColor: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    categoryColor: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     choices: ["Pinecone", "Qdrant", "Weaviate", "Milvus", "pgvector"],
     recommended: "Qdrant (self-hosted) + Pinecone (managed)",
     justification: "Dual-tier strategy: Qdrant for self-hosted/privacy-first users (Docker deploy), Pinecone Serverless for managed SaaS customers. Both support metadata filtering, HNSW indexing, and batch upsert. Qdrant's gRPC API is 3x faster than REST.",
@@ -130,7 +130,7 @@ export function Phase2TechStack() {
       title="Tech Stack Recommendation"
       subtitle="A purpose-built stack optimized for AI-powered content processing, vector search at scale, and multi-tenant SaaS delivery."
       icon={<Server className="w-6 h-6" />}
-      accentColor="cyan"
+      accentColor="orange"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {techStack.map((tech) => (

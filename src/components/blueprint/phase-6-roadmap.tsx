@@ -11,9 +11,9 @@ const roadmapSteps = [
     phase: "MVP",
     title: "Core Engine + WordPress Plugin",
     timeline: "Weeks 1-6",
-    color: "bg-emerald-500",
-    textColor: "text-emerald-600 dark:text-emerald-400",
-    bgColor: "bg-emerald-500/5 border-emerald-500/20",
+    color: "bg-teal-500",
+    textColor: "text-teal-600 dark:text-teal-400",
+    bgColor: "bg-teal-500/5 border-teal-500/20",
     items: [
       "Content ingestion via WordPress REST API + XML sitemap parser",
       "Paragraph-aware chunker with heading context",
@@ -30,9 +30,9 @@ const roadmapSteps = [
     phase: "V1.0",
     title: "Multi-Tenant SaaS + Bulk Processing",
     timeline: "Weeks 7-14",
-    color: "bg-cyan-500",
-    textColor: "text-cyan-600 dark:text-cyan-400",
-    bgColor: "bg-cyan-500/5 border-cyan-500/20",
+    color: "bg-orange-500",
+    textColor: "text-orange-600 dark:text-orange-400",
+    bgColor: "bg-orange-500/5 border-orange-500/20",
     items: [
       "Multi-tenant architecture with site_id isolation (row-level security)",
       "AWS SQS + Lambda worker for bulk processing (10K+ posts)",
@@ -68,9 +68,9 @@ const roadmapSteps = [
     phase: "Scale",
     title: "Enterprise + Plugin Ecosystem",
     timeline: "Weeks 23-30",
-    color: "bg-violet-500",
-    textColor: "text-violet-600 dark:text-violet-400",
-    bgColor: "bg-violet-500/5 border-violet-500/20",
+    color: "bg-rose-500",
+    textColor: "text-rose-600 dark:text-rose-400",
+    bgColor: "bg-rose-500/5 border-rose-500/20",
     items: [
       "Plugin SDK for custom CMS integrations (React component library)",
       "Webhook system for real-time content change detection",
@@ -125,7 +125,7 @@ export function Phase6Roadmap() {
       title="Roadmap & Risk Mitigation"
       subtitle="A 30-week phased development plan from MVP to enterprise scale, with detailed risk analysis and mitigation strategies."
       icon={<Rocket className="w-6 h-6" />}
-      accentColor="orange"
+      accentColor="emerald"
     >
       {/* Roadmap Timeline */}
       <div className="space-y-4">

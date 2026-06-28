@@ -184,8 +184,8 @@ export function Phase4Anchor() {
               className="space-y-3"
             >
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Accepted Anchors</span>
+                <CheckCircle2 className="w-4 h-4 text-teal-500" />
+                <span className="text-sm font-semibold text-teal-700 dark:text-teal-400">Accepted Anchors</span>
               </div>
               {[
                 { anchor: "internal linking strategy", source: "Developing a solid internal linking strategy is crucial for SEO.", words: 3 },
@@ -194,12 +194,12 @@ export function Phase4Anchor() {
                 { anchor: "keyword research tools", source: "We compared the top keyword research tools on the market.", words: 3 },
                 { anchor: "content audit process", source: "A proper content audit process reveals hidden opportunities.", words: 3 },
               ].map((item) => (
-                <div key={item.anchor} className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+                <div key={item.anchor} className="p-3 rounded-lg bg-teal-500/5 border border-teal-500/15">
                   <div className="flex items-center gap-2 mb-1">
-                    <code className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                    <code className="text-sm font-semibold text-teal-700 dark:text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded">
                       {item.anchor}
                     </code>
-                    <Badge variant="outline" className="text-[10px] text-emerald-600 dark:text-emerald-400">{item.words} words</Badge>
+                    <Badge variant="outline" className="text-[10px] text-teal-600 dark:text-teal-400">{item.words} words</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground italic">&ldquo;{item.source}&rdquo;</p>
                 </div>
