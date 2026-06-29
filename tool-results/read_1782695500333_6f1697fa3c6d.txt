@@ -1,0 +1,753 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import { useState, useEffect, useCallback } from "react";
+     4→     4→import { motion, AnimatePresence } from "framer-motion";
+     5→     5→import {
+     6→     6→  Wand2,
+     7→     7→  Sparkles,
+     8→     8→  Loader2,
+     9→     9→  Link2,
+    10→    10→  FileText,
+    11→    11→  CheckCircle2,
+    12→    12→  ArrowRight,
+    13→    13→  AlertCircle,
+    14→    14→  Clock,
+    15→    15→  BarChart3,
+    16→    16→  Target,
+    17→    17→  Zap,
+    18→    18→  ExternalLink,
+    19→    19→  Scissors,
+    20→    20→  Search,
+    21→    21→  PenLine,
+    22→    22→} from "lucide-react";
+    23→    23→import { Card, CardContent, CardHeader } from "@/components/ui/card";
+    24→    24→import { Badge } from "@/components/ui/badge";
+    25→    25→import { Button } from "@/components/ui/button";
+    26→    26→import { Textarea } from "@/components/ui/textarea";
+    27→    27→import { Input } from "@/components/ui/input";
+    28→    28→import {
+    29→    29→  Select,
+    30→    30→  SelectTrigger,
+    31→    31→  SelectValue,
+    32→    32→  SelectContent,
+    33→    33→  SelectItem,
+    34→    34→} from "@/components/ui/select";
+    35→    35→import { cn } from "@/lib/utils";
+    36→    36→
+    37→    37→/* ------------------------------------------------------------------ */
+    38→    38→/*  Types                                                              */
+    39→    39→/* ------------------------------------------------------------------ */
+    40→    40→
+    41→    41→interface TargetPost {
+    42→    42→  id: number;
+    43→    43→  title: string;
+    44→    44→  slug: string;
+    45→    45→  excerpt: string;
+    46→    46→}
+    47→    47→
+    48→    48→interface Suggestion {
+    49→    49→  target_post: TargetPost;
+    50→    50→  relevance_score: number;
+    51→    51→  anchor_text: string;
+    52→    52→  context_sentence: string;
+    53→    53→  confidence: "high" | "medium" | "low";
+    54→    54→}
+    55→    55→
+    56→    56→interface SuggestResponse {
+    57→    57→  chunks_count: number;
+    58→    58→  processing_time_ms: number;
+    59→    59→  suggestions: Suggestion[];
+    60→    60→}
+    61→    61→
+    62→    62→type PipelineStep = "idle" | "chunking" | "retrieval" | "generation" | "done";
+    63→    63→
+    64→    64→/* ------------------------------------------------------------------ */
+    65→    65→/*  Sample Posts                                                       */
+    66→    66→/* ------------------------------------------------------------------ */
+    67→    67→
+    68→    68→const SAMPLE_POSTS: { label: string; title: string; content: string }[] = [
+    69→    69→  {
+    70→    70→    label: "My WordPress SEO Journey",
+    71→    71→    title: "My WordPress SEO Journey",
+    72→    72→    content:
+    73→    73→      "When I first launched my WordPress blog back in 2021, I had no idea how much work went into proper search engine optimization. My posts were sitting on page five of Google, barely getting any organic traffic. I started by auditing my existing content and realized I had zero internal links connecting related articles together. This was a massive missed opportunity. I spent the next few weeks building out content clusters around my core topics — each pillar post linked out to at least five supporting articles, and those articles linked back to the pillar. The results were incredible. Within two months, my average time on page increased by 40%, and my crawl budget improved because Googlebot could discover deeper pages through sensible internal linking paths. I also tackled technical SEO issues: compressing images with WebP, implementing lazy loading, and setting up proper canonical tags. Site speed went from a dismal 4.2-second load time to under 1.8 seconds. I added schema markup for my how-to articles and saw rich snippets appear in search results within weeks. The biggest takeaway? Internal linking isn't just an SEO tactic — it's a user experience improvement that keeps readers engaged and exploring your site longer.",
+    74→    74→  },
+    75→    75→  {
+    76→    76→    label: "Beginner's Guide to Content Marketing",
+    77→    77→    title: "The Beginner's Guide to Content Marketing",
+    78→    78→    content:
+    79→    79→      "Content marketing is one of the most cost-effective strategies for growing your online presence, but getting started can feel overwhelming. The first step is understanding your audience deeply — what questions are they asking, what problems do they need solved, and where do they spend their time online? Once you have that clarity, keyword research becomes your compass. Tools like Google's own Keyword Planner, Ubersuggest, or Ahrefs can help you identify topics with decent search volume and manageable competition. Next, build a content calendar. I recommend planning at least three months ahead, with a mix of blog posts, infographics, and maybe short video scripts. Consistency matters more than volume — publishing one high-quality piece per week beats five mediocre ones. Distribution is where most beginners stumble. Don't just hit publish and pray. Share your content across social media, engage in relevant online communities, and consider building an email list from day one. Measuring ROI in content marketing takes patience. Track organic traffic growth, backlinks earned, lead generation, and engagement metrics over time. Tools like Google Analytics and Search Console will show you which pieces are driving results so you can double down on what works.",
+    80→    80→  },
+    81→    81→  {
+    82→    82→    label: "Fixing Technical SEO Issues",
+    83→    83→    title: "How I Fixed My Site's Technical SEO Issues",
+    84→    84→    content:
+    85→    85→      "Technical SEO was the elephant in the room that I ignored for far too long. My site had accumulated over 300 crawl errors in Google Search Console — mostly 404 pages from old URLs that I had changed during a site migration. I started by creating a comprehensive redirect map using a spreadsheet and implemented 301 redirects for every broken URL. Within a month, crawl errors dropped to under 20. Next up was site speed. I ran my pages through PageSpeed Insights and was shocked to see scores in the low 30s. The culprits were unoptimized hero images, render-blocking JavaScript, and no browser caching. I compressed all images, deferred non-critical JS, and set up caching headers. Scores jumped to the 80s across the board. I also implemented structured data using JSON-LD for my articles, FAQs, and how-to guides. This gave me rich snippets in search results almost immediately — my click-through rate improved by roughly 25% on pages with schema markup. Finally, I audited my internal link structure. Many important pages were buried three or four clicks from the homepage. I reorganized my navigation, added contextual internal links within content, and created a proper HTML sitemap. The combination of fixing crawl errors, improving speed, adding structured data, and optimizing internal links led to a 60% increase in organic traffic over three months.",
+    86→    86→  },
+    87→    87→];
+    88→    88→
+    89→    89→/* ------------------------------------------------------------------ */
+    90→    90→/*  Animation Variants                                                 */
+    91→    91→/* ------------------------------------------------------------------ */
+    92→    92→
+    93→    93→const containerVariants = {
+    94→    94→  hidden: { opacity: 0, y: 24 },
+    95→    95→  visible: {
+    96→    96→    opacity: 1,
+    97→    97→    y: 0,
+    98→    98→    transition: { duration: 0.5, ease: "easeOut" },
+    99→    99→  },
+   100→   100→};
+   101→   101→
+   102→   102→const cardVariants = {
+   103→   103→  hidden: { opacity: 0, y: 16 },
+   104→   104→  visible: (i: number) => ({
+   105→   105→    opacity: 1,
+   106→   106→    y: 0,
+   107→   107→    transition: { duration: 0.4, ease: "easeOut", delay: i * 0.1 },
+   108→   108→  }),
+   109→   109→};
+   110→   110→
+   111→   111→const stepVariants = {
+   112→   112→  hidden: { opacity: 0, x: -12 },
+   113→   113→  visible: { opacity: 1, x: 0, transition: { duration: 0.35 } },
+   114→   114→  completed: {
+   115→   115→    opacity: 1,
+   116→   116→    x: 0,
+   117→   117→    transition: { duration: 0.35 },
+   118→   118→  },
+   119→   119→};
+   120→   120→
+   121→   121→/* ------------------------------------------------------------------ */
+   122→   122→/*  Pipeline Step Component                                             */
+   123→   123→/* ------------------------------------------------------------------ */
+   124→   124→
+   125→   125→function PipelineStepCard({
+   126→   126→  step,
+   127→   127→  icon: Icon,
+   128→   128→  label,
+   129→   129→  status,
+   130→   130→  result,
+   131→   131→}: {
+   132→   132→  step: number;
+   133→   133→  icon: React.ElementType;
+   134→   134→  label: string;
+   135→   135→  status: "pending" | "active" | "done";
+   136→   136→  result?: string;
+   137→   137→}) {
+   138→   138→  return (
+   139→   139→    <motion.div
+   140→   140→      variants={stepVariants}
+   141→   141→      initial="hidden"
+   142→   142→      animate={status === "active" ? "visible" : status === "done" ? "completed" : "hidden"}
+   143→   143→      className="flex items-center gap-3"
+   144→   144→    >
+   145→   145→      <div
+   146→   146→        className={cn(
+   147→   147→          "flex items-center justify-center w-9 h-9 rounded-full border-2 transition-colors shrink-0",
+   148→   148→          status === "done" && "bg-teal-500 border-teal-500 text-white",
+   149→   149→          status === "active" && "border-teal-500/60 text-teal-600 dark:text-teal-400 bg-teal-500/10",
+   150→   150→          status === "pending" && "border-muted-foreground/25 text-muted-foreground/40"
+   151→   151→        )}
+   152→   152→      >
+   153→   153→        {status === "done" ? (
+   154→   154→          <CheckCircle2 className="size-5" />
+   155→   155→        ) : status === "active" ? (
+   156→   156→          <Loader2 className="size-5 animate-spin" />
+   157→   157→        ) : (
+   158→   158→          <Icon className="size-4" />
+   159→   159→        )}
+   160→   160→      </div>
+   161→   161→      <div className="flex-1 min-w-0">
+   162→   162→        <p
+   163→   163→          className={cn(
+   164→   164→            "text-sm font-medium transition-colors",
+   165→   165→            status === "done" && "text-foreground",
+   166→   166→            status === "active" && "text-foreground",
+   167→   167→            status === "pending" && "text-muted-foreground/50"
+   168→   168→          )}
+   169→   169→        >
+   170→   170→          <span className="text-muted-foreground/60 mr-1.5 text-xs">Step {step}</span>
+   171→   171→          {label}
+   172→   172→        </p>
+   173→   173→        {status === "active" && (
+   174→   174→          <motion.p
+   175→   175→            initial={{ opacity: 0 }}
+   176→   176→            animate={{ opacity: 1 }}
+   177→   177→            className="text-xs text-teal-600 dark:text-teal-400 mt-0.5"
+   178→   178→          >
+   179→   179→            Processing...
+   180→   180→          </motion.p>
+   181→   181→        )}
+   182→   182→        {status === "done" && result && (
+   183→   183→          <motion.p
+   184→   184→            initial={{ opacity: 0 }}
+   185→   185→            animate={{ opacity: 1 }}
+   186→   186→            className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5 font-medium"
+   187→   187→          >
+   188→   188→            {result}
+   189→   189→          </motion.p>
+   190→   190→        )}
+   191→   191→      </div>
+   192→   192→    </motion.div>
+   193→   193→  );
+   194→   194→}
+   195→   195→
+   196→   196→/* ------------------------------------------------------------------ */
+   197→   197→/*  Suggestion Card                                                    */
+   198→   198→/* ------------------------------------------------------------------ */
+   199→   199→
+   200→   200→function SuggestionCard({ suggestion, index }: { suggestion: Suggestion; index: number }) {
+   201→   201→  const { target_post, relevance_score, anchor_text, context_sentence, confidence } =
+   202→   202→    suggestion;
+   203→   203→
+   204→   204→  // Color-code relevance score
+   205→   205→  const relevanceColor =
+   206→   206→    relevance_score > 0.2
+   207→   207→      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25"
+   208→   208→      : relevance_score > 0.1
+   209→   209→        ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25"
+   210→   210→        : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/25";
+   211→   211→
+   212→   212→  // Color-code confidence
+   213→   213→  const confidenceColor =
+   214→   214→    confidence === "high"
+   215→   215→      ? "bg-teal-500/15 text-teal-700 dark:text-teal-400 border-teal-500/25"
+   216→   216→      : confidence === "medium"
+   217→   217→        ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25"
+   218→   218→        : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/25";
+   219→   219→
+   220→   220→  // Highlight anchor text in context sentence
+   221→   221→  const renderContext = () => {
+   222→   222→    const parts = context_sentence.split(new RegExp(`(${escapeRegex(anchor_text)})`, "gi"));
+   223→   223→    return parts.map((part, i) =>
+   224→   224→      part.toLowerCase() === anchor_text.toLowerCase() ? (
+   225→   225→        <strong key={i} className="font-bold text-amber-900 dark:text-amber-200">
+   226→   226→          {part}
+   227→   227→        </strong>
+   228→   228→      ) : (
+   229→   229→        part
+   230→   230→      )
+   231→   231→    );
+   232→   232→  };
+   233→   233→
+   234→   234→  return (
+   235→   235→    <motion.div
+   236→   236→      custom={index}
+   237→   237→      variants={cardVariants}
+   238→   238→      initial="hidden"
+   239→   239→      animate="visible"
+   240→   240→    >
+   241→   241→      <Card className="border-border/60 hover:border-border hover:shadow-md transition-shadow">
+   242→   242→        <CardContent className="p-4 sm:p-5 space-y-3">
+   243→   243→          {/* Target Post */}
+   244→   244→          <div className="flex items-start justify-between gap-3">
+   245→   245→            <div className="min-w-0">
+   246→   246→              <a
+   247→   247→                href={`#${target_post.slug}`}
+   248→   248→                className="text-sm font-semibold text-foreground hover:text-teal-600 dark:hover:text-teal-400 transition-colors flex items-center gap-1.5 group"
+   249→   249→              >
+   250→   250→                <ExternalLink className="size-3.5 shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+   251→   251→                <span className="truncate">{target_post.title}</span>
+   252→   252→              </a>
+   253→   253→              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+   254→   254→                {target_post.excerpt}
+   255→   255→              </p>
+   256→   256→            </div>
+   257→   257→          </div>
+   258→   258→
+   259→   259→          {/* Badges Row */}
+   260→   260→          <div className="flex flex-wrap items-center gap-2">
+   261→   261→            <Badge variant="outline" className={cn("text-xs", relevanceColor)}>
+   262→   262→              <BarChart3 className="size-3 mr-1" />
+   263→   263→              {relevance_score.toFixed(2)} relevance
+   264→   264→            </Badge>
+   265→   265→            <Badge variant="outline" className={cn("text-xs capitalize", confidenceColor)}>
+   266→   266→              <Target className="size-3 mr-1" />
+   267→   267→              {confidence}
+   268→   268→            </Badge>
+   269→   269→          </div>
+   270→   270→
+   271→   271→          {/* Anchor Text Highlight */}
+   272→   272→          <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20 p-3 sm:p-4">
+   273→   273→            <p className="text-[10px] uppercase tracking-wider font-semibold text-amber-700 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+   274→   274→              <Zap className="size-3" />
+   275→   275→              Suggested Anchor
+   276→   276→            </p>
+   277→   277→            <p className="text-sm sm:text-base leading-relaxed text-foreground/90">
+   278→   278→              &ldquo;{renderContext()}&rdquo;
+   279→   279→            </p>
+   280→   280→          </div>
+   281→   281→        </CardContent>
+   282→   282→      </Card>
+   283→   283→    </motion.div>
+   284→   284→  );
+   285→   285→}
+   286→   286→
+   287→   287→/* ------------------------------------------------------------------ */
+   288→   288→/*  Utility                                                            */
+   289→   289→/* ------------------------------------------------------------------ */
+   290→   290→
+   291→   291→function escapeRegex(str: string) {
+   292→   292→  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+   293→   293→}
+   294→   294→
+   295→   295→/* ------------------------------------------------------------------ */
+   296→   296→/*  Main Component                                                     */
+   297→   297→/* ------------------------------------------------------------------ */
+   298→   298→
+   299→   299→export function DemoSection() {
+   300→   300→  const [title, setTitle] = useState("");
+   301→   301→  const [content, setContent] = useState("");
+   302→   302→  const [selectedSample, setSelectedSample] = useState<string>("");
+   303→   303→  const [pipeline, setPipeline] = useState<PipelineStep>("idle");
+   304→   304→  const [results, setResults] = useState<SuggestResponse | null>(null);
+   305→   305→  const [error, setError] = useState<string | null>(null);
+   306→   306→  const [engineLive, setEngineLive] = useState(false);
+   307→   307→
+   308→   308→  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+   309→   309→  const charCount = content.length;
+   310→   310→
+   311→   311→  /* ---- Check engine status ---- */
+   312→   312→  useEffect(() => {
+   313→   313→    const checkEngine = async () => {
+   314→   314→      try {
+   315→   315→        const res = await fetch("/?XTransformPort=3030/posts");
+   316→   316→        if (res.ok) setEngineLive(true);
+   317→   317→      } catch {
+   318→   318→        setEngineLive(false);
+   319→   319→      }
+   320→   320→    };
+   321→   321→    checkEngine();
+   322→   322→    const interval = setInterval(checkEngine, 15000);
+   323→   323→    return () => clearInterval(interval);
+   324→   324→  }, []);
+   325→   325→
+   326→   326→  /* ---- Load sample post ---- */
+   327→   327→  const handleSampleSelect = useCallback((value: string) => {
+   328→   328→    setSelectedSample(value);
+   329→   329→    const sample = SAMPLE_POSTS.find((s) => s.label === value);
+   330→   330→    if (sample) {
+   331→   331→      setTitle(sample.title);
+   332→   332→      setContent(sample.content);
+   333→   333→      // Reset results when loading new content
+   334→   334→      setResults(null);
+   335→   335→      setError(null);
+   336→   336→      setPipeline("idle");
+   337→   337→    }
+   338→   338→  }, []);
+   339→   339→
+   340→   340→  /* ---- Generate suggestions ---- */
+   341→   341→  const handleGenerate = useCallback(async () => {
+   342→   342→    if (!content.trim()) return;
+   343→   343→
+   344→   344→    // Reset
+   345→   345→    setError(null);
+   346→   346→    setResults(null);
+   347→   347→    setPipeline("chunking");
+   348→   348→
+   349→   349→    // Step 1: Chunking (simulate 1.2s)
+   350→   350→    await new Promise((r) => setTimeout(r, 1200));
+   351→   351→    setPipeline("retrieval");
+   352→   352→
+   353→   353→    // Step 2: Retrieval (simulate 1s)
+   354→   354→    await new Promise((r) => setTimeout(r, 1000));
+   355→   355→    setPipeline("generation");
+   356→   356→
+   357→   357→    // Step 3: Generation — fire API in parallel with simulated delay
+   358→   358→    try {
+   359→   359→      const res = await fetch("/?XTransformPort=3030/suggest", {
+   360→   360→        method: "POST",
+   361→   361→        headers: { "Content-Type": "application/json" },
+   362→   362→        body: JSON.stringify({ text: content, title: title || undefined }),
+   363→   363→      });
+   364→   364→
+   365→   365→      if (!res.ok) {
+   366→   366→        throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+   367→   367→      }
+   368→   368→
+   369→   369→      const data: SuggestResponse = await res.json();
+   370→   370→      // Small delay to let generation animation play
+   371→   371→      await new Promise((r) => setTimeout(r, 600));
+   372→   372→      setPipeline("done");
+   373→   373→      setResults(data);
+   374→   374→    } catch (err) {
+   375→   375→      setPipeline("idle");
+   376→   376→      setError(
+   377→   377→        err instanceof Error
+   378→   378→          ? err.message
+   379→   379→          : "An unexpected error occurred. Please check that the demo engine is running and try again."
+   380→   380→      );
+   381→   381→    }
+   382→   382→  }, [content, title]);
+   383→   383→
+   384→   384→  /* ---- Try Again ---- */
+   385→   385→  const handleRetry = useCallback(() => {
+   386→   386→    setError(null);
+   387→   387→    setPipeline("idle");
+   388→   388→  }, []);
+   389→   389→
+   390→   390→  /* ---- Pipeline step status helper ---- */
+   391→   391→  const stepStatus = (step: "chunking" | "retrieval" | "generation") => {
+   392→   392→    if (pipeline === "idle") return "pending" as const;
+   393→   393→    const order: PipelineStep[] = ["chunking", "retrieval", "generation", "done"];
+   394→   394→    const currentIdx = order.indexOf(pipeline);
+   395→   395→    const stepIdx = order.indexOf(step);
+   396→   396→    if (stepIdx < currentIdx) return "done" as const;
+   397→   397→    if (stepIdx === currentIdx) return "active" as const;
+   398→   398→    return "pending" as const;
+   399→   399→  };
+   400→   400→
+   401→   401→  return (
+   402→   402→    <section id="demo" className="scroll-mt-24 py-20 sm:py-28">
+   403→   403→      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   404→   404→        {/* ---- Header ---- */}
+   405→   405→        <motion.div
+   406→   406→          initial={{ opacity: 0, y: 20 }}
+   407→   407→          whileInView={{ opacity: 1, y: 0 }}
+   408→   408→          viewport={{ once: true, margin: "-60px" }}
+   409→   409→          transition={{ duration: 0.5 }}
+   410→   410→          className="text-center mb-12"
+   411→   411→        >
+   412→   412→          <div className="flex items-center justify-center gap-3 mb-4">
+   413→   413→            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+   414→   414→              Try It Now — Live Demo
+   415→   415→            </h2>
+   416→   416→            {/* ENGINE LIVE badge */}
+   417→   417→            <span className="relative flex h-3 w-3">
+   418→   418→              {engineLive && (
+   419→   419→                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
+   420→   420→              )}
+   421→   421→              <span
+   422→   422→                className={cn(
+   423→   423→                  "relative inline-flex rounded-full h-3 w-3",
+   424→   424→                  engineLive ? "bg-teal-500" : "bg-muted-foreground/40"
+   425→   425→                )}
+   426→   426→              />
+   427→   427→            </span>
+   428→   428→            <Badge
+   429→   429→              variant="outline"
+   430→   430→              className={cn(
+   431→   431→                "text-xs font-semibold px-2.5 py-0.5 transition-colors",
+   432→   432→                engineLive
+   433→   433→                  ? "border-teal-500/40 bg-teal-500/10 text-teal-700 dark:text-teal-400"
+   434→   434→                  : "border-muted-foreground/25 bg-muted text-muted-foreground"
+   435→   435→              )}
+   436→   436→            >
+   437→   437→              {engineLive ? "ENGINE LIVE" : "OFFLINE"}
+   438→   438→            </Badge>
+   439→   439→          </div>
+   440→   440→          <p className="mt-3 text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+   441→   441→            Paste any blog post and watch LinkForge generate real internal link
+   442→   442→            suggestions in real-time.
+   443→   443→          </p>
+   444→   444→        </motion.div>
+   445→   445→
+   446→   446→        {/* ---- Two-Column Layout ---- */}
+   447→   447→        <motion.div
+   448→   448→          variants={containerVariants}
+   449→   449→          initial="hidden"
+   450→   450→          whileInView="visible"
+   451→   451→          viewport={{ once: true, margin: "-40px" }}
+   452→   452→          className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start"
+   453→   453→        >
+   454→   454→          {/* ========================= */}
+   455→   455→          {/* Left Column — Input        */}
+   456→   456→          {/* ========================= */}
+   457→   457→          <div className="space-y-5">
+   458→   458→            {/* Sample Post Selector */}
+   459→   459→            <div className="space-y-2">
+   460→   460→              <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
+   461→   461→                <FileText className="size-4 text-muted-foreground" />
+   462→   462→                Or try a sample post:
+   463→   463→              </label>
+   464→   464→              <Select value={selectedSample} onValueChange={handleSampleSelect}>
+   465→   465→                <SelectTrigger className="w-full">
+   466→   466→                  <SelectValue placeholder="Select a sample blog post..." />
+   467→   467→                </SelectTrigger>
+   468→   468→                <SelectContent>
+   469→   469→                  {SAMPLE_POSTS.map((s) => (
+   470→   470→                    <SelectItem key={s.label} value={s.label}>
+   471→   471→                      {s.label}
+   472→   472→                    </SelectItem>
+   473→   473→                  ))}
+   474→   474→                </SelectContent>
+   475→   475→              </Select>
+   476→   476→            </div>
+   477→   477→
+   478→   478→            {/* Title Input */}
+   479→   479→            <div className="space-y-2">
+   480→   480→              <label
+   481→   481→                htmlFor="demo-title"
+   482→   482→                className="text-sm font-medium text-foreground"
+   483→   483→              >
+   484→   484→                Post Title{" "}
+   485→   485→                <span className="text-muted-foreground font-normal">(optional)</span>
+   486→   486→              </label>
+   487→   487→              <Input
+   488→   488→                id="demo-title"
+   489→   489→                placeholder="e.g., My Latest Blog Post"
+   490→   490→                value={title}
+   491→   491→                onChange={(e) => setTitle(e.target.value)}
+   492→   492→                className="bg-background"
+   493→   493→              />
+   494→   494→            </div>
+   495→   495→
+   496→   496→            {/* Content Textarea */}
+   497→   497→            <div className="space-y-2">
+   498→   498→              <label
+   499→   499→                htmlFor="demo-content"
+   500→   500→                className="text-sm font-medium text-foreground"
+   501→   501→              >
+   502→   502→                Blog Post Content
+   503→   503→              </label>
+   504→   504→              <Textarea
+   505→   505→                id="demo-content"
+   506→   506→                placeholder="Paste your blog post content here... LinkForge will analyze the text and find the best opportunities for internal links within your existing content library."
+   507→   507→                value={content}
+   508→   508→                onChange={(e) => {
+   509→   509→                  setContent(e.target.value);
+   510→   510→                  // Reset results if content changes significantly
+   511→   511→                  if (results) {
+   512→   512→                    setResults(null);
+   513→   513→                    setPipeline("idle");
+   514→   514→                  }
+   515→   515→                }}
+   516→   516→                className="min-h-[300px] resize-y bg-background text-sm leading-relaxed"
+   517→   517→              />
+   518→   518→              <div className="flex items-center justify-between text-xs text-muted-foreground">
+   519→   519→                <span>
+   520→   520→                  {charCount.toLocaleString()} characters
+   521→   521→                </span>
+   522→   522→                <span>
+   523→   523→                  {wordCount.toLocaleString()} {wordCount === 1 ? "word" : "words"}
+   524→   524→                </span>
+   525→   525→              </div>
+   526→   526→            </div>
+   527→   527→
+   528→   528→            {/* Generate Button */}
+   529→   529→            <Button
+   530→   530→              size="lg"
+   531→   531→              onClick={handleGenerate}
+   532→   532→              disabled={pipeline !== "idle" || !content.trim()}
+   533→   533→              className={cn(
+   534→   534→                "w-full gap-2.5 text-base font-semibold shadow-lg transition-all",
+   535→   535→                pipeline === "idle" &&
+   536→   536→                  content.trim() &&
+   537→   537→                  "bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white shadow-teal-500/25 hover:shadow-teal-500/35",
+   538→   538→                (pipeline !== "idle" || !content.trim()) &&
+   539→   539→                  "bg-muted text-muted-foreground shadow-none cursor-not-allowed"
+   540→   540→              )}
+   541→   541→            >
+   542→   542→              {pipeline !== "idle" ? (
+   543→   543→                <>
+   544→   544→                  <Loader2 className="size-5 animate-spin" />
+   545→   545→                  Analyzing...
+   546→   546→                </>
+   547→   547→              ) : (
+   548→   548→                <>
+   549→   549→                  <Sparkles className="size-5" />
+   550→   550→                  Generate Link Suggestions
+   551→   551→                  <ArrowRight className="size-4 ml-1" />
+   552→   552→                </>
+   553→   553→              )}
+   554→   554→            </Button>
+   555→   555→          </div>
+   556→   556→
+   557→   557→          {/* ========================= */}
+   558→   558→          {/* Right Column — Results     */}
+   559→   559→          {/* ========================= */}
+   560→   560→          <div className="min-h-[400px]">
+   561→   561→            <AnimatePresence mode="wait">
+   562→   562→              {/* ---- Pipeline Progress ---- */}
+   563→   563→              {(pipeline === "chunking" ||
+   564→   564→                pipeline === "retrieval" ||
+   565→   565→                pipeline === "generation") && (
+   566→   566→                <motion.div
+   567→   567→                  key="pipeline"
+   568→   568→                  initial={{ opacity: 0, y: 12 }}
+   569→   569→                  animate={{ opacity: 1, y: 0 }}
+   570→   570→                  exit={{ opacity: 0, y: -12 }}
+   571→   571→                  transition={{ duration: 0.3 }}
+   572→   572→                >
+   573→   573→                  <Card className="border-teal-500/30 bg-teal-500/5">
+   574→   574→                    <CardHeader className="pb-3">
+   575→   575→                      <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+   576→   576→                        <Wand2 className="size-4 text-teal-600 dark:text-teal-400" />
+   577→   577→                        Processing Pipeline
+   578→   578→                      </h3>
+   579→   579→                    </CardHeader>
+   580→   580→                    <CardContent className="space-y-5">
+   581→   581→                      <PipelineStepCard
+   582→   582→                        step={1}
+   583→   583→                        icon={Scissors}
+   584→   584→                        label="Chunking"
+   585→   585→                        status={stepStatus("chunking")}
+   586→   586→                        result={
+   587→   587→                          results
+   588→   588→                            ? `${results.chunks_count} chunks created`
+   589→   589→                            : "Splitting into paragraphs..."
+   590→   590→                        }
+   591→   591→                      />
+   592→   592→                      <div className="border-l-2 border-dashed border-muted-foreground/20 ml-4 h-3" />
+   593→   593→                      <PipelineStepCard
+   594→   594→                        step={2}
+   595→   595→                        icon={Search}
+   596→   596→                        label="Retrieval"
+   597→   597→                        status={stepStatus("retrieval")}
+   598→   598→                        result={
+   599→   599→                          results
+   600→   600→                            ? `${results.suggestions.length + 1} candidates found`
+   601→   601→                            : "Searching for relevant posts..."
+   602→   602→                        }
+   603→   603→                      />
+   604→   604→                      <div className="border-l-2 border-dashed border-muted-foreground/20 ml-4 h-3" />
+   605→   605→                      <PipelineStepCard
+   606→   606→                        step={3}
+   607→   607→                        icon={PenLine}
+   608→   608→                        label="Generation"
+   609→   609→                        status={stepStatus("generation")}
+   610→   610→                        result={
+   611→   611→                          results
+   612→   612→                            ? `${results.suggestions.length} suggestions ready`
+   613→   613→                            : "Generating anchor text..."
+   614→   614→                        }
+   615→   615→                      />
+   616→   616→                    </CardContent>
+   617→   617→                  </Card>
+   618→   618→                </motion.div>
+   619→   619→              )}
+   620→   620→
+   621→   621→              {/* ---- Error State ---- */}
+   622→   622→              {error && pipeline === "idle" && (
+   623→   623→                <motion.div
+   624→   624→                  key="error"
+   625→   625→                  initial={{ opacity: 0, scale: 0.96 }}
+   626→   626→                  animate={{ opacity: 1, scale: 1 }}
+   627→   627→                  exit={{ opacity: 0 }}
+   628→   628→                  transition={{ duration: 0.3 }}
+   629→   629→                >
+   630→   630→                  <Card className="border-rose-500/40 bg-rose-500/5">
+   631→   631→                    <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+   632→   632→                      <div className="flex items-center justify-center w-14 h-14 rounded-full bg-rose-500/10">
+   633→   633→                        <AlertCircle className="size-7 text-rose-500" />
+   634→   634→                      </div>
+   635→   635→                      <div>
+   636→   636→                        <h3 className="text-base font-semibold text-foreground mb-1">
+   637→   637→                          Something went wrong
+   638→   638→                        </h3>
+   639→   639→                        <p className="text-sm text-muted-foreground max-w-sm">
+   640→   640→                          {error}
+   641→   641→                        </p>
+   642→   642→                      </div>
+   643→   643→                      <Button
+   644→   644→                        variant="outline"
+   645→   645→                        onClick={handleRetry}
+   646→   646→                        className="border-rose-500/30 text-rose-700 dark:text-rose-400 hover:bg-rose-500/10 gap-2"
+   647→   647→                      >
+   648→   648→                        <ArrowRight className="size-4 rotate-[-135deg]" />
+   649→   649→                        Try Again
+   650→   650→                      </Button>
+   651→   651→                    </CardContent>
+   652→   652→                  </Card>
+   653→   653→                </motion.div>
+   654→   654→              )}
+   655→   655→
+   656→   656→              {/* ---- Results Display ---- */}
+   657→   657→              {results && pipeline === "done" && (
+   658→   658→                <motion.div
+   659→   659→                  key="results"
+   660→   660→                  initial={{ opacity: 0 }}
+   661→   661→                  animate={{ opacity: 1 }}
+   662→   662→                  exit={{ opacity: 0 }}
+   663→   663→                  transition={{ duration: 0.4 }}
+   664→   664→                  className="space-y-4"
+   665→   665→                >
+   666→   666→                  <div className="flex items-center justify-between">
+   667→   667→                    <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+   668→   668→                      <Link2 className="size-4 text-teal-600 dark:text-teal-400" />
+   669→   669→                      Link Suggestions
+   670→   670→                    </h3>
+   671→   671→                    <Badge
+   672→   672→                      variant="outline"
+   673→   673→                      className="border-teal-500/30 bg-teal-500/10 text-teal-700 dark:text-teal-400 text-xs"
+   674→   674→                    >
+   675→   675→                      {results.suggestions.length} found
+   676→   676→                    </Badge>
+   677→   677→                  </div>
+   678→   678→
+   679→   679→                  {/* Suggestion Cards */}
+   680→   680→                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1">
+   681→   681→                    <AnimatePresence>
+   682→   682→                      {results.suggestions.map((s, i) => (
+   683→   683→                        <SuggestionCard key={s.target_post.id} suggestion={s} index={i} />
+   684→   684→                      ))}
+   685→   685→                    </AnimatePresence>
+   686→   686→                  </div>
+   687→   687→
+   688→   688→                  {/* Processing Stats */}
+   689→   689→                  <Card className="bg-muted/40 border-border/40">
+   690→   690→                    <CardContent className="p-3 sm:p-4">
+   691→   691→                      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-muted-foreground">
+   692→   692→                        <span className="flex items-center gap-1.5">
+   693→   693→                          <Clock className="size-3.5" />
+   694→   694→                          <span className="font-medium text-foreground">
+   695→   695→                            {results.processing_time_ms}ms
+   696→   696→                          </span>{" "}
+   697→   697→                          processing time
+   698→   698→                        </span>
+   699→   699→                        <span className="hidden sm:inline text-muted-foreground/40">|</span>
+   700→   700→                        <span className="flex items-center gap-1.5">
+   701→   701→                          <BarChart3 className="size-3.5" />
+   702→   702→                          <span className="font-medium text-foreground">
+   703→   703→                            {results.chunks_count}
+   704→   704→                          </span>{" "}
+   705→   705→                          chunks analyzed
+   706→   706→                        </span>
+   707→   707→                        <span className="hidden sm:inline text-muted-foreground/40">|</span>
+   708→   708→                        <span className="flex items-center gap-1.5">
+   709→   709→                          <Target className="size-3.5" />
+   710→   710→                          <span className="font-medium text-foreground">
+   711→   711→                            {results.suggestions.length}
+   712→   712→                          </span>{" "}
+   713→   713→                          suggestions
+   714→   714→                        </span>
+   715→   715→                      </div>
+   716→   716→                    </CardContent>
+   717→   717→                  </Card>
+   718→   718→                </motion.div>
+   719→   719→              )}
+   720→   720→
+   721→   721→              {/* ---- Empty State ---- */}
+   722→   722→              {!error && pipeline === "idle" && !results && (
+   723→   723→                <motion.div
+   724→   724→                  key="empty"
+   725→   725→                  initial={{ opacity: 0 }}
+   726→   726→                  animate={{ opacity: 1 }}
+   727→   727→                  exit={{ opacity: 0 }}
+   728→   728→                  transition={{ duration: 0.3 }}
+   729→   729→                >
+   730→   730→                  <Card className="border-dashed border-border/60 bg-muted/20 h-full min-h-[400px] flex items-center justify-center">
+   731→   731→                    <CardContent className="p-8 flex flex-col items-center text-center gap-4">
+   732→   732→                      <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-muted/60">
+   733→   733→                        <Link2 className="size-10 text-muted-foreground/30" />
+   734→   734→                      </div>
+   735→   735→                      <div>
+   736→   736→                        <p className="text-base font-semibold text-foreground/70">
+   737→   737→                          Your link suggestions will appear here
+   738→   738→                        </p>
+   739→   739→                        <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto">
+   740→   740→                          Paste content above or select a sample post to get started
+   741→   741→                        </p>
+   742→   742→                      </div>
+   743→   743→                    </CardContent>
+   744→   744→                  </Card>
+   745→   745→                </motion.div>
+   746→   746→              )}
+   747→   747→            </AnimatePresence>
+   748→   748→          </div>
+   749→   749→        </motion.div>
+   750→   750→      </div>
+   751→   751→    </section>
+   752→   752→  );
+   753→   753→}

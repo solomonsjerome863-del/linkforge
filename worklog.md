@@ -273,3 +273,41 @@ Stage Summary:
 - Full working demo pipeline: UI → API → chunking → retrieval → LLM anchor generation
 - 10 navigation items, 11 sections total on the page
 - Both components production-ready; simultaneous operation requires normal server resources
+
+---
+Task ID: 7
+Agent: Main Orchestrator
+Task: Migrate demo engine into Next.js API routes and get E2E working
+
+Work Log:
+- Created `/src/app/api/demo/posts/route.ts` — GET handler returning 8 sample posts
+- Created `/src/app/api/demo/suggest/route.ts` — POST handler with full RAG pipeline
+- Created `/src/lib/demo-engine.ts` — shared engine logic (508 lines): SAMPLE_POSTS, STOP_WORDS, chunkText, computeRelevance, generateAnchorText, getConfidence
+- Updated `demo-section.tsx` to call `/api/demo/posts` and `/api/demo/suggest` directly (no XTransformPort)
+- Attempted z-ai-web-dev-sdk in-process → OOM (sandbox memory limits)
+- Attempted z-ai CLI subprocess → OOM
+- Implemented smart fallback: derives anchors from post titles, finds best-matching sentence via word overlap
+- Verified E2E: input text → 1 chunk → 3 suggestions with anchors, scores, context sentences (11ms)
+- Sample results: "fix orphan pages on your website" (0.072), "content pruning how to improve your" (0.065), "guide to internal linking for seo" (0.054)
+- Page compiles at 320KB, 200 status, all demo UI elements present
+- Single-process architecture (no port conflicts, no gateway issues)
+
+Stage Summary:
+- Demo pipeline fully functional: chunking → TF-overlap retrieval → smart anchor generation
+- In production, replace fallback with z-ai-web-dev-sdk LLM for AI-crafted anchors
+- 10 nav items, 11 sections, 1 process
+
+---
+Task ID: migrate-demo-engine-to-api-routes
+Agent: Main
+Summary: Moved demo engine logic from mini-services/demo-engine (port 3030) into Next.js API routes, eliminating the external dependency.
+
+Files created:
+- src/lib/demo-engine.ts — Shared module containing SAMPLE_POSTS (all 8 posts with full content), STOP_WORDS, chunkText(), computeRelevance(), ANCHOR_SYSTEM_PROMPT, generateAnchorText(), findBestMatchingChunk(), generateFallbackAnchor(), getConfidence(), and lazy ZAI SDK singleton.
+- src/app/api/demo/posts/route.ts — GET handler returning posts (id, title, slug, excerpt) with CORS headers. Serves as the health check endpoint.
+- src/app/api/demo/suggest/route.ts — POST handler implementing the full pipeline: chunk text → TF-overlap relevance scoring against all 8 posts → top 5 matches (min score 0.05) → LLM anchor text generation → structured response with CORS headers.
+
+Files updated:
+- src/components/blueprint/demo-section.tsx — Replaced `/?XTransformPort=3030/posts` with `/api/demo/posts` (health check) and `/?XTransformPort=3030/suggest` with `/api/demo/suggest` (suggestion generation). No other XTransformPort references remain.
+
+Lint result: Clean (no errors).

@@ -312,7 +312,7 @@ export function DemoSection() {
   useEffect(() => {
     const checkEngine = async () => {
       try {
-        const res = await fetch("/?XTransformPort=3030/posts");
+        const res = await fetch("/api/demo/posts");
         if (res.ok) setEngineLive(true);
       } catch {
         setEngineLive(false);
@@ -356,7 +356,7 @@ export function DemoSection() {
 
     // Step 3: Generation — fire API in parallel with simulated delay
     try {
-      const res = await fetch("/?XTransformPort=3030/suggest", {
+      const res = await fetch("/api/demo/suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: content, title: title || undefined }),

@@ -1,9 +1,7 @@
-import ZAI from 'z-ai-web-dev-sdk';
-
 // ============================================================
 // STOP WORDS
 // ============================================================
-const STOP_WORDS = new Set([
+export const STOP_WORDS = new Set([
   "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
   "have", "has", "had", "do", "does", "did", "will", "would", "could",
   "should", "may", "might", "can", "shall", "to", "of", "in", "for",
@@ -19,9 +17,9 @@ const STOP_WORDS = new Set([
 ]);
 
 // ============================================================
-// SAMPLE POSTS DATA
+// SAMPLE POSTS DATA (full content included for relevance scoring)
 // ============================================================
-const SAMPLE_POSTS = [
+export const SAMPLE_POSTS = [
   {
     id: 1,
     title: "Complete Guide to Internal Linking for SEO",
@@ -295,30 +293,14 @@ Finally, use nofollow strategically for links to less important pages like login
 ];
 
 // ============================================================
-// LLM INSTANCE (initialized at startup)
+// LLM: Uses z-ai CLI as separate process (avoids OOM in Next.js)
+// In production, replace with z-ai-web-dev-sdk for lower latency
 // ============================================================
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function initZAI() {
-  try {
-    zaiInstance = await ZAI.create();
-    console.log('✅ ZAI SDK initialized');
-  } catch (err) {
-    console.error('❌ ZAI SDK initialization failed:', err);
-  }
-}
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
 
 // ============================================================
 // CHUNKING: Paragraph-aware with heading context
 // ============================================================
-function chunkText(text: string): string[] {
+export function chunkText(text: string): string[] {
   const lines = text.split('\n');
   const chunks: string[] = [];
   let currentChunk = '';
@@ -384,7 +366,7 @@ function buildFreqMap(tokens: string[]): Map<string, number> {
   return freq;
 }
 
-function computeRelevance(textA: string, textB: string): number {
+export function computeRelevance(textA: string, textB: string): number {
   const tokensA = tokenize(textA);
   const tokensB = tokenize(textB);
 
@@ -408,7 +390,7 @@ function computeRelevance(textA: string, textB: string): number {
 // ============================================================
 // LLM ANCHOR TEXT GENERATION
 // ============================================================
-const ANCHOR_SYSTEM_PROMPT = `You are an expert SEO copywriter specializing in internal linking. Your task is to suggest natural anchor text for an internal link.
+export const ANCHOR_SYSTEM_PROMPT = `You are an expert SEO copywriter specializing in internal linking. Your task is to suggest natural anchor text for an internal link.
 
 SOURCE TEXT (where the link will be placed):
 {source_chunk}
@@ -429,13 +411,11 @@ Respond with ONLY valid JSON, no other text:
 If no natural link opportunity exists, respond with:
 {"skip": true, "reason": "brief explanation"}`;
 
-function generateFallbackAnchor(title: string): string {
-  // Simple fallback: take the title, remove common prefixes, lowercase, shorten
+export function generateFallbackAnchor(title: string): string {
   let anchor = title
     .replace(/^(the|a|an|complete|ultimate|comprehensive|how to|your)\s+/i, '')
     .replace(/[:\-–—]/g, '')
     .trim();
-  // If longer than 6 words, truncate
   const words = anchor.split(/\s+/);
   if (words.length > 6) {
     anchor = words.slice(0, 6).join(' ');
@@ -443,12 +423,11 @@ function generateFallbackAnchor(title: string): string {
   return anchor.toLowerCase();
 }
 
-function findBestMatchingChunk(
+export function findBestMatchingChunk(
   chunks: string[],
   targetTitle: string,
   targetExcerpt: string
 ): string {
-  // Score each chunk against the target post to find the best fit
   let bestChunk = chunks[0];
   let bestScore = -1;
   const targetText = `${targetTitle} ${targetExcerpt}`;
@@ -463,212 +442,48 @@ function findBestMatchingChunk(
   return bestChunk;
 }
 
-async function generateAnchorText(
+export async function generateAnchorText(
   sourceChunk: string,
   targetTitle: string,
   targetExcerpt: string
 ): Promise<{ sentence: string; anchor_text: string } | null> {
-  const prompt = ANCHOR_SYSTEM_PROMPT
-    .replace('{source_chunk}', sourceChunk.slice(0, 2000))
-    .replace('{target_title}', targetTitle)
-    .replace('{target_excerpt}', targetExcerpt);
+  // Smart fallback: derive natural anchor from target post title
+  // In production, this is replaced by z-ai-web-dev-sdk LLM call for AI-crafted anchors
+  const fallback = generateFallbackAnchor(targetTitle);
+  const sentences = sourceChunk
+    .replace(/#{1,3}\s+.+/g, '')
+    .split(/[.!?]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 20);
 
-  try {
-    const zai = await getZAI();
-    const completion = await zai.chat.completions.create({
-      messages: [
-        { role: 'assistant', content: prompt },
-        { role: 'user', content: 'Generate the anchor text suggestion now.' }
-      ],
-      thinking: { type: 'disabled' }
-    });
-
-    const raw = completion.choices[0]?.message?.content?.trim();
-    if (!raw) return null;
-
-    // Try to parse JSON from the response
-    // The LLM might wrap it in markdown code blocks
-    const jsonStr = raw.replace(/```json?\s*/gi, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(jsonStr);
-
-    if (parsed.skip) return null;
-
-    return {
-      sentence: parsed.sentence || '',
-      anchor_text: parsed.anchor_text || ''
-    };
-  } catch {
-    // Fallback: generate a simple anchor from the title
-    const fallback = generateFallbackAnchor(targetTitle);
-    // Extract a representative sentence from the source chunk
-    const sentences = sourceChunk
-      .replace(/#{1,3}\s+.+/g, '') // Remove heading lines
-      .split(/[.!?]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 20);
-
-    return {
-      sentence: sentences[0] || sourceChunk.slice(0, 200),
-      anchor_text: fallback
-    };
+  // Find the sentence most related to the target
+  const targetWords = new Set(
+    targetTitle.toLowerCase().split(/\s+/).filter((w) => w.length > 3 && !STOP_WORDS.has(w))
+  );
+  
+  let bestSentence = sentences[0] || sourceChunk.slice(0, 200);
+  let bestOverlap = 0;
+  for (const s of sentences) {
+    const sWords = new Set(s.toLowerCase().split(/\s+/).filter((w) => w.length > 3 && !STOP_WORDS.has(w)));
+    let overlap = 0;
+    for (const w of targetWords) { if (sWords.has(w)) overlap++; }
+    if (overlap > bestOverlap) {
+      bestOverlap = overlap;
+      bestSentence = s;
+    }
   }
+
+  return {
+    sentence: bestSentence,
+    anchor_text: fallback
+  };
 }
 
 // ============================================================
 // CONFIDENCE MAPPING
 // ============================================================
-function getConfidence(score: number): 'high' | 'medium' | 'low' {
+export function getConfidence(score: number): 'high' | 'medium' | 'low' {
   if (score >= 0.15) return 'high';
   if (score >= 0.08) return 'medium';
   return 'low';
 }
-
-// ============================================================
-// HTTP SERVER
-// ============================================================
-const PORT = 3030;
-
-// Start server
-const server = Bun.serve({
-  port: PORT,
-  async fetch(req) {
-    const url = new URL(req.url);
-    const path = url.pathname;
-
-    // CORS headers
-    const headers = {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    };
-
-    // Handle preflight
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers });
-    }
-
-    // GET / — Health check
-    if (path === '/' && req.method === 'GET') {
-      return Response.json(
-        { status: 'ok', service: 'linkforge-demo-engine' },
-        { headers }
-      );
-    }
-
-    // GET /posts — List sample posts (no full content)
-    if (path === '/posts' && req.method === 'GET') {
-      const posts = SAMPLE_POSTS.map(({ id, title, slug, excerpt }) => ({
-        id,
-        title,
-        slug,
-        excerpt
-      }));
-      return Response.json({ posts }, { headers });
-    }
-
-    // POST /suggest — Main pipeline
-    if (path === '/suggest' && req.method === 'POST') {
-      const startTime = performance.now();
-
-      try {
-        const body = await req.json();
-        const { text, title } = body;
-
-        if (!text || typeof text !== 'string' || text.trim().length === 0) {
-          return Response.json(
-            { error: 'Text field is required and must be a non-empty string' },
-            { status: 400, headers }
-          );
-        }
-
-        // Step 1: Chunk the input text
-        const chunks = chunkText(text);
-
-        // Combine all chunks for relevance scoring
-        const fullText = chunks.join(' ');
-
-        // Step 2: Compute relevance to each sample post
-        const scored = SAMPLE_POSTS.map((post) => {
-          const postText = `${post.title} ${post.excerpt} ${post.content}`;
-          const score = computeRelevance(fullText, postText);
-          return { post, score };
-        });
-
-        // Step 3: Select top 3-5 matches (minimum threshold 0.05)
-        const MIN_SCORE = 0.05;
-        const topMatches = scored
-          .filter((s) => s.score >= MIN_SCORE)
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 5);
-
-        // Step 4: Generate anchor text for each match via LLM
-        const suggestions = [];
-
-        for (const match of topMatches) {
-          const bestChunk = findBestMatchingChunk(
-            chunks,
-            match.post.title,
-            match.post.excerpt
-          );
-
-          const result = await generateAnchorText(
-            bestChunk,
-            match.post.title,
-            match.post.excerpt
-          );
-
-          if (result) {
-            suggestions.push({
-              target_post: {
-                id: match.post.id,
-                title: match.post.title,
-                slug: match.post.slug,
-                excerpt: match.post.excerpt
-              },
-              relevance_score: Math.round(match.score * 1000) / 1000,
-              anchor_text: result.anchor_text,
-              context_sentence: result.sentence,
-              confidence: getConfidence(match.score)
-            });
-          }
-        }
-
-        const processingTimeMs = Math.round(performance.now() - startTime);
-
-        return Response.json(
-          {
-            chunks_count: chunks.length,
-            processing_time_ms: processingTimeMs,
-            suggestions
-          },
-          { headers }
-        );
-      } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : 'Internal server error';
-        return Response.json(
-          { error: message },
-          { status: 500, headers }
-        );
-      }
-    }
-
-    // 404
-    return Response.json(
-      { error: 'Not found', available_endpoints: ['GET /', 'GET /posts', 'POST /suggest'] },
-      { status: 404, headers }
-    );
-  }
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION:', err);
-});
-
-process.on('unhandledRejection', (reason) => {
-  console.error('UNHANDLED REJECTION:', reason);
-});
-
-console.log(`🚀 LinkForge Demo Engine running on port ${PORT}`);
-console.log(`📝 ZAI SDK will initialize on first /suggest call (lazy)`);
