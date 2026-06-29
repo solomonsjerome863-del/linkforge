@@ -21,6 +21,7 @@ import {
   CreditCard,
   FlaskConical,
   Plug,
+  Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ import { Phase6Roadmap } from "@/components/blueprint/phase-6-roadmap";
 import { PricingSection } from "@/components/blueprint/pricing-section";
 import { MarketTestSection } from "@/components/blueprint/market-test-section";
 import { PluginMatrixSection } from "@/components/blueprint/plugin-matrix-section";
+import { DemoSection } from "@/components/blueprint/demo-section";
 
 const navItems = [
   { id: "phase-1", label: "Architecture", icon: <Globe className="w-4 h-4" /> },
@@ -45,6 +47,7 @@ const navItems = [
   { id: "phase-6", label: "Roadmap", icon: <Rocket className="w-4 h-4" /> },
   { id: "pricing", label: "Pricing", icon: <CreditCard className="w-4 h-4" /> },
   { id: "plugins", label: "Plugins", icon: <Plug className="w-4 h-4" /> },
+  { id: "demo", label: "Demo", icon: <Wand2 className="w-4 h-4" /> },
   { id: "market-test", label: "A/Z Test", icon: <FlaskConical className="w-4 h-4" /> },
 ];
 
@@ -332,6 +335,11 @@ export default function BlueprintPage() {
 
         {/* Plugin Matrix Section */}
         <PluginMatrixSection />
+
+        <Separator className="max-w-6xl mx-auto" />
+
+        {/* Live Demo Section */}
+        <DemoSection />
 
         <Separator className="max-w-7xl mx-auto" />
 
