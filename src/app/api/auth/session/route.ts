@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const email = request.nextUrl.searchParams.get("email");
+    const userId = request.nextUrl.searchParams.get("userId");
 
-    if (!email) {
-      return NextResponse.json({ error: "Email query parameter is required" }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: "userId query parameter is required" }, { status: 400 });
     }
 
-    const user = await db.user.findUnique({
-      where: { email },
+    const user = await validateUser(userId);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
+    }
+
+    const userWithSites = await db.user.findUnique({
+      where: { id: userId },
       include: {
         sites: {
           orderBy: { createdAt: "desc" },
@@ -18,15 +24,14 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!userWithSites) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
-    const { passwordHash: _, ...safeUser } = user;
+    const { passwordHash: _, ...safeUser } = userWithSites;
     return NextResponse.json({ user: safeUser });
   } catch (error: unknown) {
     console.error("Session error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

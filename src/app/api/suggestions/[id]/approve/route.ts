@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 export async function POST(
   request: NextRequest,
@@ -7,6 +8,15 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    const body = await request.json();
+    const { userId } = body;
+
+    if (userId) {
+      const user = await validateUser(userId);
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 401 });
+      }
+    }
 
     const suggestion = await db.linkSuggestion.findUnique({ where: { id } });
     if (!suggestion) {
@@ -21,7 +31,6 @@ export async function POST(
     return NextResponse.json({ suggestion: updated });
   } catch (error: unknown) {
     console.error("Approve suggestion error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

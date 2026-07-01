@@ -14,24 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LinkForge AI — Technical Blueprint",
-  description: "Next-Gen Internal Linking Engine: A comprehensive 6-phase technical architecture for building an LLM-powered internal linking SaaS using RAG + Vector Search.",
-  keywords: ["internal linking", "SEO", "RAG", "vector search", "LLM", "anchor text", "LinkWhisper alternative", "SaaS architecture"],
-  authors: [{ name: "LinkForge AI Team" }],
+  title: "LinkForge AI — AI-Powered Internal Linking for SEO",
+  description: "Automatically generate smart internal link suggestions for your website using AI. Improve your SEO with contextual, high-quality internal links.",
+  keywords: ["internal linking", "SEO", "AI", "anchor text", "link suggestions", "site structure", "LinkWhisper alternative", "SaaS"],
+  authors: [{ name: "LinkForge AI" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "LinkForge AI — Technical Blueprint",
-    description: "Next-Gen Internal Linking Engine: RAG + Vector Search architecture for automated internal linking.",
+    title: "LinkForge AI — AI-Powered Internal Linking",
+    description: "Generate smart internal link suggestions automatically. Better linking, better SEO.",
     url: "https://chat.z.ai",
     siteName: "LinkForge AI",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LinkForge AI — Technical Blueprint",
-    description: "Next-Gen Internal Linking Engine: RAG + Vector Search architecture.",
+    title: "LinkForge AI — AI-Powered Internal Linking",
+    description: "Generate smart internal link suggestions automatically.",
   },
 };
 

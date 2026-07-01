@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import type { DashboardStats, Site, SiteStatus } from "@/lib/types";
 
 type StatCardColor = "teal" | "orange" | "amber" | "green";
@@ -97,11 +98,12 @@ export function DashboardView() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
+    if (!user?.id) return;
     async function fetchData() {
       try {
         const [statsRes, sitesRes] = await Promise.all([
-          fetch(`/api/dashboard/stats?userId=${user!.id}`).catch(() => null),
-          fetch(`/api/sites?userId=${user!.id}`).catch(() => null),
+          fetch(`/api/dashboard/stats?userId=${user.id}`).catch(() => null),
+          fetch(`/api/sites?userId=${user.id}`).catch(() => null),
         ]);
         if (statsRes?.ok) {
           const data = await statsRes.json();
@@ -118,7 +120,7 @@ export function DashboardView() {
       }
     }
     fetchData();
-  }, [setDashboardStats, setSites]);
+  }, [user?.id, setDashboardStats, setSites]);
 
   function handleGenerateSuggestions() {
     if (sites.length === 0) return;
@@ -127,7 +129,7 @@ export function DashboardView() {
     fetch(`/api/suggestions/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ siteId: firstSite.id }),
+      body: JSON.stringify({ siteId: firstSite.id, userId: user?.id }),
     })
       .then((res) => {
         if (!res.ok) throw new Error();
@@ -138,7 +140,7 @@ export function DashboardView() {
         setActiveView("suggestions");
       })
       .catch(() => {
-        // Still navigate even if API fails
+        toast.error("Failed to generate suggestions");
         setSelectedSiteId(firstSite.id);
         setActiveView("suggestions");
       })

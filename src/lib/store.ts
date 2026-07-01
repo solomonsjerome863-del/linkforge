@@ -6,11 +6,14 @@ import type {
   LinkSuggestion,
   DashboardStats,
 } from "./types";
+import { saveUser, loadUser, clearUser } from "./auth-storage";
 
 interface AppState {
   // Auth
   user: User | null;
+  _hydrated: boolean;
   setUser: (user: User | null) => void;
+  hydrate: () => void;
 
   // Navigation
   activeView: AppView;
@@ -33,10 +36,26 @@ interface AppState {
   setIsLoading: (loading: boolean) => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   // Auth
   user: null,
-  setUser: (user) => set({ user }),
+  _hydrated: false,
+  hydrate: () => {
+    if (get()._hydrated) return;
+    set({ _hydrated: true });
+    const stored = loadUser();
+    if (stored) {
+      set({ user: stored as User });
+    }
+  },
+  setUser: (user) => {
+    set({ user });
+    if (user) {
+      saveUser(user);
+    } else {
+      clearUser();
+    }
+  },
 
   // Navigation
   activeView: "dashboard",

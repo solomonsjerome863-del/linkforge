@@ -6,6 +6,7 @@ import {
   Link2,
   LayoutDashboard,
   Globe,
+  FileText,
   Link2Icon,
   BarChart3,
   Settings,
@@ -45,6 +46,7 @@ import type { AppView } from "@/lib/types";
 import { DashboardView } from "./dashboard-view";
 import { SitesView } from "./sites-view";
 import { SuggestionsView } from "./suggestions-view";
+import { PagesView } from "./pages-view";
 import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
 import { PLAN_LIMITS } from "@/lib/types";
@@ -56,6 +58,7 @@ const NAV_ITEMS: {
 }[] = [
   { view: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { view: "sites", label: "Sites", icon: Globe },
+  { view: "pages", label: "Pages", icon: FileText },
   { view: "suggestions", label: "Suggestions", icon: Link2Icon },
   { view: "analytics", label: "Analytics", icon: BarChart3 },
   { view: "settings", label: "Settings", icon: Settings },
@@ -64,6 +67,7 @@ const NAV_ITEMS: {
 const VIEW_TITLES: Record<AppView, string> = {
   dashboard: "Dashboard",
   sites: "Sites",
+  pages: "Pages",
   suggestions: "Link Suggestions",
   analytics: "Analytics",
   settings: "Settings",
@@ -259,6 +263,8 @@ export function AppShell() {
         return <DashboardView />;
       case "sites":
         return <SitesView />;
+      case "pages":
+        return <PagesView />;
       case "suggestions":
         return <SuggestionsView />;
       case "analytics":

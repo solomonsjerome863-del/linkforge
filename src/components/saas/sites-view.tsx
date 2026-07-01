@@ -125,19 +125,20 @@ export function SitesView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchSites();
-  }, []);
+    if (user?.id) fetchSites();
+  }, [user?.id]);
 
   async function fetchSites() {
+    if (!user?.id) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/sites?userId=${user!.id}`);
+      const res = await fetch(`/api/sites?userId=${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setSites(data.sites);
       }
     } catch {
-      // empty
+      toast.error("Failed to load sites");
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +196,7 @@ export function SitesView() {
   async function handleCrawl(site: Site) {
     setCrawlingId(site.id);
     try {
-      const res = await fetch(`/api/sites/${site.id}/crawl`, {
+      const res = await fetch(`/api/sites/${site.id}/crawl?userId=${user!.id}`, {
         method: "POST",
       });
       if (!res.ok) throw new Error();
@@ -209,12 +210,12 @@ export function SitesView() {
       // Poll for completion
       const interval = setInterval(async () => {
         try {
-          const pollRes = await fetch("/api/sites");
+          const pollRes = await fetch(`/api/sites?userId=${user!.id}`);
           if (pollRes.ok) {
             const data = await pollRes.json();
-            const updated = data.find((s: Site) => s.id === site.id);
+            const updated = data.sites?.find((s: Site) => s.id === site.id);
             if (updated && updated.status !== "crawling") {
-              setSites(data);
+              setSites(data.sites);
               clearInterval(interval);
               setCrawlingId(null);
               if (updated.status === "ready") {
@@ -235,9 +236,18 @@ export function SitesView() {
     }
   }
 
+  const [deleteTarget, setDeleteTarget] = useState<Site | null>(null);
+
   async function handleDelete(site: Site) {
+    setDeleteTarget(site);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const site = deleteTarget;
+    setDeleteTarget(null);
     try {
-      const res = await fetch(`/api/sites/${site.id}`, {
+      const res = await fetch(`/api/sites/${site.id}?userId=${user!.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error();
@@ -514,6 +524,22 @@ export function SitesView() {
               {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Add Site
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Site</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? This will remove all pages, suggestions, and analytics for this site. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDelete}>Delete Site</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

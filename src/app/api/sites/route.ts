@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,6 +8,11 @@ export async function GET(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: "userId query parameter is required" }, { status: 400 });
+    }
+
+    const user = await validateUser(userId);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     const sites = await db.site.findMany({
@@ -22,8 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ sites });
   } catch (error: unknown) {
     console.error("List sites error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -34,6 +39,11 @@ export async function POST(request: NextRequest) {
 
     if (!userId || !name || !url) {
       return NextResponse.json({ error: "userId, name, and url are required" }, { status: 400 });
+    }
+
+    const user = await validateUser(userId);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     const site = await db.site.create({
@@ -49,7 +59,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ site }, { status: 201 });
   } catch (error: unknown) {
     console.error("Create site error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

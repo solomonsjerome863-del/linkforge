@@ -52,6 +52,7 @@ function getStatusStyle(status: SuggestionStatus): string {
 }
 
 export function SuggestionsView() {
+  const user = useAppStore((s) => s.user);
   const sites = useAppStore((s) => s.sites);
   const suggestions = useAppStore((s) => s.suggestions);
   const setSuggestions = useAppStore((s) => s.setSuggestions);
@@ -78,15 +79,15 @@ export function SuggestionsView() {
   async function fetchSuggestions() {
     setIsLoading(true);
     try {
-      const res = await fetch(
-        `/api/suggestions?siteId=${currentSiteId}`
-      );
+      const params = new URLSearchParams({ siteId: currentSiteId! });
+      if (user?.id) params.set("userId", user.id);
+      const res = await fetch(`/api/suggestions?${params}`);
       if (res.ok) {
         const data = await res.json();
         setSuggestions(data.suggestions);
       }
     } catch {
-      // empty
+      toast.error("Failed to load suggestions");
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +100,7 @@ export function SuggestionsView() {
       const res = await fetch("/api/suggestions/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ siteId: currentSiteId }),
+        body: JSON.stringify({ siteId: currentSiteId, userId: user?.id }),
       });
       if (!res.ok) throw new Error();
       toast.success("New suggestions generated!");
@@ -114,7 +115,11 @@ export function SuggestionsView() {
   async function handleApprove(suggestionId: string) {
     setActionLoading(suggestionId);
     try {
-      const res = await fetch(`/api/suggestions/${suggestionId}/approve`, { method: "POST" });
+      const res = await fetch(`/api/suggestions/${suggestionId}/approve`, { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id }),
+      });
       if (!res.ok) throw new Error();
       setSuggestions(
         suggestions.map((s) =>
@@ -132,7 +137,11 @@ export function SuggestionsView() {
   async function handleReject(suggestionId: string) {
     setActionLoading(suggestionId);
     try {
-      const res = await fetch(`/api/suggestions/${suggestionId}/reject`, { method: "POST" });
+      const res = await fetch(`/api/suggestions/${suggestionId}/reject`, { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id }),
+      });
       if (!res.ok) throw new Error();
       setSuggestions(
         suggestions.map((s) =>
@@ -160,7 +169,7 @@ export function SuggestionsView() {
       const res = await fetch("/api/suggestions/batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: pendingIds, action: "approve" }),
+        body: JSON.stringify({ ids: pendingIds, action: "approve", userId: user?.id }),
       });
       if (!res.ok) throw new Error();
       setSuggestions(
@@ -417,7 +426,11 @@ export function SuggestionsView() {
                                 onClick={() => handleReject(suggestion.id)}
                                 disabled={actionLoading === suggestion.id}
                               >
-                                <X className="w-4 h-4" />
+                                {actionLoading === suggestion.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <X className="w-4 h-4" />
+                                )}
                               </Button>
                             </div>
                           )}

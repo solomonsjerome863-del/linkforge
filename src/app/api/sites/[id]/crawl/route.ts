@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 const SAMPLE_POSTS = [
   { title: "Complete Guide to Internal Linking for SEO", slug: "/internal-linking-guide-seo", headings: ["What is Internal Linking?", "Why Internal Links Matter for SEO", "Best Practices for Internal Linking", "How Many Internal Links Per Page?", "Internal Linking vs External Linking"], wordCount: 2400 },
@@ -69,10 +70,21 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    const userId = request.nextUrl.searchParams.get("userId");
+    if (userId) {
+      const user = await validateUser(userId);
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 401 });
+      }
+    }
 
     const site = await db.site.findUnique({ where: { id } });
     if (!site) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
+    }
+
+    if (userId && site.userId !== userId) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     // Create crawl job
@@ -180,7 +192,6 @@ export async function POST(
       // Ignore cleanup errors
     }
 
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

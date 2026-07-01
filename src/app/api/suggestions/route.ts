@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,6 +9,20 @@ export async function GET(request: NextRequest) {
 
     if (!siteId) {
       return NextResponse.json({ error: "siteId query parameter is required" }, { status: 400 });
+    }
+
+    const userId = request.nextUrl.searchParams.get("userId");
+    if (userId) {
+      const user = await validateUser(userId);
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 401 });
+      }
+
+      // Verify the site belongs to the user
+      const site = await db.site.findUnique({ where: { id: siteId } });
+      if (!site || site.userId !== userId) {
+        return NextResponse.json({ error: "User not found" }, { status: 401 });
+      }
     }
 
     const where: Record<string, unknown> = { siteId };
@@ -31,7 +46,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ suggestions });
   } catch (error: unknown) {
     console.error("List suggestions error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

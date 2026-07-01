@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 const STOP_WORDS = new Set([
   "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
@@ -68,15 +69,26 @@ function generateSurroundingText(textContent: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { siteId } = body;
+    const { siteId, userId } = body;
 
     if (!siteId) {
       return NextResponse.json({ error: "siteId is required" }, { status: 400 });
     }
 
+    if (userId) {
+      const user = await validateUser(userId);
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 401 });
+      }
+    }
+
     const site = await db.site.findUnique({ where: { id: siteId } });
     if (!site) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
+    }
+
+    if (userId && site.userId !== userId) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     const pages = await db.page.findMany({
@@ -167,7 +179,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("Generate suggestions error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

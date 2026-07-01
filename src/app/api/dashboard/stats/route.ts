@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { validateUser } from "@/lib/api-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,6 +8,11 @@ export async function GET(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: "userId query parameter is required" }, { status: 400 });
+    }
+
+    const user = await validateUser(userId);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     const [
@@ -66,7 +72,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ stats });
   } catch (error: unknown) {
     console.error("Dashboard stats error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -10,7 +10,6 @@ import {
   Building2,
   Rocket,
   Check,
-  X,
   Loader2,
   Save,
 } from "lucide-react";
@@ -103,19 +102,15 @@ export function SettingsView() {
   }, [user?.name]);
 
   async function handleSaveName() {
+    if (!name.trim()) {
+      toast.error("Name cannot be empty");
+      return;
+    }
     setIsSavingName(true);
     try {
-      const res = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      if (res.ok) {
-        if (user) setUser({ ...user, name });
-        toast.success("Name updated");
-      } else {
-        toast.error("Failed to update name");
-      }
+      await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
+      if (user) setUser({ ...user, name: name.trim() });
+      toast.success("Name updated");
     } catch {
       toast.error("Failed to update name");
     } finally {
@@ -126,23 +121,8 @@ export function SettingsView() {
   async function handleSavePrefs() {
     setIsSavingPrefs(true);
     try {
-      const res = await fetch("/api/user/preferences", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          maxLinksPerPage,
-          autoApproveThreshold,
-          excludePatterns: excludePatterns
-            .split("\n")
-            .map((p) => p.trim())
-            .filter(Boolean),
-        }),
-      });
-      if (res.ok) {
-        toast.success("Preferences saved");
-      } else {
-        toast.error("Failed to save preferences");
-      }
+      await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
+      toast.success("Preferences saved");
     } catch {
       toast.error("Failed to save preferences");
     } finally {

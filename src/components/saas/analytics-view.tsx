@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Link2Icon,
   FileText,
   AlertTriangle,
+  CheckCircle2,
   TrendingUp,
-  TrendingDown,
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/table";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import type { AnalyticsSnapshot } from "@/lib/types";
 
 // Simulated analytics data shape
 interface AnalyticsData {
@@ -45,28 +44,37 @@ interface AnalyticsData {
   topPages: { title: string; incoming: number; outgoing: number }[];
 }
 
-function generateMockData(): AnalyticsData {
+function seededRandom(seed: string, index: number) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const x = Math.sin(hash + index) * 10000;
+  return x - Math.floor(x);
+}
+
+function generateMockData(siteId: string): AnalyticsData {
   const today = new Date();
   const dailyLinks = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(today);
     d.setDate(d.getDate() - (6 - i));
     return {
       date: d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
-      count: Math.floor(Math.random() * 40) + 20,
+      count: Math.floor(seededRandom(siteId, i) * 40) + 20,
     };
   });
   const totalLinks = dailyLinks.reduce((s, d) => s + d.count, 0);
   return {
     totalLinks,
     linksTrend: 12.5,
-    pagesIndexed: Math.floor(Math.random() * 200) + 80,
-    orphanPages: Math.floor(Math.random() * 15) + 3,
-    avgLinksPerPage: +(Math.random() * 3 + 2).toFixed(1),
+    pagesIndexed: Math.floor(seededRandom(siteId, 100) * 200) + 80,
+    orphanPages: Math.floor(seededRandom(siteId, 200) * 15) + 3,
+    avgLinksPerPage: +(seededRandom(siteId, 300) * 3 + 2).toFixed(1),
     dailyLinks,
     funnel: {
-      pending: Math.floor(Math.random() * 30) + 10,
-      approved: Math.floor(Math.random() * 50) + 20,
-      applied: Math.floor(Math.random() * 80) + 40,
+      pending: Math.floor(seededRandom(siteId, 400) * 30) + 10,
+      approved: Math.floor(seededRandom(siteId, 500) * 50) + 20,
+      applied: Math.floor(seededRandom(siteId, 600) * 80) + 40,
     },
     topPages: [
       { title: "Ultimate Guide to Internal Linking", incoming: 24, outgoing: 8 },
@@ -101,7 +109,7 @@ export function AnalyticsView() {
       })
       .catch(() => {
         // Use mock data when API isn't ready
-        setData(generateMockData());
+        setData(generateMockData(currentSiteId ?? "default"));
       })
       // loading state derived from data being null
   }, [currentSiteId]);
@@ -209,10 +217,17 @@ export function AnalyticsView() {
                       <p className="text-sm text-muted-foreground">Orphan Pages</p>
                       <div className="flex items-baseline gap-2 mt-1">
                         <p className="text-3xl font-bold">{data.orphanPages}</p>
-                        <span className="flex items-center text-sm text-rose-600 dark:text-rose-400">
-                          <TrendingDown className="w-3.5 h-3.5 mr-0.5" />
-                          needs attention
-                        </span>
+                        {data.orphanPages > 0 ? (
+                          <span className="flex items-center text-sm text-rose-600 dark:text-rose-400">
+                            <AlertTriangle className="w-3.5 h-3.5 mr-0.5" />
+                            needs attention
+                          </span>
+                        ) : (
+                          <span className="flex items-center text-sm text-teal-600 dark:text-teal-400">
+                            <CheckCircle2 className="w-3.5 h-3.5 mr-0.5" />
+                            all linked
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center ring-4 ring-amber-500/20">
@@ -315,7 +330,7 @@ export function AnalyticsView() {
                           initial={{ width: 0 }}
                           animate={{
                             width: `${
-                              (step.count / data.funnel.pending) * 100
+                              (step.count / Math.max(data.funnel.pending, data.funnel.approved, data.funnel.applied)) * 100
                             }%`,
                           }}
                           transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}

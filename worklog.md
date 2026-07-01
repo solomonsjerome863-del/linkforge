@@ -1,40 +1,31 @@
 ---
 Task ID: 1
-Agent: Main
-Task: Transform LinkForge AI from blueprint showcase to functional SaaS application
+Agent: Main Agent
+Task: Market-readiness audit and bug fixes for LinkForge AI
 
 Work Log:
-- Updated Prisma schema with 6 models: User, Site, Page, LinkSuggestion, CrawlJob, AnalyticsSnapshot
-- Pushed schema to SQLite with `db:push --force-reset`
-- Created TypeScript types (`/src/lib/types.ts`) with all SaaS interfaces and plan limits
-- Created Zustand store (`/src/lib/store.ts`) for auth, navigation, and data state
-- Built 7 SaaS UI components via subagent:
-  - `auth-view.tsx` — Login/Signup with animated tabs
-  - `app-shell.tsx` — Sidebar layout with navigation, user dropdown
-  - `dashboard-view.tsx` — Stats cards, quick actions, site list
-  - `sites-view.tsx` — Site CRUD, crawl trigger, platform badges
-  - `suggestions-view.tsx` — Suggestion cards, approve/reject, batch actions, filters
-  - `analytics-view.tsx` — KPI cards, bar chart, funnel, top pages table
-  - `settings-view.tsx` — Account/Plan/Preferences tabs
-- Built 11 API routes:
-  - Auth: signup, login, session
-  - Sites: list, create, get, delete, crawl trigger
-  - Suggestions: list, generate, approve, reject, batch
-  - Dashboard: aggregated stats
-- Fixed critical bugs:
-  - BigInt serialization in dashboard stats ($queryRaw returns BigInt)
-  - Auth response parsing (API returns `{user:...}`, not flat user)
-  - Missing `@/` prefix in component imports
-  - Missing `userId` query params in API calls
-  - Wrong API endpoints for approve/reject (was PATCH, should be POST to /approve, /reject)
-  - Batch approve using wrong approach (was N individual calls, now uses /batch endpoint)
-  - Score display (raw 0.2 → now shows 20%)
-  - Duplicate Sheet component in app-shell
-  - Empty seed route causing lint error (removed)
+- Audited all 15 API routes and 6 SaaS views for bugs
+- Created `/src/lib/auth-storage.ts` for localStorage session persistence
+- Rewrote `/src/lib/store.ts` with hydration support and auto-save/clear
+- Rewrote `/src/app/page.tsx` with hydration-safe loading pattern (no error boundary, no SSR flash)
+- Fixed sites-view: polling URL wrong (missing userId), wrong response shape (data vs data.sites), missing error toast
+- Fixed dashboard-view: user! null assertions, missing user in useEffect deps, silent error swallowing
+- Fixed suggestions-view: added userId to all API calls, reject button loading state, error toast
+- Fixed settings-view: removed calls to non-existent API routes, replaced with client-side persistence
+- Created `/src/lib/api-auth.ts` shared validation helper
+- Added userId validation to all 10 data API routes + ownership checks
+- Fixed analytics-view: seeded random for consistent mock data, fixed funnel bar overflow
+- Added delete confirmation dialog for sites
+- Created `/src/app/api/pages/route.ts` API endpoint
+- Created `/src/components/saas/pages-view.tsx` with summary cards, search, filter, sort, orphan badges
+- Created `/src/app/api/suggestions/export/route.ts` for CSV/JSON export
+- Wired Pages view into app-shell nav and types
+- Updated layout metadata for launch (removed "Blueprint" branding)
+- Fixed all ESLint errors (set-state-in-effect)
 
 Stage Summary:
-- Full SaaS app built with auth, dashboard, sites, suggestions, analytics, settings
-- Original blueprint preserved as "Technical Blueprint" view accessible from sidebar
-- All API endpoints verified working via curl
-- Database creates demo data on signup (1 site, 10 pages, 8+ suggestions)
-- Lint passes with 0 errors
+- 0 lint errors, 0 console errors
+- Full auth flow tested: signup → dashboard → all 6 views → sign-out → re-login
+- Session persistence verified: page reload keeps user logged in
+- All API routes return 200 with proper auth validation
+- Mobile responsive verified at 375px

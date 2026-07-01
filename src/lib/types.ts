@@ -3,7 +3,7 @@ export type SiteStatus = "pending" | "crawling" | "ready" | "error";
 export type Platform = "wordpress" | "shopify" | "webflow" | "ghost" | "custom";
 export type SuggestionStatus = "pending" | "approved" | "rejected" | "applied";
 export type CrawlJobStatus = "pending" | "running" | "completed" | "failed";
-export type AppView = "dashboard" | "sites" | "suggestions" | "analytics" | "settings" | "blueprint";
+export type AppView = "dashboard" | "sites" | "pages" | "suggestions" | "analytics" | "settings" | "blueprint";
 
 export interface User {
   id: string;
@@ -51,6 +51,7 @@ export interface LinkSuggestion {
   score: number;
   status: SuggestionStatus;
   appliedAt: string | null;
+  createdAt: string;
   sourcePage?: { id: string; title: string; url: string };
   targetPage?: { id: string; title: string; url: string };
 }
