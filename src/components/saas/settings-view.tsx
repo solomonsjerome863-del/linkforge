@@ -110,9 +110,9 @@ export function SettingsView() {
     try {
       await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
       if (user) setUser({ ...user, name: name.trim() });
-      toast.success("Name updated");
+      toast.success("Profile updated");
     } catch {
-      toast.error("Failed to update name");
+      toast.error("Failed to save changes");
     } finally {
       setIsSavingName(false);
     }
@@ -124,7 +124,7 @@ export function SettingsView() {
       await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
       toast.success("Preferences saved");
     } catch {
-      toast.error("Failed to save preferences");
+      toast.error("Failed to save changes");
     } finally {
       setIsSavingPrefs(false);
     }

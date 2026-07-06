@@ -114,7 +114,7 @@ export function DashboardView() {
           setSites(data.sites);
         }
       } catch {
-        // Use empty defaults
+        toast.error("Failed to load dashboard");
       } finally {
         setIsLoading(false);
       }

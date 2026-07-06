@@ -104,7 +104,8 @@ export function SuggestionsView() {
         body: JSON.stringify({ siteId: currentSiteId, userId: user?.id }),
       });
       if (!res.ok) throw new Error();
-      toast.success("New suggestions generated!");
+      const data = await res.json();
+      toast.success(`Generated ${data.count ?? 0} new suggestions`);
       await fetchSuggestions();
     } catch {
       toast.error("Failed to generate suggestions");
@@ -127,7 +128,7 @@ export function SuggestionsView() {
           s.id === suggestionId ? { ...s, status: "approved" as SuggestionStatus } : s
         )
       );
-      toast.success("Suggestion approved");
+      toast.success("Link suggestion approved");
     } catch {
       toast.error("Failed to approve");
     } finally {
@@ -149,7 +150,7 @@ export function SuggestionsView() {
           s.id === suggestionId ? { ...s, status: "rejected" as SuggestionStatus } : s
         )
       );
-      toast.success("Suggestion rejected");
+      toast.success("Link suggestion rejected");
     } catch {
       toast.error("Failed to reject");
     } finally {

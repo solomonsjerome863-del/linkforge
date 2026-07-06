@@ -271,3 +271,73 @@ Stage Summary:
 - Caddyfile.production created at /home/z/my-project/Caddyfile.production
 - Contains: www→apex redirect, auto-HTTPS via Let's Encrypt, security headers, XTransformPort support
 - User needs: DNS A record pointing to server IP, then swap Caddyfile and reload Caddy
+
+---
+Task ID: 2-a
+Agent: Main Agent
+Task: Wire up AI-powered anchor text generation in suggestions endpoint
+
+Work Log:
+- Read `src/app/api/suggestions/generate/route.ts` (existing TF-overlap scoring with `pickAnchorText`)
+- Read `src/lib/llm-anchor.ts` (fully implemented but unused LLM anchor generator using `z-ai-web-dev-sdk`)
+- Added import of `generateAnchorTextWithLLM` from `@/lib/llm-anchor` to the generate route
+- Inserted LLM enhancement block after `capped` array is created (line 163), before DB write:
+  - Takes top 10 suggestions from the capped list
+  - Maps each to the `SuggestionPair` format expected by the LLM function (source/target page context from `pageKeywords`)
+  - Calls `generateAnchorTextWithLLM` in a try/catch
+  - Replaces `anchorText` and `surroundingText` on suggestions where LLM returned results
+  - Falls back to algorithmic anchors on any LLM failure (no flow break)
+  - Logs enhancement count: `[Generate] LLM enhanced X/Y anchor texts`
+- No database schema changes, no API response format changes, all existing TF-overlap scoring preserved
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- `generateAnchorTextWithLLM` is now wired into the POST /api/suggestions/generate endpoint
+- Top 10 suggestions get LLM-enhanced anchor text; remaining 20 keep algorithmic anchors
+- Graceful fallback: if LLM fails, the endpoint continues with algorithmic results
+- 0 lint errors
+
+---
+Task ID: 1-a
+Agent: Main Agent
+Task: Add Dark Mode with Theme Toggle to LinkForge
+
+Work Log:
+- Created `/src/components/theme-provider.tsx` — client-side wrapper for next-themes ThemeProvider with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`
+- Updated `/src/app/layout.tsx` — imported ThemeProvider, wrapped `{children}` inside it (outside Toaster, inside body)
+- Updated `/src/components/saas/landing-page.tsx` — added `useTheme` from next-themes, `Sun`/`Moon` icons from lucide-react, theme toggle button in Navbar desktop actions (before Sign In) and mobile sheet (before Sign In)
+- Updated `/src/components/saas/app-shell.tsx` — added `useTheme`, `Sun`/`Moon`, theme toggle button in header (before user dropdown)
+- Updated `/src/components/saas/auth-view.tsx` — added `useTheme`, `Sun`/`Moon`, floating theme toggle button in top-right corner (absolute positioned)
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- Dark mode fully functional via next-themes with class-based toggling
+- Theme toggle available on all 3 views: Landing Page, Auth View, App Shell
+- Desktop and mobile toggle on landing page; header toggle on app shell; floating toggle on auth view
+- Sun/Moon icons animate with CSS transitions (rotate + scale)
+- 0 lint errors
+
+---
+Task ID: 3-a
+Agent: Main Agent
+Task: Add toast notifications for all user actions across SaaS views
+
+Work Log:
+- Audited all 5 target views for existing toast coverage
+- sites-view.tsx: Already fully covered (add, delete, crawl start/complete/fail, load errors) — no changes needed
+- pages-view.tsx: Already covered (load errors) — no changes needed
+- suggestions-view.tsx (3 changes):
+  - Updated approve toast: "Suggestion approved" → "Link suggestion approved"
+  - Updated reject toast: "Suggestion rejected" → "Link suggestion rejected"
+  - Updated generate toast: "New suggestions generated!" → "Generated X new suggestions" (parses `data.count` from API response)
+- settings-view.tsx (3 changes):
+  - Updated profile save toast: "Name updated" → "Profile updated"
+  - Unified error toasts: "Failed to update name" and "Failed to save preferences" → "Failed to save changes"
+- dashboard-view.tsx (1 change):
+  - Added `toast.error("Failed to load dashboard")` in fetchData catch block (was empty)
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- All 5 views now have appropriate sonner toast notifications for every user action
+- No existing logic was changed — only toast calls were added/updated
+- 0 lint errors

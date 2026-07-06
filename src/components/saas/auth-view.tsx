@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link2, Mail, Lock, User, Loader2, ArrowRight, KeyRound } from "lucide-react";
+import { Link2, Mail, Lock, User, Loader2, ArrowRight, KeyRound, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useAppStore } from "@/lib/store";
+import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import type { User as UserType } from "@/lib/types";
 
@@ -24,6 +25,7 @@ type AuthMode = "signin" | "signup" | "forgot" | "reset";
 export function AuthView() {
   const setUser = useAppStore((s) => s.setUser);
   const setActiveView = useAppStore((s) => s.setActiveView);
+  const { theme, setTheme } = useTheme();
   const [mode, setMode] = useState<AuthMode>("signin");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -194,7 +196,18 @@ export function AuthView() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-teal-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-teal-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 p-4 relative">
+      {/* Floating theme toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        aria-label="Toggle theme"
+        className="absolute top-4 right-4 z-10"
+      >
+        <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      </Button>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-200/30 dark:bg-orange-900/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 dark:bg-teal-900/10 rounded-full blur-3xl" />

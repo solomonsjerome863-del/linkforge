@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   ChevronRight,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +43,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAppStore } from "@/lib/store";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import type { AppView } from "@/lib/types";
 import { DashboardView } from "./dashboard-view";
@@ -253,6 +256,7 @@ export function AppShell() {
   const activeView = useAppStore((s) => s.activeView);
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);
   const setSidebarOpen = useAppStore((s) => s.setSidebarOpen);
+  const { theme, setTheme } = useTheme();
 
   // Close sidebar on mobile when view changes
   useEffect(() => {
@@ -311,6 +315,12 @@ export function AppShell() {
             <h1 className="text-lg font-semibold">{VIEW_TITLES[activeView]}</h1>
 
             <div className="flex-1" />
+
+            {/* Theme toggle */}
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme" className="relative">
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </Button>
 
             {/* User dropdown */}
             <DropdownMenu>

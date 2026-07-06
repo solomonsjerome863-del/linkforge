@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { validateUser } from "@/lib/api-auth";
+import { generateAnchorTextWithLLM } from "@/lib/llm-anchor";
 
 const STOP_WORDS = new Set([
   "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
@@ -160,6 +161,47 @@ export async function POST(request: NextRequest) {
     // Sort by score desc, cap at 30
     suggestions.sort((a, b) => b.score - a.score);
     const capped = suggestions.slice(0, 30);
+
+    // Enhance top suggestions with LLM-generated anchor text
+    const topForLLM = capped.slice(0, 10);
+    if (topForLLM.length > 0) {
+      const llmPairs = topForLLM.map((s) => {
+        const sourcePage = pageKeywords.find((p) => p.id === s.sourcePageId);
+        const targetPage = pageKeywords.find((p) => p.id === s.targetPageId);
+        return {
+          sourcePageId: s.sourcePageId,
+          targetPageId: s.targetPageId,
+          source: {
+            title: sourcePage?.title || "",
+            headings: sourcePage?.parsedHeadings || [],
+            textContent: sourcePage?.textContent || "",
+          },
+          target: {
+            title: targetPage?.title || "",
+            headings: targetPage?.parsedHeadings || [],
+            textContent: targetPage?.textContent || "",
+          },
+          score: s.score,
+        };
+      });
+
+      try {
+        const llmResults = await generateAnchorTextWithLLM(llmPairs);
+        for (const suggestion of capped) {
+          const key = `${suggestion.sourcePageId}::${suggestion.targetPageId}`;
+          const llmResult = llmResults.get(key);
+          if (llmResult) {
+            suggestion.anchorText = llmResult.anchorText;
+            if (llmResult.surroundingText) {
+              suggestion.surroundingText = llmResult.surroundingText;
+            }
+          }
+        }
+        console.log(`[Generate] LLM enhanced ${llmResults.size}/${llmPairs.length} anchor texts`);
+      } catch (error) {
+        console.error("[Generate] LLM anchor generation failed, using algorithmic fallback:", error);
+      }
+    }
 
     if (capped.length > 0) {
       await db.linkSuggestion.createMany({ data: capped });
