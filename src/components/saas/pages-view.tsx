@@ -172,87 +172,95 @@ export function PagesView() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Total Pages */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
-                <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Pages</p>
-                <p className="text-2xl font-bold">{totalPages}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 rounded-xl" />
+          ))
+        ) : (
+          <>
+            {/* Total Pages */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Pages</p>
+                    <p className="text-2xl font-bold">{totalPages}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Orphan Pages */}
-        <Card
-          className={cn(
-            orphanPages > 0 &&
-              "border-orange-300 dark:border-orange-700/50 bg-orange-50/50 dark:bg-orange-950/20"
-          )}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                  orphanPages > 0
-                    ? "bg-rose-100 dark:bg-rose-900/30"
-                    : "bg-teal-100 dark:bg-teal-900/30"
-                )}
-              >
-                <AlertTriangle
-                  className={cn(
-                    "w-5 h-5",
-                    orphanPages > 0
-                      ? "text-rose-600 dark:text-rose-400"
-                      : "text-teal-600 dark:text-teal-400"
-                  )}
-                />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Orphan Pages</p>
-                <div className="flex items-baseline gap-2">
-                  <p
+            {/* Orphan Pages */}
+            <Card
+              className={cn(
+                orphanPages > 0 &&
+                  "border-orange-300 dark:border-orange-700/50 bg-orange-50/50 dark:bg-orange-950/20"
+              )}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div
                     className={cn(
-                      "text-2xl font-bold",
+                      "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
                       orphanPages > 0
-                        ? "text-rose-600 dark:text-rose-400"
-                        : "text-teal-600 dark:text-teal-400"
+                        ? "bg-rose-100 dark:bg-rose-900/30"
+                        : "bg-teal-100 dark:bg-teal-900/30"
                     )}
                   >
-                    {orphanPages}
-                  </p>
-                  {totalPages > 0 && (
-                    <span className="text-sm text-muted-foreground">
-                      ({orphanPercentage}%)
-                    </span>
-                  )}
+                    <AlertTriangle
+                      className={cn(
+                        "w-5 h-5",
+                        orphanPages > 0
+                          ? "text-rose-600 dark:text-rose-400"
+                          : "text-teal-600 dark:text-teal-400"
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Orphan Pages</p>
+                    <div className="flex items-baseline gap-2">
+                      <p
+                        className={cn(
+                          "text-2xl font-bold",
+                          orphanPages > 0
+                            ? "text-rose-600 dark:text-rose-400"
+                            : "text-teal-600 dark:text-teal-400"
+                        )}
+                      >
+                        {orphanPages}
+                      </p>
+                      {totalPages > 0 && (
+                        <span className="text-sm text-muted-foreground">
+                          ({orphanPercentage}%)
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* Total Words */}
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
-                <Type className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Words</p>
-                <p className="text-2xl font-bold">
-                  {formatWordCount(totalWords)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Total Words */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
+                    <Type className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Words</p>
+                    <p className="text-2xl font-bold">
+                      {formatWordCount(totalWords)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
 
       {/* Controls Row */}
@@ -302,7 +310,7 @@ export function PagesView() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
+            <Skeleton key={i} className="h-16 rounded-lg" />
           ))}
         </div>
       ) : filteredPages.length === 0 ? (

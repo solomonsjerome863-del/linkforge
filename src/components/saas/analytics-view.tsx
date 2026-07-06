@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { LinkGraphView } from "./link-graph-view";
 
 // Simulated analytics data shape
 interface AnalyticsData {
@@ -144,6 +145,9 @@ export function AnalyticsView() {
           </Select>
         )}
       </div>
+
+      {/* Link Network Graph — signature feature */}
+      <LinkGraphView />
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

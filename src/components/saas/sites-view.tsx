@@ -18,6 +18,8 @@ import {
   Paintbrush,
   Ghost,
   Code2,
+  CheckCircle2,
+  Circle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -117,6 +119,9 @@ export function SitesView() {
   const [isLoading, setIsLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [crawlingId, setCrawlingId] = useState<string | null>(null);
+  const [showCrawlProgress, setShowCrawlProgress] = useState(false);
+  const [crawlProgressStep, setCrawlProgressStep] = useState(0);
+  const [crawlSiteName, setCrawlSiteName] = useState("");
 
   // Add site form
   const [newName, setNewName] = useState("");
@@ -193,14 +198,34 @@ export function SitesView() {
     }
   }
 
+  const CRAWL_STEPS = [
+    "Discovering URLs...",
+    "Crawling pages...",
+    "Analyzing content...",
+    "Generating links...",
+  ];
+
   async function handleCrawl(site: Site) {
     setCrawlingId(site.id);
+    setCrawlSiteName(site.name);
+    setCrawlProgressStep(0);
+    setShowCrawlProgress(true);
+
+    // Start simulated progress timer
+    const t1 = setTimeout(() => setCrawlProgressStep(1), 2000);
+    const t2 = setTimeout(() => setCrawlProgressStep(2), 8000);
+    const t3 = setTimeout(() => setCrawlProgressStep(3), 10000);
+    const t4 = setTimeout(() => {
+      setShowCrawlProgress(false);
+      setCrawlingId(null);
+    }, 12000);
+
     try {
       const res = await fetch(`/api/sites/${site.id}/crawl?userId=${user!.id}`, {
         method: "POST",
       });
       if (!res.ok) throw new Error();
-      toast.success(`Crawling "${site.name}"...`);
+      toast.success(`Crawl started for "${site.name}"`);
       // Optimistic update
       setSites(
         sites.map((s) =>
@@ -217,6 +242,8 @@ export function SitesView() {
             if (updated && updated.status !== "crawling") {
               setSites(data.sites);
               clearInterval(interval);
+              clearTimeout(t4);
+              setShowCrawlProgress(false);
               setCrawlingId(null);
               if (updated.status === "ready") {
                 toast.success(`"${site.name}" crawl complete!`);
@@ -227,11 +254,21 @@ export function SitesView() {
           }
         } catch {
           clearInterval(interval);
+          clearTimeout(t1);
+          clearTimeout(t2);
+          clearTimeout(t3);
+          clearTimeout(t4);
+          setShowCrawlProgress(false);
           setCrawlingId(null);
         }
       }, 3000);
     } catch {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
       toast.error("Failed to start crawl");
+      setShowCrawlProgress(false);
       setCrawlingId(null);
     }
   }
@@ -285,8 +322,8 @@ export function SitesView() {
       {/* Sites Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-44 rounded-xl" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-40 rounded-xl" />
           ))}
         </div>
       ) : sites.length === 0 ? (
@@ -532,6 +569,51 @@ export function SitesView() {
               Add Site
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Crawl Progress Dialog */}
+      <Dialog open={showCrawlProgress} onOpenChange={() => {}}>
+        <DialogContent
+          showCloseButton={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Crawling &quot;{crawlSiteName}&quot;</DialogTitle>
+            <DialogDescription>
+              Please wait while we analyze your site.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            {CRAWL_STEPS.map((label, idx) => {
+              const isDone = idx < crawlProgressStep;
+              const isActive = idx === crawlProgressStep;
+              return (
+                <div key={label} className="flex items-center gap-3">
+                  {isDone ? (
+                    <CheckCircle2 className="w-5 h-5 text-teal-500 shrink-0" />
+                  ) : isActive ? (
+                    <Loader2 className="w-5 h-5 text-orange-500 animate-spin shrink-0" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-muted-foreground/40 shrink-0" />
+                  )}
+                  <span
+                    className={cn(
+                      "text-sm",
+                      isDone
+                        ? "text-muted-foreground"
+                      : isActive
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground/50"
+                    )}
+                  >
+                    {label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </DialogContent>
       </Dialog>
 

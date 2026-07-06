@@ -341,3 +341,89 @@ Stage Summary:
 - All 5 views now have appropriate sonner toast notifications for every user action
 - No existing logic was changed — only toast calls were added/updated
 - 0 lint errors
+
+---
+Task ID: 3-b
+Agent: Main Agent
+Task: Add Export Button to Suggestions View
+
+Work Log:
+- Added `Download` icon to lucide-react import
+- Added `DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger` imports from `@/components/ui/dropdown-menu`
+- Added `handleExport(format)` async function that:
+  - Shows "Exporting..." toast immediately
+  - Fetches `/api/suggestions/export?siteId=...&userId=...&format=csv|json`
+  - Creates Blob from response and triggers browser download as `linkforge-suggestions.csv` or `.json`
+  - Shows "Export downloaded" on success, "Export failed" on error
+- Added Export dropdown button (outline variant) next to "Generate New" button with two options: "Export as CSV" and "Export as JSON"
+- Button disabled when no site selected or no suggestions exist
+- Site selector already existed (shown when sites.length > 1) — no changes needed
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- Export dropdown button added to Suggestions view filter bar
+- Supports CSV and JSON export formats via existing `/api/suggestions/export` endpoint
+- Consistent styling with existing "Generate New" button (outline variant, same size)
+- 0 lint errors
+
+---
+Task ID: 2-b
+Agent: Main Agent
+Task: Add Crawl Progress Dialog + Loading Skeletons
+
+Work Log:
+- sites-view.tsx — Added `CheckCircle2` and `Circle` icon imports from lucide-react
+- sites-view.tsx — Added 3 new state variables: `showCrawlProgress`, `crawlProgressStep`, `crawlSiteName`
+- sites-view.tsx — Added `CRAWL_STEPS` array with 4 steps: Discovering URLs, Crawling pages, Analyzing content, Generating links
+- sites-view.tsx — Rewrote `handleCrawl` to open non-closable progress dialog with simulated step timer (0→2s→8s→10s→12s)
+- sites-view.tsx — Dialog shows CheckCircle2 (done), Loader2 spinning (active), Circle (pending) for each step
+- sites-view.tsx — Dialog is non-closable: `showCloseButton={false}`, `onInteractOutside` and `onEscapeKeyDown` prevented
+- sites-view.tsx — Toast changed from "Crawling..." to "Crawl started for..."
+- sites-view.tsx — All setTimeout refs cleared on error/completion to prevent stale state
+- sites-view.tsx — Updated loading skeletons: 6 cards h-44 → 3 cards h-40 rounded-xl
+- pages-view.tsx — Added loading skeletons for 3 stat cards (h-20 rounded-xl) when isLoading is true
+- pages-view.tsx — Updated page list skeletons: 5 cards h-24 rounded-xl → 5 rows h-16 rounded-lg
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- Crawl progress dialog shows 4-step animated progress when crawl is triggered
+- Dialog displays site name in title, auto-advances through steps, auto-closes at 12s
+- Real crawl completion (via polling) also closes dialog early if done before 12s
+- Loading skeletons updated in both Sites and Pages views per spec
+- 0 lint errors
+
+---
+Task ID: 1-b
+Agent: Main Agent
+Task: Build Interactive Link Network Graph Visualization
+
+Work Log:
+- Created `/src/components/saas/link-graph-view.tsx` — pure SVG-based interactive network graph (no external libraries)
+- Data fetching: fetches pages from `/api/pages` and suggestions from `/api/suggestions`, filters for approved/applied suggestions as edges
+- Force-directed layout algorithm: circular initial placement, 80 iterations of repulsion/attraction/centering/damping forces
+- Node sizing: radius scales from 12px to 34px based on connection count
+- Color coding: orange-500 for well-linked nodes, rose-500 for orphan nodes (0 incoming links)
+- Edge rendering: lines with arrowhead markers, shortened to stop at node boundaries, gray-400 default / orange-500 on highlight
+- SVG glow filters: separate orange and rose glow filters for highlighted/hovered nodes
+- Pan: mouse drag on SVG background (nodes excluded via `data-node` attribute check)
+- Zoom: mouse wheel with zoom-toward-cursor math, clamped 0.1x–5x
+- Hover: highlights all connected nodes/edges, dims everything else to 8% opacity, shows tooltip with full page title
+- Click: shows detail panel (bottom-right) with page title, URL, word count, incoming/outgoing link counts, orphan badge
+- Legend: top-right overlay showing orange = Well-linked, red = Orphan
+- Node/edge count badge: bottom-left overlay
+- Reset View button: re-centers transform and clears selection
+- Empty state: Globe icon + "Crawl your site to see the link graph" when no pages
+- Loading skeleton: Card with Skeleton header and 500px body
+- Framer Motion entrance animation on the entire card
+- Loading state derived from `loadedForSite !== currentSiteId` to avoid synchronous setState in useEffect (react-hooks/set-state-in-effect lint rule)
+- Integrated into analytics-view.tsx: imported `LinkGraphView`, rendered at TOP of analytics view before KPI cards
+- Edge color uses gray-400 (works in both light and dark mode) instead of gray-300 with dark: override
+- Arrow marker uses gray-400 fill for consistency
+- Ran `bun run lint` — 0 errors
+
+Stage Summary:
+- Interactive SVG link network graph is the signature feature at the top of the Analytics view
+- Supports pan, zoom, hover highlighting, click details, and reset view
+- Force-directed layout with 80 iterations for natural node positioning
+- Dark mode compatible with gray-400 edges and CSS-based node/label coloring
+- 0 lint errors

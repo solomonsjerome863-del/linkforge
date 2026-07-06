@@ -12,6 +12,7 @@ import {
   ArrowDownUp,
   CheckCheck,
   Globe,
+  Download,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -203,6 +210,33 @@ export function SuggestionsView() {
 
   const pendingCount = suggestions.filter((s) => s.status === "pending").length;
 
+  async function handleExport(format: "csv" | "json") {
+    if (!currentSiteId || !user?.id) return;
+    toast.success("Exporting...");
+    try {
+      const params = new URLSearchParams({
+        siteId: currentSiteId,
+        userId: user.id,
+        format,
+      });
+      const res = await fetch(`/api/suggestions/export?${params}`);
+      if (!res.ok) throw new Error();
+      const data = await res.text();
+      const blob = new Blob([data], {
+        type: format === "csv" ? "text/csv" : "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `linkforge-suggestions.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Export downloaded");
+    } catch {
+      toast.error("Export failed");
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* No sites empty state */}
@@ -314,6 +348,26 @@ export function SuggestionsView() {
             )}
             Approve All
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!currentSiteId || suggestions.length === 0}
+              >
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExport("csv")}>
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("json")}>
+                Export as JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             size="sm"
             onClick={handleGenerate}
