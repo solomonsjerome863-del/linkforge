@@ -460,7 +460,7 @@ function ApiStatusTable() {
                   {API_ENDPOINTS.map((group) =>
                     group.endpoints.map((ep, idx) => (
                       <tr
-                        key={`${group.group}-${ep.path}`}
+                        key={`${group.group}-${ep.method}-${ep.path}`}
                         className="border-b last:border-b-0 hover:bg-muted/50 transition-colors"
                       >
                         {idx === 0 && (
