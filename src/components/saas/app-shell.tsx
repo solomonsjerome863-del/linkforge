@@ -50,6 +50,7 @@ import { PagesView } from "./pages-view";
 import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
 import { OnboardingWizard } from "./onboarding-wizard";
+import { BlueprintView } from "./blueprint-view";
 import { PLAN_LIMITS } from "@/lib/types";
 
 const NAV_ITEMS: {
@@ -273,7 +274,7 @@ export function AppShell() {
       case "settings":
         return <SettingsView />;
       case "blueprint":
-        return null; // Blueprint is rendered outside app-shell in page.tsx
+        return <BlueprintView />;
       default:
         return <DashboardView />;
     }
