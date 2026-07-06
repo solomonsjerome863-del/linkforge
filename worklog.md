@@ -427,3 +427,28 @@ Stage Summary:
 - Force-directed layout with 80 iterations for natural node positioning
 - Dark mode compatible with gray-400 edges and CSS-based node/label coloring
 - 0 lint errors
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix public IP/domain access — "Oops, something went wrong" error
+
+Work Log:
+- Diagnosed root cause: Caddy only listens on port 81, but Cloudflare forwards to port 80 (which was not listening)
+- Also found next.config.ts allowedDevOrigins only had internal IP, not public IP
+- Updated next.config.ts: added "47.57.242.119", "linkforge.digital", "www.linkforge.digital" to allowedDevOrigins
+- Created mini-services/reverse-proxy/ — Node.js reverse proxy on port 8080
+  - Forwards to Next.js dev server on port 3000
+  - Handles XTransformPort routing for microservices
+  - Proper X-Forwarded headers (For, Proto, Real-IP)
+- Tried bun (crashed repeatedly), Node.js direct (killed by sandbox), finally PM2 (stable)
+- PM2 daemonizes the proxy process, auto-restarts on crash
+- Verified 10 consecutive requests: all HTTP 200, ~36,500 bytes each, 0 restarts
+- Updated Caddyfile to listen on :80, :81 (for future use when root access is available)
+- Updated Caddyfile.production to work behind Cloudflare (no Let's Encrypt, HTTP only)
+
+Stage Summary:
+- Reverse proxy running on port 8080 via PM2, stable and tested
+- Next.js dev server on port 3000, healthy (30-40ms response time)
+- Caddy on port 81 for sandbox preview
+- User needs to configure Cloudflare Origin Rule to forward to port 8080
