@@ -917,7 +917,7 @@ function Footer() {
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
-    { label: "Blog", href: "#" },
+    { label: "Blog", href: "https://linkforge.ai/blog" },
   ];
 
   return (
@@ -926,7 +926,7 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo + tagline */}
           <div className="flex flex-col items-center md:items-start gap-2">
-            <div className="flex items-center gap-2">
+            <a href="https://linkforge.ai" className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
                 <Link2 className="w-3.5 h-3.5 text-white" />
               </div>
@@ -934,7 +934,7 @@ function Footer() {
                 Link<span className="text-orange-500">Forge</span>{" "}
                 <span className="text-muted-foreground font-normal text-sm">AI</span>
               </span>
-            </div>
+            </a>
             <p className="text-sm text-muted-foreground">
               AI-powered internal linking for better SEO.
             </p>
@@ -943,47 +943,56 @@ function Footer() {
           {/* Footer links */}
           <nav className="flex items-center gap-6">
             {footerLinks.map((link) => (
-              <button
+              <a
                 key={link.label}
-                onClick={() => {
-                  if (link.href === "#") return;
-                  scrollToId(link.href.replace("#", ""));
-                }}
+                href={link.href}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {link.label}
-              </button>
+              </a>
             ))}
           </nav>
 
           {/* Social icons */}
           <div className="flex items-center gap-4">
-            <button
+            <a
+              href="https://twitter.com/linkforgeai"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Twitter"
             >
               <Twitter className="w-5 h-5" />
-            </button>
-            <button
+            </a>
+            <a
+              href="https://linkedin.com/company/linkforgeai"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
-            </button>
-            <button
+            </a>
+            <a
+              href="https://github.com/linkforgeai"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="GitHub"
             >
               <Github className="w-5 h-5" />
-            </button>
+            </a>
           </div>
         </div>
 
         <Separator className="my-8" />
 
-        <p className="text-center text-xs text-muted-foreground">
-          © 2025 LinkForge AI. All rights reserved.
-        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} LinkForge AI. All rights reserved.</p>
+          <p>
+            <a href="https://linkforge.ai" className="hover:text-foreground transition-colors">linkforge.ai</a>
+          </p>
+        </div>
       </div>
     </footer>
   );

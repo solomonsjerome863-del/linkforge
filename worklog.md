@@ -176,3 +176,36 @@ Stage Summary:
 - Built comprehensive 545-line BlueprintView component with architecture, features, tech stack, API status
 - All three previously requested features verified working: password reset, email verification API, real web crawling
 - Full 13-test customer experience pass: every view renders, every interaction works, mobile responsive
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Domain branding, SEO, and production-ready metadata for linkforge.ai
+
+Work Log:
+- Chose domain: **linkforge.ai** (brand-aligned, .ai TLD for AI SaaS)
+- Created `/public/favicon.svg` — custom orange gradient SVG favicon with "L" + link dot design
+- Created `/public/apple-touch-icon.svg` — 180x180 version for iOS
+- Created `/public/manifest.json` — PWA manifest with name, icons, theme color (#f97316)
+- Created `/public/og-image.png` — AI-generated social sharing card (1152x864)
+- Rewrote `/src/app/layout.tsx` with full production metadata:
+  - `metadataBase: new URL("https://linkforge.ai")`
+  - Template-based title: `%s | LinkForge AI`
+  - 12 SEO keywords
+  - OpenGraph with image, locale, siteName
+  - Twitter card (summary_large_image)
+  - Viewport config with theme-color
+  - Robot directives (allow /, disallow /api/)
+  - 4 JSON-LD structured data blocks: Organization, WebApplication (with pricing + featureList), WebSite, FAQPage
+- Created `/src/app/sitemap.ts` — dynamic sitemap.xml with 3 entries
+- Created `/src/app/robots.ts` — dynamic robots.txt disallowing /api/, pointing to sitemap
+- Removed old static `/public/robots.txt`
+- Updated landing page footer: proper `<a>` links to linkforge.ai, social URLs (twitter/linkedin/github), dynamic copyright year, domain display
+- Removed all old placeholder references (chat.z.ai, z-cdn.chatglm.cn)
+
+Stage Summary:
+- Domain: **linkforge.ai** — fully branded and configured
+- SEO: Title, description, keywords, OG, Twitter, canonical, robots, sitemap, JSON-LD all implemented
+- Assets: Custom favicon, apple-touch-icon, OG image, PWA manifest
+- Verified: sitemap.xml returns linkforge.ai URLs, robots.txt disallows /api/, manifest serves, OG image 200 OK
+- 0 lint errors, 0 console errors

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,26 +13,160 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://linkforge.ai";
+const SITE_NAME = "LinkForge AI";
+const SITE_TAGLINE = "AI-Powered Internal Linking for SEO";
+const SITE_DESCRIPTION =
+  "Automatically generate smart internal link suggestions for your website using AI. Improve your SEO with contextual, high-quality internal links. Works with WordPress, Shopify, Webflow, and any website.";
+
+export const viewport: Viewport = {
+  themeColor: "#f97316",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  title: "LinkForge AI — AI-Powered Internal Linking for SEO",
-  description: "Automatically generate smart internal link suggestions for your website using AI. Improve your SEO with contextual, high-quality internal links.",
-  keywords: ["internal linking", "SEO", "AI", "anchor text", "link suggestions", "site structure", "LinkWhisper alternative", "SaaS"],
-  authors: [{ name: "LinkForge AI" }],
-  icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "internal linking",
+    "internal links SEO",
+    "AI link building",
+    "anchor text optimization",
+    "link suggestions",
+    "site structure",
+    "orphan page detection",
+    "content analysis",
+    "LinkWhisper alternative",
+    "SEO tool",
+    "internal link manager",
+    "LinkForge",
+  ],
+  authors: [{ name: "LinkForge AI", url: SITE_URL }],
+  creator: "LinkForge AI",
+  publisher: "LinkForge AI",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/apple-touch-icon.svg",
+  },
+  manifest: "/manifest.json",
   openGraph: {
-    title: "LinkForge AI — AI-Powered Internal Linking",
-    description: "Generate smart internal link suggestions automatically. Better linking, better SEO.",
-    url: "https://chat.z.ai",
-    siteName: "LinkForge AI",
     type: "website",
+    locale: "en_US",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1152,
+        height: 864,
+        alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LinkForge AI — AI-Powered Internal Linking",
-    description: "Generate smart internal link suggestions automatically.",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
+    images: ["/og-image.png"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+// JSON-LD Structured Data
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/favicon.svg`,
+      description: SITE_DESCRIPTION,
+      sameAs: [],
+    },
+    {
+      "@type": "WebApplication",
+      "@id": `${SITE_URL}/#application`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "AggregateOffer",
+        lowPrice: "0",
+        highPrice: "99",
+        priceCurrency: "USD",
+        offerCount: 3,
+      },
+      description: SITE_DESCRIPTION,
+      featureList: [
+        "AI-powered internal link suggestions",
+        "Real web crawling and content extraction",
+        "Keyword overlap analysis",
+        "Orphan page detection",
+        "Anchor text generation",
+        "Bulk approve/reject operations",
+        "Analytics dashboard",
+        "CSV/JSON export",
+      ],
+      screenshot: `${SITE_URL}/og-image.png`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is internal linking and why does it matter?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Internal linking connects pages within your website. It helps search engines discover and understand your content hierarchy, distributes page authority, improves user navigation, and boosts rankings for important pages.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How does LinkForge AI generate link suggestions?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "LinkForge AI crawls your website, extracts content and headings from each page, analyzes keyword overlap between pages using TF-overlap scoring, and generates contextual anchor text suggestions for the most relevant internal linking opportunities.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is there a free plan?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes! LinkForge AI offers a free Starter plan with 1 site, up to 50 pages per site, and 100 monthly link suggestions. No credit card required.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -42,6 +176,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
