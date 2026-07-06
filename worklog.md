@@ -78,3 +78,28 @@ Stage Summary:
 - All 28 test cases passed
 - 0 lint errors, 0 console errors
 - App is fully market-ready
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Customer-readiness improvements — onboarding, landing page fixes, error handling
+
+Work Log:
+- Fixed pricing nav link bug: `id="pricing"` was on ComparisonSection instead of PricingSection → moved to correct section
+- Generated dashboard screenshot for hero image
+- Built 3-step onboarding wizard (`onboarding-wizard.tsx`):
+  - Step 1: Welcome with value proposition
+  - Step 2: Add first site (name + URL form, creates site via API)
+  - Step 3: Crawl progress animation → "Go to Dashboard"
+  - Skip/dismiss at any step, persisted via localStorage flag
+- Integrated OnboardingWizard into AppShell
+- Added "Retry Crawl" button for errored sites (destructive variant, clear error message)
+- Added empty state to Suggestions view when no sites exist (with CTA to add site)
+- Wrapped suggestions filter/content in sites.length > 0 guard
+
+Stage Summary:
+- 0 lint errors, 0 console errors
+- Full flow verified: landing page → signup → onboarding wizard → add site → crawl → dashboard
+- Pricing nav now scrolls to pricing cards (not comparison table)
+- Error sites show "Retry Crawl" with error description
+- New users get guided onboarding instead of empty dashboard

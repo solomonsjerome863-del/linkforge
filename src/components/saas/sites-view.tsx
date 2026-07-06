@@ -409,12 +409,14 @@ export function SitesView() {
                       </div>
                       <div className="flex items-center justify-between mt-4 pt-3 border-t">
                         <span className="text-xs text-muted-foreground">
-                          {site.lastCrawled
-                            ? `Crawled ${formatRelativeDate(site.lastCrawled)}`
-                            : "Not yet crawled"}
+                          {site.status === "error"
+                            ? site.error || "Crawl failed"
+                            : site.lastCrawled
+                              ? `Crawled ${formatRelativeDate(site.lastCrawled)}`
+                              : "Not yet crawled"}
                         </span>
                         <Button
-                          variant="outline"
+                          variant={site.status === "error" ? "destructive" : "outline"}
                           size="sm"
                           onClick={() => handleCrawl(site)}
                           disabled={crawlingId === site.id}
@@ -424,6 +426,11 @@ export function SitesView() {
                             <>
                               <Loader2 className="w-3 h-3 mr-1 animate-spin" />
                               Crawling
+                            </>
+                          ) : site.status === "error" ? (
+                            <>
+                              <RefreshCw className="w-3 h-3 mr-1" />
+                              Retry Crawl
                             </>
                           ) : (
                             <>

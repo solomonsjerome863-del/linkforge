@@ -11,6 +11,7 @@ import {
   Inbox,
   ArrowDownUp,
   CheckCheck,
+  Globe,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -203,7 +204,30 @@ export function SuggestionsView() {
 
   return (
     <div className="space-y-6">
+      {/* No sites empty state */}
+      {sites.length === 0 && (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-4">
+              <Sparkles className="w-8 h-8 text-orange-500" />
+            </div>
+            <h4 className="text-lg font-semibold mb-1">No sites yet</h4>
+            <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+              Add and crawl a website first to generate link suggestions.
+            </p>
+            <Button
+              onClick={() => setActiveView("sites")}
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              Add Your First Site
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header */}
+      {sites.length > 0 && (
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div>
@@ -235,7 +259,11 @@ export function SuggestionsView() {
           )}
         </div>
       </div>
+      )}
 
+      {/* Filter bar and content - only when sites exist */}
+      {sites.length > 0 && (
+      <>
       {/* Filter bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <Tabs
@@ -443,6 +471,8 @@ export function SuggestionsView() {
             </AnimatePresence>
           </div>
         </ScrollArea>
+      )}
+      </>
       )}
     </div>
   );

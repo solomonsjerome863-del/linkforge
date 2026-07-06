@@ -49,6 +49,7 @@ import { SuggestionsView } from "./suggestions-view";
 import { PagesView } from "./pages-view";
 import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
+import { OnboardingWizard } from "./onboarding-wizard";
 import { PLAN_LIMITS } from "@/lib/types";
 
 const NAV_ITEMS: {
@@ -347,6 +348,7 @@ export function AppShell() {
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-6">
+          <OnboardingWizard />
           <AnimatePresence mode="wait">
             <motion.div
               key={activeView}

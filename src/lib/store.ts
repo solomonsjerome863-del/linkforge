@@ -9,6 +9,10 @@ import type {
 import { saveUser, loadUser, clearUser } from "./auth-storage";
 
 interface AppState {
+  // Landing page
+  showLanding: boolean;
+  setShowLanding: (show: boolean) => void;
+
   // Auth
   user: User | null;
   _hydrated: boolean;
@@ -37,6 +41,10 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
+  // Landing page
+  showLanding: true,
+  setShowLanding: (showLanding) => set({ showLanding }),
+
   // Auth
   user: null,
   _hydrated: false,
@@ -45,11 +53,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ _hydrated: true });
     const stored = loadUser();
     if (stored) {
-      set({ user: stored as User });
+      set({ user: stored as User, showLanding: false });
     }
   },
   setUser: (user) => {
-    set({ user });
+    set({ user, showLanding: !user });
     if (user) {
       saveUser(user);
     } else {
