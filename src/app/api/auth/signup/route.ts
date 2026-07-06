@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
         email,
         name: name || null,
         passwordHash: hashPassword(password),
+        emailVerified: true, // Auto-verified for demo; add email service for production
       },
     });
 

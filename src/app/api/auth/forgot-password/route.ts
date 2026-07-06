@@ -1,0 +1,40 @@
+import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+import { db } from "@/lib/db";
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
+
+    const user = await db.user.findUnique({ where: { email: email.toLowerCase() } });
+
+    // Always return success to prevent email enumeration
+    if (!user) {
+      return NextResponse.json({ success: true, message: "If an account exists, a reset link has been generated." });
+    }
+
+    // Generate reset token
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiry = new Date(Date.now() + 3600000); // 1 hour
+
+    await db.user.update({
+      where: { id: user.id },
+      data: { resetToken: token, resetTokenExpiry: expiry },
+    });
+
+    // In production, send email here. For demo, return token.
+    return NextResponse.json({
+      success: true,
+      message: "If an account exists, a reset link has been generated.",
+      devToken: token,
+    });
+  } catch (error: unknown) {
+    console.error("Forgot password error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

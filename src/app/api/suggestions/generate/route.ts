@@ -32,6 +32,14 @@ function extractKeywords(text: string): string[] {
     .map(([w]) => w);
 }
 
+function keywordOverlap(kw1: string[], kw2: string[]): number {
+  const set1 = new Set(kw1);
+  const set2 = new Set(kw2);
+  const common = [...set1].filter((w) => set2.has(w));
+  const allUnique = new Set([...set1, ...set2]);
+  return allUnique.size > 0 ? common.length / allUnique.size : 0;
+}
+
 function pickAnchorText(targetTitle: string, targetHeadings: string[]): string {
   const words = targetTitle
     .replace(/[^a-zA-Z0-9\s]/g, "")

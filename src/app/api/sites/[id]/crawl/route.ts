@@ -1,67 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { validateUser } from "@/lib/api-auth";
+import { execSync } from "child_process";
 
-const SAMPLE_POSTS = [
-  { title: "Complete Guide to Internal Linking for SEO", slug: "/internal-linking-guide-seo", headings: ["What is Internal Linking?", "Why Internal Links Matter for SEO", "Best Practices for Internal Linking", "How Many Internal Links Per Page?", "Internal Linking vs External Linking"], wordCount: 2400 },
-  { title: "On-Page SEO Checklist for 2025", slug: "/on-page-seo-checklist-2025", headings: ["Title Tag Optimization", "Meta Description Best Practices", "Header Tag Hierarchy", "Image Alt Text Guidelines", "URL Structure Tips"], wordCount: 1800 },
-  { title: "How to Build Topic Clusters for Content Strategy", slug: "/topic-clusters-content-strategy", headings: ["What Are Topic Clusters?", "Pillar Content vs Cluster Content", "Finding Content Gaps", "Linking Between Clusters", "Measuring Topic Cluster Performance"], wordCount: 2100 },
-  { title: "Schema Markup Guide: Structured Data for SEO", slug: "/schema-markup-guide-structured-data", headings: ["Introduction to Schema Markup", "Article Schema", "FAQ Schema", "How-To Schema", "Breadcrumb Schema"], wordCount: 3200 },
-  { title: "Content Pruning: Removing Old Content That Hurts SEO", slug: "/content-pruning-guide", headings: ["What is Content Pruning?", "When to Prune Content", "How to Audit Your Content", "What to Do With Pruned Content", "Measuring Results"], wordCount: 1900 },
-  { title: "Link Building Strategies That Actually Work", slug: "/link-building-strategies-2025", headings: ["Why Link Building Still Matters", "Guest Posting That Works", "Digital PR Campaigns", "Broken Link Building", "Resource Page Link Building"], wordCount: 2800 },
-  { title: "Technical SEO Audit: A Step-by-Step Guide", slug: "/technical-seo-audit-guide", headings: ["Crawlability Check", "Index Coverage Analysis", "Page Speed Optimization", "Mobile-Friendliness", "Structured Data Validation"], wordCount: 3500 },
-  { title: "Keyword Research Guide for Modern SEO", slug: "/keyword-research-guide", headings: ["Understanding Search Intent", "Long-Tail Keywords", "Competitor Keyword Analysis", "Keyword Difficulty Metrics", "Content Mapping to Keywords"], wordCount: 2600 },
-  { title: "E-E-A-T and Google's Quality Guidelines", slug: "/eeat-google-quality-guidelines", headings: ["What is E-E-A-T?", "Experience Factor", "Expertise Signals", "Authoritative Content", "Trustworthiness Indicators"], wordCount: 2200 },
-  { title: "Core Web Vitals Optimization Guide", slug: "/core-web-vitals-optimization", headings: ["LCP: Largest Contentful Paint", "INP: Interaction to Next Paint", "CLS: Cumulative Layout Shift", "Measuring Core Web Vitals", "Common Fixes and Tips"], wordCount: 2900 },
-];
+function extractInternalLinks(html: string, baseUrl: string): string[] {
+  const links: string[] = [];
+  const regex = /href=["']([^"']+)["']/gi;
+  let match;
+  const base = new URL(baseUrl);
 
-function generatePostContent(title: string, headings: string[], targetWords: number): string {
-  const paragraphs: string[] = [];
+  while ((match = regex.exec(html)) !== null) {
+    try {
+      const href = match[1];
+      const url = new URL(href, baseUrl);
+      if (
+        url.hostname === base.hostname &&
+        !url.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|css|js|ico|woff|woff2|ttf|eot|mp4|mp3|pdf|zip)/i) &&
+        url.pathname !== "/" &&
+        url.pathname.length > 1
+      ) {
+        const normalized = `${url.protocol}//${url.hostname}${url.pathname}`;
+        if (!links.includes(normalized)) {
+          links.push(normalized);
+        }
+      }
+    } catch {
+      // Skip invalid URLs
+    }
+  }
+  return links;
+}
 
-  paragraphs.push(
-    `${title}. This comprehensive guide covers everything you need to know about this critical SEO topic. ` +
-    `In today's competitive digital landscape, understanding and implementing these strategies can make the difference between ranking on page one and being buried in search results. ` +
-    `We'll walk through each aspect step by step, providing actionable insights you can apply to your website right away. ` +
-    `The search engine optimization ecosystem is complex and constantly evolving, so staying informed about the latest best practices is essential for maintaining and improving your organic visibility.`
-  );
+function extractHeadings(text: string): string[] {
+  const headings: string[] = [];
+  const htmlRegex = /<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi;
+  let match;
+  while ((match = htmlRegex.exec(text)) !== null) {
+    const clean = match[1].replace(/<[^>]*>/g, "").trim();
+    if (clean) headings.push(clean);
+  }
+  return headings;
+}
 
-  for (const heading of headings) {
-    paragraphs.push(
-      `## ${heading}. When it comes to ${heading.toLowerCase()}, there are several key considerations that every SEO professional should understand. ` +
-      `The foundation of a solid strategy starts with proper implementation and consistent monitoring of your results over time. ` +
-      `Many websites miss out on significant traffic because they overlook these fundamental elements. ` +
-      `By focusing on these core areas, you can build a more robust search presence and drive qualified organic traffic to your pages. ` +
-      `The data consistently shows that websites following these guidelines outperform their competitors in both rankings and user engagement metrics.`
+function htmlToPlainText(html: string): string {
+  return html
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function readPageViaCLI(url: string): { title: string; html: string; text: string } | null {
+  try {
+    const output = execSync(
+      `z-ai function -n page_reader -a '${JSON.stringify({ url })}' -o /tmp/linkforge-page-${Date.now()}.json`,
+      { timeout: 30000, encoding: "utf-8" }
     );
-
-    paragraphs.push(
-      `Implementing ${heading.toLowerCase()} correctly requires both technical knowledge and strategic thinking. ` +
-      `Start by auditing your current approach, identify gaps and opportunities, then develop a systematic plan for improvement. ` +
-      `Remember that SEO is not a one-time task but an ongoing process that evolves with search engine algorithms and user behavior patterns. ` +
-      `Regular monitoring and iteration are key to long-term success. Tools like Google Search Console, Ahrefs, and SEMrush can provide valuable data to inform your decisions and track your progress over time.`
-    );
+    // z-ai outputs result to stdout as JSON
+    const lines = output.trim().split("\n");
+    const jsonLine = lines.find((l) => l.startsWith("{"));
+    if (!jsonLine) return null;
+    const data = JSON.parse(jsonLine);
+    const html = data.data?.html || data.html || "";
+    return {
+      title: data.data?.title || data.title || url,
+      html,
+      text: htmlToPlainText(html),
+    };
+  } catch (err) {
+    console.error(`Failed to read ${url}:`, err);
+    return null;
   }
-
-  let combined = paragraphs.join(" ");
-  const currentWords = combined.split(/\s+/).length;
-  if (currentWords < targetWords) {
-    const filler =
-      `Search engine optimization continues to evolve, and staying ahead of the curve requires dedication to continuous learning and adaptation. ` +
-      `The strategies outlined in this guide represent current best practices backed by industry research and real-world results. ` +
-      `Always test changes in controlled environments and measure their impact before rolling them out across your entire site. ` +
-      `Internal linking remains one of the most underutilized SEO tactics available to website owners. ` +
-      `A well-structured internal link architecture helps search engines discover and understand the relationship between your pages, ` +
-      `distributes page authority throughout your site, and improves user navigation. `;
-    const repeats = Math.ceil((targetWords - currentWords) / filler.split(/\s+/).length);
-    combined += filler.repeat(repeats);
-  }
-
-  // Trim to approximate target
-  const words = combined.split(/\s+/);
-  if (words.length > targetWords) {
-    return words.slice(0, targetWords).join(" ");
-  }
-  return combined;
 }
 
 export async function POST(
@@ -89,109 +107,127 @@ export async function POST(
 
     // Create crawl job
     const crawlJob = await db.crawlJob.create({
-      data: {
-        siteId: id,
-        status: "running",
-        startedAt: new Date(),
-      },
+      data: { siteId: id, status: "running", startedAt: new Date() },
     });
 
-    // Update site status
     await db.site.update({
       where: { id },
-      data: { status: "crawling" },
+      data: { status: "crawling", error: null },
     });
 
-    // Delete existing pages and suggestions for a fresh crawl
+    // Delete existing pages and suggestions
     await db.linkSuggestion.deleteMany({ where: { siteId: id } });
     await db.page.deleteMany({ where: { siteId: id } });
 
-    // Pick 8-12 random posts
-    const shuffled = [...SAMPLE_POSTS].sort(() => Math.random() - 0.5);
-    const postCount = 8 + Math.floor(Math.random() * 5); // 8-12
-    const selectedPosts = shuffled.slice(0, Math.min(postCount, SAMPLE_POSTS.length));
-
     const siteUrl = site.url.replace(/\/$/, "");
+    const maxPages = site.pageLimit || 50;
 
-    // Create pages
-    const pageCreates = selectedPosts.map((post) => {
-      const textContent = generatePostContent(post.title, post.headings, post.wordCount);
-      return {
-        url: `${siteUrl}${post.slug}`,
-        title: post.title,
-        content: `<article><h1>${post.title}</h1><p>${textContent.slice(0, 300)}</p><p>${textContent.slice(300, 600)}</p><p>${textContent.slice(600)}</p></article>`,
-        textContent,
-        headings: JSON.stringify(post.headings),
-        wordCount: post.wordCount,
+    try {
+      // Step 1: Read homepage
+      const homepage = readPageViaCLI(siteUrl);
+
+      if (!homepage) {
+        throw new Error(`Could not read ${siteUrl}. Make sure the URL is accessible.`);
+      }
+
+      const internalLinks = homepage.html
+        ? extractInternalLinks(homepage.html, siteUrl)
+        : [];
+      const urlsToCrawl = [siteUrl, ...internalLinks].slice(0, maxPages);
+
+      // Step 2: Crawl each page
+      const pagesToCreate: {
+        url: string;
+        title: string;
+        content: string;
+        textContent: string;
+        headings: string;
+        wordCount: number;
+        status: string;
+        siteId: string;
+      }[] = [];
+
+      // Add homepage
+      const hpHeadings = homepage.html ? extractHeadings(homepage.html) : ["Homepage"];
+      pagesToCreate.push({
+        url: siteUrl,
+        title: homepage.title,
+        content: homepage.html.slice(0, 50000),
+        textContent: homepage.text.slice(0, 30000),
+        headings: JSON.stringify(hpHeadings.length > 0 ? hpHeadings : ["Homepage"]),
+        wordCount: homepage.text.split(/\s+/).filter(Boolean).length,
         status: "active",
         siteId: id,
-      };
-    });
+      });
 
-    await db.page.createMany({ data: pageCreates });
-    const pages = await db.page.findMany({ where: { siteId: id } });
-
-    // Update site
-    await db.site.update({
-      where: { id },
-      data: {
-        status: "ready",
-        pagesCount: pages.length,
-        lastCrawled: new Date(),
-      },
-    });
-
-    // Update crawl job
-    await db.crawlJob.update({
-      where: { id: crawlJob.id },
-      data: {
-        status: "completed",
-        pagesFound: pages.length,
-        pagesSaved: pages.length,
-        completedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json({
-      crawlJob: {
-        ...crawlJob,
-        status: "completed",
-        pagesFound: pages.length,
-        pagesSaved: pages.length,
-        completedAt: new Date().toISOString(),
-      },
-      pagesCount: pages.length,
-    });
-  } catch (error: unknown) {
-    console.error("Crawl error:", error);
-
-    // Try to mark crawl job as failed
-    try {
-      const site = await db.site.findUnique({ where: { id: (await params).id } });
-      if (site) {
-        await db.site.update({
-          where: { id: site.id },
-          data: { status: "error", error: "Crawl failed" },
-        });
-        const latestJob = await db.crawlJob.findFirst({
-          where: { siteId: site.id, status: "running" },
-          orderBy: { createdAt: "desc" },
-        });
-        if (latestJob) {
-          await db.crawlJob.update({
-            where: { id: latestJob.id },
-            data: {
-              status: "failed",
-              error: error instanceof Error ? error.message : "Unknown error",
-              completedAt: new Date(),
-            },
+      // Crawl discovered pages
+      for (let i = 1; i < urlsToCrawl.length; i++) {
+        const pageData = readPageViaCLI(urlsToCrawl[i]);
+        if (pageData && pageData.text.length > 50) {
+          const headings = pageData.html ? extractHeadings(pageData.html) : [];
+          pagesToCreate.push({
+            url: urlsToCrawl[i],
+            title: pageData.title,
+            content: pageData.html.slice(0, 50000),
+            textContent: pageData.text.slice(0, 30000),
+            headings: JSON.stringify(headings.length > 0 ? headings : ["Page"]),
+            wordCount: pageData.text.split(/\s+/).filter(Boolean).length,
+            status: "active",
+            siteId: id,
           });
         }
       }
-    } catch {
-      // Ignore cleanup errors
-    }
 
+      // Step 3: Save pages
+      if (pagesToCreate.length > 0) {
+        await db.page.createMany({ data: pagesToCreate });
+      }
+
+      await db.site.update({
+        where: { id },
+        data: {
+          status: "ready",
+          pagesCount: pagesToCreate.length,
+          lastCrawled: new Date(),
+        },
+      });
+
+      await db.crawlJob.update({
+        where: { id: crawlJob.id },
+        data: {
+          status: "completed",
+          pagesFound: urlsToCrawl.length,
+          pagesSaved: pagesToCreate.length,
+          completedAt: new Date(),
+        },
+      });
+
+      return NextResponse.json({
+        crawlJob: {
+          id: crawlJob.id,
+          status: "completed",
+          pagesFound: urlsToCrawl.length,
+          pagesSaved: pagesToCreate.length,
+          completedAt: new Date().toISOString(),
+        },
+        pagesCount: pagesToCreate.length,
+      });
+    } catch (crawlError) {
+      const errorMessage = crawlError instanceof Error ? crawlError.message : "Crawl failed";
+
+      await db.site.update({
+        where: { id },
+        data: { status: "error", error: errorMessage },
+      });
+      await db.crawlJob.update({
+        where: { id: crawlJob.id },
+        data: { status: "failed", error: errorMessage, completedAt: new Date() },
+      });
+
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+  } catch (error: unknown) {
+    console.error("Crawl error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
