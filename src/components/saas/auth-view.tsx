@@ -39,8 +39,11 @@ export function AuthView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: signinEmail, password: signinPassword }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Invalid credentials");
+      .then(async (res) => {
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || "Invalid credentials");
+        }
         return res.json();
       })
       .then((data: { user: UserType }) => {
@@ -49,8 +52,7 @@ export function AuthView() {
         toast.success("Welcome back!");
       })
       .catch((err) => {
-        const msg = err.message === "Invalid credentials" ? "Invalid email or password" : "Sign in failed";
-        toast.error(msg);
+        toast.error(err.message || "Sign in failed");
       })
       .finally(() => setIsLoading(false));
   }
@@ -71,8 +73,11 @@ export function AuthView() {
         password: signupPassword,
       }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Sign up failed");
+      .then(async (res) => {
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || "Sign up failed");
+        }
         return res.json();
       })
       .then((data: { user: UserType }) => {
@@ -81,8 +86,7 @@ export function AuthView() {
         toast.success("Account created with demo site!");
       })
       .catch((err) => {
-        const msg = err.message.includes("already exists") ? "An account with this email already exists" : "Sign up failed";
-        toast.error(msg);
+        toast.error(err.message || "Sign up failed");
       })
       .finally(() => setIsLoading(false));
   }
