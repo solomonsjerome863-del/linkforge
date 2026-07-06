@@ -83,7 +83,7 @@ function HeroSection() {
             Technical Blueprint
           </h2>
           <p className="text-white/90 text-base md:text-lg leading-relaxed">
-            A deep dive into the architecture powering LinkForge AI — from
+            A deep dive into the architecture powering LinkForge — from
             intelligent web crawling and content analysis to AI-driven internal
             link suggestions, all built on a modern, type-safe full-stack
             foundation.
@@ -104,7 +104,7 @@ const ARCH_STEPS = [
     desc: "Submits a site URL through the dashboard",
   },
   {
-    label: "LinkForge AI",
+    label: "LinkForge",
     icon: Zap,
     desc: "Orchestrates the pipeline & stores results",
   },
@@ -254,7 +254,7 @@ function FeatureGrid() {
       <section>
         <h3 className="text-xl font-semibold mb-1">Core Capabilities</h3>
         <p className="text-sm text-muted-foreground mb-6">
-          Six pillars that make LinkForge AI a complete internal linking
+          Six pillars that make LinkForge a complete internal linking
           solution.
         </p>
 

@@ -105,8 +105,7 @@ function Navbar() {
             <Link2 className="w-4 h-4 text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight">
-            Link<span className="text-orange-500">Forge</span>{" "}
-            <span className="text-muted-foreground font-normal text-base">AI</span>
+            Link<span className="text-orange-500">Forge</span>
           </span>
         </div>
 
@@ -155,8 +154,7 @@ function Navbar() {
                     <Link2 className="w-3.5 h-3.5 text-white" />
                   </div>
                   <span className="text-lg font-bold tracking-tight">
-                    Link<span className="text-orange-500">Forge</span>{" "}
-                    <span className="text-muted-foreground font-normal text-sm">AI</span>
+                    Link<span className="text-orange-500">Forge</span>
                   </span>
                 </SheetTitle>
               </SheetHeader>
@@ -269,7 +267,7 @@ function HeroSection() {
               <div className="relative rounded-2xl border border-border/60 shadow-2xl shadow-orange-500/5 overflow-hidden bg-card">
                 <img
                   src="/hero-illustration.png"
-                  alt="LinkForge AI Dashboard"
+                  alt="LinkForge Dashboard"
                   className="w-full h-auto"
                 />
               </div>
@@ -581,7 +579,7 @@ function ComparisonSection() {
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               Why Teams Choose{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                LinkForge AI
+                LinkForge
               </span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -600,7 +598,7 @@ function ComparisonSection() {
                     Feature
                   </TableHead>
                   <TableHead className="text-center py-4 bg-orange-50 text-orange-700 text-sm font-bold">
-                    LinkForge AI
+                    LinkForge
                   </TableHead>
                   <TableHead className="text-center py-4 text-sm font-medium text-muted-foreground">
                     LinkWhisper
@@ -803,14 +801,14 @@ function FAQSection() {
         "Internal links are hyperlinks that connect one page of your website to another page on the same site. They're critical for SEO because they help search engines understand your site's structure, distribute page authority (link equity) across your pages, and help visitors discover related content. Pages with more internal links tend to rank higher because search engines crawl them more frequently and understand their importance within your site hierarchy.",
     },
     {
-      question: "How is LinkForge AI different from LinkWhisper?",
+      question: "How is LinkForge different from LinkWhisper?",
       answer:
-        "LinkForge AI is a cloud-based platform that works with any website or CMS — not just WordPress. Unlike LinkWhisper, which is a WordPress plugin that relies on keyword matching, LinkForge AI uses real semantic AI to understand the context and meaning of your content. We also actually crawl your website (like a search engine would) to discover pages and analyze your site structure, giving you more accurate and comprehensive link suggestions.",
+        "LinkForge is a cloud-based platform that works with any website or CMS — not just WordPress. Unlike LinkWhisper, which is a WordPress plugin that relies on keyword matching, LinkForge uses real semantic AI to understand the context and meaning of your content. We also actually crawl your website (like a search engine would) to discover pages and analyze your site structure, giving you more accurate and comprehensive link suggestions.",
     },
     {
       question: "Does it work with my website platform?",
       answer:
-        "Yes! LinkForge AI works with any website that has a URL. Whether you're using WordPress, Shopify, Webflow, Next.js, Gatsby, Wix, Squarespace, or a fully custom-built site — as long as we can crawl it, we can analyze it. There are no plugins or integrations required. Just enter your URL and we handle the rest.",
+        "Yes! LinkForge works with any website that has a URL. Whether you're using WordPress, Shopify, Webflow, Next.js, Gatsby, Wix, Squarespace, or a fully custom-built site — as long as we can crawl it, we can analyze it. There are no plugins or integrations required. Just enter your URL and we handle the rest.",
     },
     {
       question: "How does the AI generate link suggestions?",
@@ -820,7 +818,7 @@ function FAQSection() {
     {
       question: "Is there a free plan?",
       answer:
-        "Yes! Our Starter plan is free forever and includes 1 site, up to 50 crawled pages, and 100 AI-powered link suggestions per month. It's perfect for personal blogs, small websites, or anyone who wants to try LinkForge AI before upgrading to a paid plan. No credit card required to sign up.",
+        "Yes! Our Starter plan is free forever and includes 1 site, up to 50 crawled pages, and 100 AI-powered link suggestions per month. It's perfect for personal blogs, small websites, or anyone who wants to try LinkForge before upgrading to a paid plan. No credit card required to sign up.",
     },
     {
       question: "Can I cancel anytime?",
@@ -841,7 +839,7 @@ function FAQSection() {
               </span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Everything you need to know about LinkForge AI.
+              Everything you need to know about LinkForge.
             </p>
           </div>
         </FadeIn>
@@ -881,7 +879,7 @@ function FinalCTASection() {
                 Ready to Boost Your Rankings?
               </h2>
               <p className="mt-4 text-lg text-neutral-400 max-w-2xl mx-auto">
-                Join thousands of SEO professionals who trust LinkForge AI for
+                Join thousands of SEO professionals who trust LinkForge for
                 smarter internal linking.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
@@ -917,7 +915,7 @@ function Footer() {
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
-    { label: "Blog", href: "https://linkforge.ai/blog" },
+    { label: "Blog", href: "https://linkforge.digital/blog" },
   ];
 
   return (
@@ -926,13 +924,12 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo + tagline */}
           <div className="flex flex-col items-center md:items-start gap-2">
-            <a href="https://linkforge.ai" className="flex items-center gap-2">
+            <a href="https://linkforge.digital" className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
                 <Link2 className="w-3.5 h-3.5 text-white" />
               </div>
               <span className="text-lg font-bold tracking-tight">
-                Link<span className="text-orange-500">Forge</span>{" "}
-                <span className="text-muted-foreground font-normal text-sm">AI</span>
+                Link<span className="text-orange-500">Forge</span>
               </span>
             </a>
             <p className="text-sm text-muted-foreground">
@@ -956,7 +953,7 @@ function Footer() {
           {/* Social icons */}
           <div className="flex items-center gap-4">
             <a
-              href="https://twitter.com/linkforgeai"
+              href="https://twitter.com/linkforgedigital"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -965,7 +962,7 @@ function Footer() {
               <Twitter className="w-5 h-5" />
             </a>
             <a
-              href="https://linkedin.com/company/linkforgeai"
+              href="https://linkedin.com/company/linkforgedigital"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -974,7 +971,7 @@ function Footer() {
               <Linkedin className="w-5 h-5" />
             </a>
             <a
-              href="https://github.com/linkforgeai"
+              href="https://github.com/linkforgedigital"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -988,9 +985,9 @@ function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} LinkForge AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LinkForge. All rights reserved.</p>
           <p>
-            <a href="https://linkforge.ai" className="hover:text-foreground transition-colors">linkforge.ai</a>
+            <a href="https://linkforge.digital" className="hover:text-foreground transition-colors">linkforge.digital</a>
           </p>
         </div>
       </div>

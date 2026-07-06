@@ -209,3 +209,65 @@ Stage Summary:
 - Assets: Custom favicon, apple-touch-icon, OG image, PWA manifest
 - Verified: sitemap.xml returns linkforge.ai URLs, robots.txt disallows /api/, manifest serves, OG image 200 OK
 - 0 lint errors, 0 console errors
+---
+Task ID: 1
+Agent: Main Agent
+Task: Complete A/Z domain rename verification + E2E customer workflow test
+
+Work Log:
+- Verified all source files already use `linkforge.digital` (rename was done in previous session)
+- Grep confirmed zero occurrences of `linkforge.ai` in src/ and public/
+- Only remaining `.ai` references are product identifiers (plugin name, npm package) — correct
+- Updated worklog.md is the only file with historical `linkforge.ai` references
+
+Stage Summary:
+- Domain rename to linkforge.digital: COMPLETE (verified across all source/public files)
+
+---
+Task ID: 2
+Agent: Main Agent (Agent Browser E2E)
+Task: Full A/Z customer workflow E2E test
+
+Work Log:
+- Test 1: Landing Page — Full content renders, hero, features, how-it-works, pricing, FAQ, footer
+- Test 2: Sign Up — Created account "E2E Test User" / e2etest@linkforge.digital, redirected to dashboard
+- Test 3: Dashboard — "Welcome back, E2E", Add New Site, Generate Suggestions, Recent Sites card
+- Test 4: Sites — "My SEO Blog" site card with URL, platform, status, pages, Crawl Now button
+- Test 5: Add Site Dialog — Name, URL, Platform fields, Cancel/Close buttons, validation
+- Test 6: Pages — 10 pages, 6 orphans (60%), 25.4k words, search/filter, detailed page cards
+- Test 7: Suggestions — 8 pending suggestions, anchor texts, scores, approve/reject, filter tabs
+- Test 8: Analytics — KPIs (277 links, 146 pages, 9 orphans), Link Health chart, Funnel, Top Pages table
+- Test 9: Settings (Account) — Name field, disabled email, Save Changes button
+- Test 10: Settings (Plan) — Current Plan (disabled), 3 Upgrade buttons
+- Test 11: Settings (Preferences) — Max suggestions slider, min relevance slider, exclude patterns
+- Test 12: Technical Blueprint — Architecture pipeline, 6 capabilities, tech stack, 20 API endpoints
+- Test 13: Sign Out — Returns to landing page cleanly
+- Test 14: Forgot Password — Email field, Send Reset Instructions, Back to Sign In
+- Test 15: Login — Successfully re-logged in with e2etest@linkforge.digital
+- Test 16: Mobile Responsive — Sidebar collapses to hamburger, sheet menu with all nav items
+- Test 17: Console Errors — ZERO errors
+- Test 18: SEO — sitemap.xml has linkforge.digital URLs, robots.txt points to linkforge.digital/sitemap.xml
+- Footer verification: "linkforge.digital" text, href="https://linkforge.digital", blog href correct, social URLs use linkforgedigital
+
+Stage Summary:
+- ALL 18 E2E tests PASSED with zero errors
+- Every view renders correctly: Landing, Auth (signup/signin/forgot), Dashboard, Sites, Pages, Suggestions, Analytics, Settings (3 tabs), Blueprint
+- Mobile responsive design confirmed (hamburger menu pattern)
+- Production SEO endpoints verified (sitemap.xml, robots.txt with correct domain)
+- Domain branding 100% consistent: linkforge.digital everywhere
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Domain connection setup for linkforge.digital
+
+Work Log:
+- Created Caddyfile.production with auto-HTTPS, www redirect, security headers
+- Reviewed current Caddyfile (dev :81 config) — production file separate to avoid breaking dev
+- Reviewed next.config.ts for production readiness (output: standalone confirmed)
+- All app-level domain config already set (layout.tsx, sitemap.ts, robots.ts, landing-page.tsx)
+
+Stage Summary:
+- Caddyfile.production created at /home/z/my-project/Caddyfile.production
+- Contains: www→apex redirect, auto-HTTPS via Let's Encrypt, security headers, XTransformPort support
+- User needs: DNS A record pointing to server IP, then swap Caddyfile and reload Caddy

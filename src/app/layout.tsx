@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://linkforge.ai";
-const SITE_NAME = "LinkForge AI";
+const SITE_URL = "https://linkforge.digital";
+const SITE_NAME = "LinkForge";
 const SITE_TAGLINE = "AI-Powered Internal Linking for SEO";
 const SITE_DESCRIPTION =
   "Automatically generate smart internal link suggestions for your website using AI. Improve your SEO with contextual, high-quality internal links. Works with WordPress, Shopify, Webflow, and any website.";
@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     "internal link manager",
     "LinkForge",
   ],
-  authors: [{ name: "LinkForge AI", url: SITE_URL }],
-  creator: "LinkForge AI",
-  publisher: "LinkForge AI",
+  authors: [{ name: "LinkForge", url: SITE_URL }],
+  creator: "LinkForge",
+  publisher: "LinkForge",
   icons: {
     icon: "/favicon.svg",
     apple: "/apple-touch-icon.svg",
@@ -150,10 +150,10 @@ const jsonLd = {
         },
         {
           "@type": "Question",
-          name: "How does LinkForge AI generate link suggestions?",
+          name: "How does LinkForge generate link suggestions?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "LinkForge AI crawls your website, extracts content and headings from each page, analyzes keyword overlap between pages using TF-overlap scoring, and generates contextual anchor text suggestions for the most relevant internal linking opportunities.",
+            text: "LinkForge crawls your website, extracts content and headings from each page, analyzes keyword overlap between pages using TF-overlap scoring, and generates contextual anchor text suggestions for the most relevant internal linking opportunities.",
           },
         },
         {
@@ -161,7 +161,7 @@ const jsonLd = {
           name: "Is there a free plan?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes! LinkForge AI offers a free Starter plan with 1 site, up to 50 pages per site, and 100 monthly link suggestions. No credit card required.",
+            text: "Yes! LinkForge offers a free Starter plan with 1 site, up to 50 pages per site, and 100 monthly link suggestions. No credit card required.",
           },
         },
       ],

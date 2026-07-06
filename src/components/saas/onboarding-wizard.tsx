@@ -37,7 +37,7 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
       </div>
       <div>
         <h2 className="text-2xl font-bold tracking-tight">
-          Welcome to LinkForge AI
+          Welcome to LinkForge
         </h2>
         <p className="mt-3 text-muted-foreground max-w-sm mx-auto leading-relaxed">
           Add your website and we&apos;ll crawl it, find orphan pages, and generate

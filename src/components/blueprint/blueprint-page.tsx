@@ -133,7 +133,7 @@ export function BlueprintPage() {
                 <Link2 className="w-4 h-4 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-foreground leading-tight">LinkForge AI</span>
+                <span className="text-sm font-bold text-foreground leading-tight">LinkForge</span>
                 <span className="text-[10px] text-muted-foreground leading-tight">Technical Blueprint</span>
               </div>
             </div>
@@ -355,7 +355,7 @@ export function BlueprintPage() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
                 <Link2 className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-sm font-semibold text-foreground">LinkForge AI</span>
+              <span className="text-sm font-semibold text-foreground">LinkForge</span>
               <span className="text-xs text-muted-foreground">— Technical Blueprint v1.0</span>
             </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">

@@ -169,7 +169,7 @@ const plugins: Plugin[] = [
     minTier: "pro",
     tagline: "E-commerce link architecture. Product ↔ Blog ↔ Collection.",
     installPrompt:
-      "Add LinkForge AI from the Shopify App Store. Authenticate with your LinkForge account. Select collections to index.",
+      "Add LinkForge from the Shopify App Store. Authenticate with your LinkForge account. Select collections to index.",
     capabilities: [
       "Product-to-blog linking (pDP → educational content)",
       "Collection hierarchy linking (parent ↔ child collections)",
@@ -215,7 +215,7 @@ const plugins: Plugin[] = [
     minTier: "pro",
     tagline: "For design-first teams who live in Webflow.",
     installPrompt:
-      "Install LinkForge AI from the Webflow App Marketplace. Grant CMS read/write permissions. Configure which collections to link.",
+      "Install LinkForge from the Webflow App Marketplace. Grant CMS read/write permissions. Configure which collections to link.",
     capabilities: [
       "CMS collection cross-linking",
       "Static page ↔ CMS item linking",

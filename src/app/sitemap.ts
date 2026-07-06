@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://linkforge.ai";
+const BASE_URL = "https://linkforge.digital";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

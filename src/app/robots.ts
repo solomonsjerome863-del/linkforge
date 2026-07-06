@@ -19,6 +19,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://linkforge.ai/sitemap.xml",
+    sitemap: "https://linkforge.digital/sitemap.xml",
   };
 }

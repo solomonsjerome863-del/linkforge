@@ -1,0 +1,44 @@
+# Production Caddyfile for linkforge.digital
+# Replace the current Caddyfile with this for production deployment.
+# Caddy will automatically provision SSL/TLS certificates via Let's Encrypt.
+
+# Redirect www to apex domain
+www.linkforge.digital {
+        redir https://linkforge.digital{uri} permanent
+}
+
+linkforge.digital {
+        # Security headers
+        header {
+                X-Content-Type-Options "nosniff"
+                X-Frame-Options "DENY"
+                X-XSS-Protection "1; mode=block"
+                Referrer-Policy "strict-origin-when-cross-origin"
+                Permissions-Policy "camera=(), microphone=(), geolocation=()"
+                Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        }
+
+        # Internal port-based routing for microservices
+        @transform_port_query {
+                query XTransformPort=*
+        }
+
+        handle @transform_port_query {
+                reverse_proxy localhost:{query.XTransformPort} {
+                        header_up Host {host}
+                        header_up X-Forwarded-For {remote_host}
+                        header_up X-Forwarded-Proto {scheme}
+                        header_up X-Real-IP {remote_host}
+                }
+        }
+
+        # Main Next.js application
+        handle {
+                reverse_proxy localhost:3000 {
+                        header_up Host {host}
+                        header_up X-Forwarded-For {remote_host}
+                        header_up X-Forwarded-Proto {scheme}
+                        header_up X-Real-IP {remote_host}
+                }
+        }
+}

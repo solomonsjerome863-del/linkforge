@@ -180,7 +180,7 @@ export function AuthView() {
   function handleGuestMode() {
     const guestUser: UserType = {
       id: "guest",
-      email: "guest@linkforge.ai",
+      email: "guest@linkforge.digital",
       name: "Guest User",
       image: null,
       plan: "starter",
