@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -50,9 +50,9 @@ model Page {
   id          String   @id @default(cuid())
   url         String
   title       String
-  content     String   // raw HTML content
-  textContent String   // stripped text for embedding
-  headings    String   // JSON array of heading strings
+  content     String
+  textContent String
+  headings    String
   wordCount   Int      @default(0)
   status      String   @default("active") // active | excluded
   siteId      String
@@ -101,11 +101,11 @@ model CrawlJob {
 model AnalyticsSnapshot {
   id        String   @id @default(cuid())
   siteId    String
-  date      String   // YYYY-MM-DD
+  date      String
   totalLinks    Int @default(0)
- orphanPages   Int @default(0)
- avgLinksPerPage Float @default(0)
- topKeywords   String // JSON
+  orphanPages   Int @default(0)
+  avgLinksPerPage Float @default(0)
+  topKeywords   String
   createdAt DateTime @default(now())
 
   @@unique([siteId, date])
