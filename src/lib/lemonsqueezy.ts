@@ -89,7 +89,7 @@ export async function createCheckout(params: {
           embed: false,
         },
         product_options: {
-          redirect_url: `${process.env.NEXT_PUBLIC_APP_URL || "https://linkforge.digital"}/api/billing/webhook?redirect=true`,
+          redirect_url: `${process.env.NEXT_PUBLIC_APP_URL || "https://linkforge.digital"}/?checkout=success&plan=${params.plan}`,
         },
       },
       relationships: {
