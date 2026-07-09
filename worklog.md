@@ -452,3 +452,30 @@ Stage Summary:
 - Next.js dev server on port 3000, healthy (30-40ms response time)
 - Caddy on port 81 for sandbox preview
 - User needs to configure Cloudflare Origin Rule to forward to port 8080
+
+---
+Task ID: 5
+Agent: Main Agent
+Task: Migrate LinkForge from Google Cloud to Vercel + Neon
+
+Work Log:
+- Updated Prisma schema: SQLite → PostgreSQL for Vercel compatibility
+- Rewrote crawl route: replaced execSync CLI calls with SDK-based crawler.ts
+- Updated next.config.ts: removed output: standalone and allowedDevOrigins
+- Updated db.ts: disabled query logging in production
+- Created vercel.json with build configuration
+- Created scripts/vercel-build.sh: auto-pushes Prisma schema to Neon on deploy
+- Created .env.example for documentation
+- Updated .gitignore: allow .env.example, exclude mini-services/
+- Pushed code to GitHub (github.com/solomonsjerome863-del/linkforge)
+- User deployed to Vercel (linkforge-smoky-one.vercel.app)
+- User added Neon Postgres (free tier) via Vercel Storage
+- Build script automatically created all 6 database tables on deploy
+- Verified: sign-up, dashboard, onboarding — all working on Vercel
+- Zero console errors, zero browser errors
+
+Stage Summary:
+- LinkForge is LIVE on Vercel with HTTPS
+- Database: Neon Postgres (free tier), 6 tables auto-created
+- URL: https://linkforge-smoky-one.vercel.app
+- Next step: connect custom domain linkforge.digital
