@@ -1,9 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Admin access control — only ADMIN_EMAIL can access
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const requestEmail = request.headers.get("x-admin-email");
+    if (!adminEmail || requestEmail !== adminEmail) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     // Run all queries in parallel
     const [
       totalUsers,

@@ -18,6 +18,7 @@ import {
   BadgeCheck,
   Clock,
   XCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -141,13 +142,22 @@ export function AdminView() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/admin/stats")
+    fetch("/api/admin/stats", {
+      headers: { "x-admin-email": user?.email || "" },
+    })
       .then((r) => {
+        if (r.status === 403) {
+          if (!cancelled) {
+            setError("forbidden");
+            setLoading(false);
+          }
+          return null;
+        }
         if (!r.ok) throw new Error("Failed to fetch");
         return r.json();
       })
       .then((data) => {
-        if (!cancelled) {
+        if (data && !cancelled) {
           setStats(data);
           setError(null);
           setLoading(false);
@@ -161,6 +171,26 @@ export function AdminView() {
       });
     return () => { cancelled = true; };
   }, []);
+
+  if (error === "forbidden") {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
+          <p className="text-muted-foreground mt-1">Back office analytics and subscriber management.</p>
+        </div>
+        <Card className="border-destructive/50">
+          <CardContent className="p-8 text-center space-y-3">
+            <ShieldCheck className="w-10 h-10 text-muted-foreground mx-auto" />
+            <p className="text-lg font-medium">Access Denied</p>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              This area is restricted to administrators only.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (error) {
     return (

@@ -221,7 +221,8 @@ function SidebarContent({
             </Tooltip>
           </TooltipProvider>
 
-          {/* Admin link */}
+          {/* Admin link — only visible for admin user */}
+          {user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -246,6 +247,7 @@ function SidebarContent({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          )}
         </nav>
       </ScrollArea>
 
