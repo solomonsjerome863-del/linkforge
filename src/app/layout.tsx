@@ -52,8 +52,11 @@ export const metadata: Metadata = {
   creator: "LinkForge",
   publisher: "LinkForge",
   icons: {
-    icon: "/favicon.svg",
-    apple: "/apple-touch-icon.svg",
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
   openGraph: {
@@ -65,9 +68,9 @@ export const metadata: Metadata = {
     description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
     images: [
       {
-        url: "/og-image.png",
-        width: 1152,
-        height: 864,
+        url: "/logo.png",
+        width: 1024,
+        height: 1024,
         alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
       },
     ],
@@ -76,7 +79,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
-    images: ["/og-image.png"],
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
