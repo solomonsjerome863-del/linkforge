@@ -3,7 +3,7 @@ export type SiteStatus = "pending" | "crawling" | "ready" | "error";
 export type Platform = "wordpress" | "shopify" | "webflow" | "ghost" | "custom";
 export type SuggestionStatus = "pending" | "approved" | "rejected" | "applied";
 export type CrawlJobStatus = "pending" | "running" | "completed" | "failed";
-export type AppView = "dashboard" | "sites" | "pages" | "suggestions" | "analytics" | "settings" | "blueprint";
+export type AppView = "dashboard" | "sites" | "pages" | "suggestions" | "analytics" | "settings" | "blueprint" | "admin";
 
 export interface User {
   id: string;

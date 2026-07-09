@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Sun,
   Moon,
+  ShieldCheck,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +55,7 @@ import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { BlueprintView } from "./blueprint-view";
+import { AdminView } from "./admin-view";
 import { PLAN_LIMITS, type PlanType } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -78,6 +80,7 @@ const VIEW_TITLES: Record<AppView, string> = {
   analytics: "Analytics",
   settings: "Settings",
   blueprint: "Technical Blueprint",
+  admin: "Admin Dashboard",
 };
 
 function getInitials(name: string | null) {
@@ -217,6 +220,32 @@ function SidebarContent({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          {/* Admin link */}
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => handleNav("admin")}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    activeView === "admin"
+                      ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <ShieldCheck className={cn("w-4 h-4", activeView === "admin" && "text-orange-500")} />
+                  <span className="flex-1 text-left">Admin</span>
+                  {activeView === "admin" && (
+                    <ChevronRight className="w-3 h-3 text-orange-500" />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="lg:hidden">
+                Admin Dashboard
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </nav>
       </ScrollArea>
 
@@ -299,6 +328,8 @@ export function AppShell() {
         return <SettingsView />;
       case "blueprint":
         return <BlueprintView />;
+      case "admin":
+        return <AdminView />;
       default:
         return <DashboardView />;
     }
