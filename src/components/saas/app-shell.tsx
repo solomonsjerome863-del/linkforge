@@ -54,7 +54,8 @@ import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { BlueprintView } from "./blueprint-view";
-import { PLAN_LIMITS } from "@/lib/types";
+import { PLAN_LIMITS, type PlanType } from "@/lib/types";
+import { toast } from "sonner";
 
 const NAV_ITEMS: {
   view: AppView;
@@ -262,6 +263,27 @@ export function AppShell() {
   useEffect(() => {
     setSidebarOpen(false);
   }, [activeView, setSidebarOpen]);
+
+  // Handle checkout success redirect from LemonSqueezy
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const checkoutSuccess = params.get("checkout");
+    const plan = params.get("plan");
+    if (checkoutSuccess === "success" && plan) {
+      const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
+      toast.success(`🎉 ${planLabel} plan activated! Welcome aboard.`);
+      // Update local state
+      if (user) {
+        useAppStore.getState().setUser({ ...user, plan: plan as PlanType });
+      }
+      // Clean URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("checkout");
+      url.searchParams.delete("plan");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [user]);
 
   function renderView() {
     switch (activeView) {

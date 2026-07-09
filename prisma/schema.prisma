@@ -19,6 +19,12 @@ model User {
   emailVerified Boolean   @default(false)
   resetToken    String?
   resetTokenExpiry DateTime?
+  // LemonSqueezy billing
+  lemonSqueezyCustomerId   String?
+  lemonSqueezySubscriptionId String?
+  subscriptionStatus  String? // active | paused | cancelled | expired | unpaid
+  subscriptionEndsAt   DateTime?
+  trialEndsAt          DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -110,4 +116,15 @@ model AnalyticsSnapshot {
 
   @@unique([siteId, date])
   @@index([siteId, date])
+}
+
+model SubscriptionEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  eventType String   // order_created | subscription_created | subscription_updated | subscription_cancelled | subscription_expired
+  payload   String   // raw JSON from LemonSqueezy webhook
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([processed])
 }

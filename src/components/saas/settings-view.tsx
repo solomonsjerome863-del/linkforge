@@ -12,6 +12,10 @@ import {
   Check,
   Loader2,
   Save,
+  CreditCard,
+  CalendarDays,
+  XCircle,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,9 +27,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppStore } from "@/lib/store";
+import { useLemonSqueezyCheckout } from "@/lib/use-lemonsqueezy";
+import { PLAN_LIMITS, type PlanType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { PLAN_LIMITS, type PlanType } from "@/lib/types";
 
 const PLANS: {
   type: PlanType;
@@ -36,6 +41,7 @@ const PLANS: {
   features: string[];
   popular?: boolean;
   dark?: boolean;
+  checkoutable?: boolean;
 }[] = [
   {
     type: "starter",
@@ -53,6 +59,7 @@ const PLANS: {
     icon: Crown,
     features: PLAN_LIMITS.pro.features,
     popular: true,
+    checkoutable: true,
   },
   {
     type: "business",
@@ -61,6 +68,7 @@ const PLANS: {
     period: "/mo",
     icon: Building2,
     features: PLAN_LIMITS.business.features,
+    checkoutable: true,
   },
   {
     type: "enterprise",
@@ -87,6 +95,15 @@ export function SettingsView() {
   const user = useAppStore((s) => s.user);
   const setUser = useAppStore((s) => s.setUser);
 
+  // Billing
+  const { openCheckout, isCheckingOut } = useLemonSqueezyCheckout();
+  const [subscriptionInfo, setSubscriptionInfo] = useState<{
+    subscriptionStatus: string | null;
+    subscriptionEndsAt: string | null;
+    isActive: boolean;
+  } | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
   // Account tab
   const [name, setName] = useState(user?.name ?? "");
   const [isSavingName, setIsSavingName] = useState(false);
@@ -101,6 +118,27 @@ export function SettingsView() {
     setName(user?.name ?? "");
   }, [user?.name]);
 
+  // Fetch subscription info on mount
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/billing/portal?userId=${user.id}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.plan && data.plan !== user.plan) {
+            setUser({ ...user, plan: data.plan });
+          }
+          setSubscriptionInfo({
+            subscriptionStatus: data.subscriptionStatus,
+            subscriptionEndsAt: data.subscriptionEndsAt,
+            isActive: data.isActive,
+          });
+        })
+        .catch(() => {
+          // Subscription endpoint may not be available yet
+        });
+    }
+  }, [user?.id]);
+
   async function handleSaveName() {
     if (!name.trim()) {
       toast.error("Name cannot be empty");
@@ -108,7 +146,7 @@ export function SettingsView() {
     }
     setIsSavingName(true);
     try {
-      await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
+      await new Promise((r) => setTimeout(r, 400));
       if (user) setUser({ ...user, name: name.trim() });
       toast.success("Profile updated");
     } catch {
@@ -121,7 +159,7 @@ export function SettingsView() {
   async function handleSavePrefs() {
     setIsSavingPrefs(true);
     try {
-      await new Promise((r) => setTimeout(r, 400)); // Simulate save delay
+      await new Promise((r) => setTimeout(r, 400));
       toast.success("Preferences saved");
     } catch {
       toast.error("Failed to save changes");
@@ -129,6 +167,43 @@ export function SettingsView() {
       setIsSavingPrefs(false);
     }
   }
+
+  async function handleCancelSubscription() {
+    if (!user?.id) return;
+    setIsCancelling(true);
+    try {
+      const res = await fetch("/api/billing/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Subscription cancelled. You'll keep access until the end of your billing period.");
+        setSubscriptionInfo((prev) =>
+          prev ? { ...prev, isActive: false, subscriptionStatus: "cancelled" } : prev
+        );
+      } else {
+        toast.error(data.error || "Failed to cancel subscription");
+      }
+    } catch {
+      toast.error("Failed to cancel subscription");
+    } finally {
+      setIsCancelling(false);
+    }
+  }
+
+  function formatDate(dateStr: string | null): string {
+    if (!dateStr) return "N/A";
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  const currentPlanData = PLANS.find((p) => p.type === user?.plan);
+  const hasActiveSubscription = subscriptionInfo?.isActive ?? false;
 
   return (
     <div className="space-y-6">
@@ -211,93 +286,217 @@ export function SettingsView() {
 
         {/* Plan Tab */}
         <TabsContent value="plan">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PLANS.map((plan, i) => {
-              const isCurrent = user?.plan === plan.type;
-              const Icon = plan.icon;
-              return (
-                <motion.div
-                  key={plan.type}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card
-                    className={cn(
-                      "relative flex flex-col h-full",
-                      plan.popular && "border-2 border-orange-500/50 shadow-lg shadow-orange-500/10",
-                      plan.dark && "bg-neutral-950 text-white border-neutral-800 dark:bg-neutral-950"
-                    )}
-                  >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 text-xs">
-                          Most Popular
-                        </Badge>
-                      </div>
-                    )}
-                    <CardHeader className="pb-3">
+          <div className="space-y-6">
+            {/* Active Subscription Card */}
+            {hasActiveSubscription && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/50 dark:bg-emerald-900/10">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Icon
-                          className={cn(
-                            "w-5 h-5",
-                            plan.dark
-                              ? "text-amber-400"
-                              : "text-orange-500"
-                          )}
-                        />
-                        <CardTitle className={cn("text-base", plan.dark && "text-white")}>{plan.name}</CardTitle>
+                        <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <CardTitle className="text-base">Active Subscription</CardTitle>
                       </div>
-                      <div className="pt-1">
-                        <span className={cn("text-3xl font-bold", plan.dark && "text-white")}>
-                          {plan.price}
-                        </span>
-                        {plan.period && (
-                          <span className={cn("text-sm text-muted-foreground", plan.dark && "text-neutral-400")}>
-                            {plan.period}
-                          </span>
-                        )}
+                      <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">
+                        {subscriptionInfo?.subscriptionStatus === "on_trial" ? "Trial" : "Active"}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Plan</p>
+                        <p className="font-medium capitalize">
+                          {currentPlanData?.name ?? user?.plan}
+                        </p>
                       </div>
-                    </CardHeader>
-                    <CardContent className="flex-1 flex flex-col">
-                      <ul className="space-y-2 text-sm flex-1">
-                        {plan.features.map((feature, fi) => (
-                          <li key={fi} className="flex items-start gap-2">
-                            <Check className={cn("w-4 h-4 mt-0.5 shrink-0", plan.dark ? "text-teal-400" : "text-teal-600")} />
-                            <span className={plan.dark ? "text-neutral-300" : ""}>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="mt-4">
-                        {isCurrent ? (
-                          <Button
-                            variant="outline"
-                            className="w-full"
-                            disabled
-                          >
-                            Current Plan
-                          </Button>
+                      <div>
+                        <p className="text-muted-foreground">Status</p>
+                        <p className="font-medium capitalize">
+                          {subscriptionInfo?.subscriptionStatus}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Renews / Ends</p>
+                        <div className="flex items-center gap-1.5">
+                          <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                          <p className="font-medium">
+                            {formatDate(subscriptionInfo?.subscriptionEndsAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800/50 dark:hover:bg-red-900/20"
+                        onClick={handleCancelSubscription}
+                        disabled={isCancelling}
+                      >
+                        {isCancelling ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         ) : (
-                          <Button
+                          <XCircle className="w-4 h-4 mr-2" />
+                        )}
+                        Cancel Subscription
+                      </Button>
+                      <p className="text-xs text-muted-foreground">
+                        You&apos;ll keep access until the end of your billing period.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Cancelled Subscription Notice */}
+            {subscriptionInfo?.subscriptionStatus === "cancelled" && !hasActiveSubscription && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <Card className="border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/10">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                        Subscription Cancelled
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        Your plan access continues until{" "}
+                        {formatDate(subscriptionInfo?.subscriptionEndsAt)}.
+                        You can subscribe again below.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Plan Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {PLANS.map((plan, i) => {
+                const isCurrent = user?.plan === plan.type;
+                const Icon = plan.icon;
+                return (
+                  <motion.div
+                    key={plan.type}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <Card
+                      className={cn(
+                        "relative flex flex-col h-full",
+                        plan.popular && "border-2 border-orange-500/50 shadow-lg shadow-orange-500/10",
+                        plan.dark && "bg-neutral-950 text-white border-neutral-800 dark:bg-neutral-950"
+                      )}
+                    >
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 text-xs">
+                            Most Popular
+                          </Badge>
+                        </div>
+                      )}
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center gap-2">
+                          <Icon
                             className={cn(
-                              "w-full",
-                              plan.popular
-                                ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
-                                : plan.dark
+                              "w-5 h-5",
+                              plan.dark
+                                ? "text-amber-400"
+                                : "text-orange-500"
+                            )}
+                          />
+                          <CardTitle className={cn("text-base", plan.dark && "text-white")}>{plan.name}</CardTitle>
+                        </div>
+                        <div className="pt-1">
+                          <span className={cn("text-3xl font-bold", plan.dark && "text-white")}>
+                            {plan.price}
+                          </span>
+                          {plan.period && (
+                            <span className={cn("text-sm text-muted-foreground", plan.dark && "text-neutral-400")}>
+                              {plan.period}
+                            </span>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col">
+                        <ul className="space-y-2 text-sm flex-1">
+                          {plan.features.map((feature, fi) => (
+                            <li key={fi} className="flex items-start gap-2">
+                              <Check className={cn("w-4 h-4 mt-0.5 shrink-0", plan.dark ? "text-teal-400" : "text-teal-600")} />
+                              <span className={plan.dark ? "text-neutral-300" : ""}>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-4">
+                          {isCurrent ? (
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              disabled
+                            >
+                              Current Plan
+                            </Button>
+                          ) : plan.checkoutable ? (
+                            <Button
+                              className={cn(
+                                "w-full",
+                                plan.popular
+                                  ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+                                  : plan.dark
+                                    ? "bg-white text-neutral-900 hover:bg-neutral-200"
+                                    : ""
+                              )}
+                              onClick={() => openCheckout(plan.type)}
+                              disabled={isCheckingOut}
+                            >
+                              {isCheckingOut ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              ) : null}
+                              {plan.period ? "Upgrade" : "Contact Sales"}
+                              <ExternalLink className="w-3.5 h-3.5 ml-1.5 opacity-60" />
+                            </Button>
+                          ) : plan.type === "enterprise" ? (
+                            <Button
+                              className={cn(
+                                "w-full",
+                                plan.dark
                                   ? "bg-white text-neutral-900 hover:bg-neutral-200"
                                   : ""
-                            )}
-                            onClick={() => toast.info(`${plan.name} plan upgrade coming soon!`)}
-                          >
-                            Upgrade
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                              )}
+                              variant="outline"
+                              onClick={() =>
+                                toast.info(
+                                  "Enterprise inquiries: hello@linkforge.digital"
+                                )
+                              }
+                            >
+                              Contact Sales
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                              disabled
+                            >
+                              Free
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </TabsContent>
 
