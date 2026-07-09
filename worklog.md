@@ -502,3 +502,34 @@ Stage Summary:
 - Neon PostgreSQL database reads/writes verified via successful signup
 - Project metadata ready for linkforge.digital custom domain
 - Custom domain setup: user needs to add domain in Vercel Dashboard → Settings → Domains, then configure DNS records at registrar
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Custom domain connection + LemonSqueezy billing integration + branding update
+
+Work Log:
+- Verified Vercel deployment live at linkforge-smoky-one.vercel.app
+- E2E tested signup flow: created "Vercel Test User" on Neon PostgreSQL — success
+- Connected custom domain linkforge.digital via Vercel Domains
+- Updated DNS A records from 47.57.242.119 (old Google Cloud) to 76.76.21.21 (Vercel)
+- Verified HTTPS active, SSL cert issued, www redirect working, zero console errors
+- Built full LemonSqueezy billing integration:
+  - src/lib/lemonsqueezy.ts — server API helper (createCheckout, cancelSubscription, verifyWebhookSignature)
+  - src/app/api/billing/checkout/route.ts — POST creates LemonSqueezy checkout session
+  - src/app/api/billing/portal/route.ts — GET subscription info, POST cancel
+  - src/app/api/billing/webhook/route.ts — handles 7 LemonSqueezy webhook events
+  - src/lib/use-lemonsqueezy.ts — client hook for checkout flow
+  - Demo mode: works without API keys (shows toast, updates local state)
+  - Updated .env.example with all LemonSqueezy env vars
+- Updated branding with custom AI-generated logo:
+  - Generated logo.png, favicon-32.png, apple-touch-icon.png, icon-192.png, icon-512.png
+  - Updated manifest.json, layout.tsx (icons, OG image, Twitter card)
+  - Replaced inline SVG logos with image in app-shell, landing page navbar, mobile sheet, footer
+- User set up LemonSqueezy account, store, and uploaded logo
+
+Stage Summary:
+- linkforge.digital LIVE with HTTPS, SSL, www redirect
+- LemonSqueezy billing integration deployed (demo mode, ready for API keys)
+- Custom logo deployed across all touchpoints (navbar, sidebar, footer, favicon, OG, PWA)
+- Next: Add LemonSqueezy env vars to Vercel + configure webhook after identity verification
