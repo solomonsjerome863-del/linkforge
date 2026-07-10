@@ -145,13 +145,57 @@ export async function POST(request: NextRequest) {
         break;
       }
 
-      case "subscription_payment_failed":
-      case "subscription_payment_recovered": {
-        const status = eventName === "subscription_payment_failed" ? "unpaid" : "active";
+      case "subscription_payment_failed": {
         await db.user.update({
           where: { id: userId },
-          data: { subscriptionStatus: status },
+          data: { subscriptionStatus: "unpaid" },
         });
+        break;
+      }
+
+      case "subscription_payment_recovered":
+      case "subscription_payment_success": {
+        await db.user.update({
+          where: { id: userId },
+          data: { subscriptionStatus: "active" },
+        });
+        break;
+      }
+
+      case "subscription_paused": {
+        await db.user.update({
+          where: { id: userId },
+          data: { subscriptionStatus: "paused" },
+        });
+        break;
+      }
+
+      case "subscription_unpaused":
+      case "subscription_resumed": {
+        await db.user.update({
+          where: { id: userId },
+          data: { subscriptionStatus: "active" },
+        });
+        break;
+      }
+
+      case "subscription_plan_changed": {
+        const variantPlan = variantId ? variantIdToPlan(variantId) : plan;
+        if (variantPlan) {
+          await db.user.update({
+            where: { id: userId },
+            data: {
+              plan: variantPlan,
+              subscriptionStatus: "active",
+            },
+          });
+        }
+        break;
+      }
+
+      case "subscription_payment_refunded": {
+        // Keep subscription active but log the refund
+        console.log(`[Webhook] Payment refunded for ${user.email}`);
         break;
       }
 
