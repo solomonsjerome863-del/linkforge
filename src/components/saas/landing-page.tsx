@@ -695,10 +695,10 @@ function PricingSection() {
       badge: "Popular",
     },
     {
-      name: "Agency",
+      name: "Business",
       price: "$149",
       period: "/mo",
-      description: "For large agencies and enterprises",
+      description: "For teams and growing businesses",
       features: [
         "25 sites",
         "5,000 pages crawled",

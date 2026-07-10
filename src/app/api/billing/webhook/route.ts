@@ -13,14 +13,6 @@ import {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check if this is a redirect-back (user returned from checkout)
-    const isRedirect = request.nextUrl.searchParams.get("redirect") === "true";
-    if (isRedirect) {
-      const plan = request.nextUrl.searchParams.get("plan") || "pro";
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://linkforge.digital";
-      return NextResponse.redirect(`${baseUrl}/?checkout=success&plan=${plan}`);
-    }
-
     const rawBody = await request.text();
     const signature = request.headers.get("x-signature");
 

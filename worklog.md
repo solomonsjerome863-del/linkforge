@@ -533,3 +533,28 @@ Stage Summary:
 - LemonSqueezy billing integration deployed (demo mode, ready for API keys)
 - Custom logo deployed across all touchpoints (navbar, sidebar, footer, favicon, OG, PWA)
 - Next: Add LemonSqueezy env vars to Vercel + configure webhook after identity verification
+
+---
+Task ID: Walkthrough Audit
+Agent: Main Agent
+Task: Full A/Z walkthrough verification of linkforge.digital
+
+Work Log:
+- Verified live site via agent-browser: landing page, sign-in dialog, dark mode, mobile responsive
+- Landing page renders all sections: hero, features, how-it-works, comparison table, pricing, FAQ, CTA, footer
+- Sign-in dialog shows correctly with Sign In / Create Account tabs
+- Dark mode toggle works correctly
+- Mobile view shows hamburger menu with all nav items
+- Code review: admin API has email-based 403 guard, sidebar shows Admin only for NEXT_PUBLIC_ADMIN_EMAIL match
+- Code review: settings-view has full billing tab with subscription info, cancel, and plan upgrade cards
+- Code review: webhook handler covers all LemonSqueezy events (created, updated, cancelled, expired, paused, resumed, plan_changed, payment_failed/recovered/success/refunded)
+- Fixed: "Agency" → "Business" naming mismatch in landing page pricing (line 698)
+- Cleaned up dead redirect handler code in webhook route
+- Updated lemonsqueezy.ts redirect URL to go directly to app (not through webhook POST)
+- ESLint passes with 0 errors
+
+Stage Summary:
+- 1 bug fixed: Agency→Business naming mismatch in landing page
+- 1 cleanup: removed dead redirect code in webhook
+- 1 improvement: checkout redirect URL now goes directly to app
+- All code passes lint
