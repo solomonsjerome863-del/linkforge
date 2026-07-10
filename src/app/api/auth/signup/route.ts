@@ -15,14 +15,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, name, password } = body;
+    const normalizedEmail = email.toLowerCase().trim();
 
     // Validate inputs
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(normalizedEmail)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await db.user.findUnique({ where: { email } });
+    const existingUser = await db.user.findFirst({ where: { email: { equals: normalizedEmail, mode: "insensitive" } } });
     if (existingUser) {
       return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
     }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Create user
     const user = await db.user.create({
       data: {
-        email,
+        email: normalizedEmail,
         name: name || null,
         passwordHash: hashPassword(password),
         emailVerified: true, // Auto-verified for demo; add email service for production
