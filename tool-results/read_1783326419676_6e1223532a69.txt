@@ -1,0 +1,837 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import { motion } from "framer-motion";
+     4→     4→import {
+     5→     5→  Link2,
+     6→     6→  ArrowRight,
+     7→     7→  Search,
+     8→     8→  Brain,
+     9→     9→  Globe,
+    10→    10→  Zap,
+    11→    11→  Shield,
+    12→    12→  BarChart3,
+    13→    13→  Check,
+    14→    14→  Star,
+    15→    15→  ChevronRight,
+    16→    16→  Menu,
+    17→    17→  X,
+    18→    18→  FileText,
+    19→    19→} from "lucide-react";
+    20→    20→import { Button } from "@/components/ui/button";
+    21→    21→import { Badge } from "@/components/ui/badge";
+    22→    22→import { Card, CardContent } from "@/components/ui/card";
+    23→    23→import { useAppStore } from "@/lib/store";
+    24→    24→import { useState } from "react";
+    25→    25→
+    26→    26→/* ─── Fade-in on scroll wrapper ─── */
+    27→    27→function FadeIn({
+    28→    28→  children,
+    29→    29→  className,
+    30→    30→  delay = 0,
+    31→    31→}: {
+    32→    32→  children: React.ReactNode;
+    33→    33→  className?: string;
+    34→    34→  delay?: number;
+    35→    35→}) {
+    36→    36→  return (
+    37→    37→    <motion.div
+    38→    38→      initial={{ opacity: 0, y: 30 }}
+    39→    39→      whileInView={{ opacity: 1, y: 0 }}
+    40→    40→      viewport={{ once: true, margin: "-60px" }}
+    41→    41→      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    42→    42→      className={className}
+    43→    43→    >
+    44→    44→      {children}
+    45→    45→    </motion.div>
+    46→    46→  );
+    47→    47→}
+    48→    48→
+    49→    49→/* ─── Navbar ─── */
+    50→    50→function Navbar({ onGetStarted }: { onGetStarted: () => void }) {
+    51→    51→  const [open, setOpen] = useState(false);
+    52→    52→  const links = [
+    53→    53→    { label: "Features", href: "#features" },
+    54→    54→    { label: "How It Works", href: "#how-it-works" },
+    55→    55→    { label: "Pricing", href: "#pricing" },
+    56→    56→  ];
+    57→    57→
+    58→    58→  return (
+    59→    59→    <nav className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+    60→    60→      <div className="max-w-6xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
+    61→    61→        <div className="flex items-center gap-2">
+    62→    62→          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+    63→    63→            <Link2 className="w-4 h-4 text-white" />
+    64→    64→          </div>
+    65→    65→          <span className="text-lg font-bold tracking-tight">
+    66→    66→            Link<span className="text-orange-500">Forge</span>{" "}
+    67→    67→            <span className="text-muted-foreground font-normal text-sm">AI</span>
+    68→    68→          </span>
+    69→    69→        </div>
+    70→    70→
+    71→    71→        {/* Desktop links */}
+    72→    72→        <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
+    73→    73→          {links.map((l) => (
+    74→    74→            <a
+    75→    75→              key={l.href}
+    76→    76→              href={l.href}
+    77→    77→              className="hover:text-foreground transition-colors"
+    78→    78→            >
+    79→    79→              {l.label}
+    80→    80→            </a>
+    81→    81→          ))}
+    82→    82→        </div>
+    83→    83→
+    84→    84→        <div className="flex items-center gap-3">
+    85→    85→          <Button
+    86→    86→            variant="ghost"
+    87→    87→            size="sm"
+    88→    88→            className="hidden sm:inline-flex text-muted-foreground hover:text-foreground"
+    89→    89→            onClick={onGetStarted}
+    90→    90→          >
+    91→    91→            Sign In
+    92→    92→          </Button>
+    93→    93→          <Button
+    94→    94→            size="sm"
+    95→    95→            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20"
+    96→    96→            onClick={onGetStarted}
+    97→    97→          >
+    98→    98→            Get Started Free
+    99→    99→            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+   100→   100→          </Button>
+   101→   101→          <button
+   102→   102→            className="md:hidden p-2 text-muted-foreground"
+   103→   103→            onClick={() => setOpen(!open)}
+   104→   104→            aria-label="Toggle menu"
+   105→   105→          >
+   106→   106→            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+   107→   107→          </button>
+   108→   108→        </div>
+   109→   109→      </div>
+   110→   110→
+   111→   111→      {/* Mobile menu */}
+   112→   112→      {open && (
+   113→   113→        <motion.div
+   114→   114→          initial={{ opacity: 0, height: 0 }}
+   115→   115→          animate={{ opacity: 1, height: "auto" }}
+   116→   116→          className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl"
+   117→   117→        >
+   118→   118→          <div className="px-4 py-4 space-y-3">
+   119→   119→            {links.map((l) => (
+   120→   120→              <a
+   121→   121→                key={l.href}
+   122→   122→                href={l.href}
+   123→   123→                className="block text-sm text-muted-foreground hover:text-foreground py-1"
+   124→   124→                onClick={() => setOpen(false)}
+   125→   125→              >
+   126→   126→                {l.label}
+   127→   127→              </a>
+   128→   128→            ))}
+   129→   129→            <Button
+   130→   130→              variant="ghost"
+   131→   131→              size="sm"
+   132→   132→              className="w-full justify-start text-muted-foreground"
+   133→   133→              onClick={() => {
+   134→   134→                setOpen(false);
+   135→   135→                onGetStarted();
+   136→   136→              }}
+   137→   137→            >
+   138→   138→              Sign In
+   139→   139→            </Button>
+   140→   140→          </div>
+   141→   141→        </motion.div>
+   142→   142→      )}
+   143→   143→    </nav>
+   144→   144→  );
+   145→   145→}
+   146→   146→
+   147→   147→/* ─── HERO ─── */
+   148→   148→function Hero({ onGetStarted }: { onGetStarted: () => void }) {
+   149→   149→  return (
+   150→   150→    <section className="relative pt-28 pb-20 sm:pt-36 sm:pb-28 overflow-hidden">
+   151→   151→      {/* Background blobs */}
+   152→   152→      <div className="absolute inset-0 pointer-events-none">
+   153→   153→        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-orange-400/10 rounded-full blur-[120px]" />
+   154→   154→        <div className="absolute top-1/2 -left-48 w-[400px] h-[400px] bg-teal-400/8 rounded-full blur-[100px]" />
+   155→   155→      </div>
+   156→   156→
+   157→   157→      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+   158→   158→        {/* Badge */}
+   159→   159→        <motion.div
+   160→   160→          initial={{ opacity: 0, y: 10 }}
+   161→   161→          animate={{ opacity: 1, y: 0 }}
+   162→   162→          transition={{ delay: 0.1 }}
+   163→   163→        >
+   164→   164→          <Badge
+   165→   165→            variant="outline"
+   166→   166→            className="mb-6 px-4 py-1.5 text-xs font-medium border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/40 dark:text-orange-400"
+   167→   167→          >
+   168→   168→            <Zap className="w-3 h-3 mr-1.5" />
+   169→   169→            Works with ANY website — not just WordPress
+   170→   170→          </Badge>
+   171→   171→        </motion.div>
+   172→   172→
+   173→   173→        {/* Headline */}
+   174→   174→        <motion.h1
+   175→   175→          initial={{ opacity: 0, y: 16 }}
+   176→   176→          animate={{ opacity: 1, y: 0 }}
+   177→   177→          transition={{ delay: 0.2, duration: 0.6 }}
+   178→   178→          className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6"
+   179→   179→        >
+   180→   180→          AI internal linking{" "}
+   181→   181→          <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 bg-clip-text text-transparent">
+   182→   182→            that actually works
+   183→   183→          </span>
+   184→   184→        </motion.h1>
+   185→   185→
+   186→   186→        {/* Subheadline */}
+   187→   187→        <motion.p
+   188→   188→          initial={{ opacity: 0, y: 16 }}
+   189→   189→          animate={{ opacity: 1, y: 0 }}
+   190→   190→          transition={{ delay: 0.35, duration: 0.6 }}
+   191→   191→          className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+   192→   192→        >
+   193→   193→          LinkForge AI crawls your site, finds orphan pages, and generates
+   194→   194→          contextually relevant internal links — no WordPress plugin required.
+   195→   195→        </motion.p>
+   196→   196→
+   197→   197→        {/* CTAs */}
+   198→   198→        <motion.div
+   199→   199→          initial={{ opacity: 0, y: 16 }}
+   200→   200→          animate={{ opacity: 1, y: 0 }}
+   201→   201→          transition={{ delay: 0.5 }}
+   202→   202→          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+   203→   203→        >
+   204→   204→          <Button
+   205→   205→            size="lg"
+   206→   206→            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-xl shadow-orange-500/25 h-12 px-8 text-base font-semibold"
+   207→   207→            onClick={onGetStarted}
+   208→   208→          >
+   209→   209→            Start Free — No Credit Card
+   210→   210→            <ArrowRight className="w-4 h-4 ml-2" />
+   211→   211→          </Button>
+   212→   212→          <a href="#how-it-works">
+   213→   213→            <Button
+   214→   214→              variant="ghost"
+   215→   215→              size="lg"
+   216→   216→              className="h-12 px-6 text-muted-foreground hover:text-foreground"
+   217→   217→            >
+   218→   218→              See How It Works
+   219→   219→              <ChevronRight className="w-4 h-4 ml-1" />
+   220→   220→            </Button>
+   221→   221→          </a>
+   222→   222→        </motion.div>
+   223→   223→
+   224→   224→        {/* Social proof */}
+   225→   225→        <motion.div
+   226→   226→          initial={{ opacity: 0 }}
+   227→   227→          animate={{ opacity: 1 }}
+   228→   228→          transition={{ delay: 0.7 }}
+   229→   229→          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground"
+   230→   230→        >
+   231→   231→          <div className="flex items-center gap-1.5">
+   232→   232→            {[...Array(5)].map((_, i) => (
+   233→   233→              <Star
+   234→   234→                key={i}
+   235→   235→                className="w-4 h-4 fill-amber-400 text-amber-400"
+   236→   236→              />
+   237→   237→            ))}
+   238→   238→            <span className="ml-1.5 font-medium text-foreground">4.9/5</span>
+   239→   239→          </div>
+   240→   240→          <span className="hidden sm:inline text-border">|</span>
+   241→   241→          <span>Free plan available</span>
+   242→   242→          <span className="hidden sm:inline text-border">|</span>
+   243→   243→          <span>Setup in 2 minutes</span>
+   244→   244→        </motion.div>
+   245→   245→      </div>
+   246→   246→    </section>
+   247→   247→  );
+   248→   248→}
+   249→   249→
+   250→   250→/* ─── LOGO BAR ─── */
+   251→   251→function LogoBar() {
+   252→   252→  const platforms = [
+   253→   253→    "WordPress",
+   254→   254→    "Shopify",
+   255→   255→    "Webflow",
+   256→   256→    "Next.js",
+   257→   257→    "Ghost",
+   258→   258→    "Custom",
+   259→   259→  ];
+   260→   260→  return (
+   261→   261→    <section className="border-y border-border/50 bg-muted/30 py-8">
+   262→   262→      <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+   263→   263→        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-5 font-medium">
+   264→   264→          Works with every platform
+   265→   265→        </p>
+   266→   266→        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+   267→   267→          {platforms.map((name) => (
+   268→   268→            <div
+   269→   269→              key={name}
+   270→   270→              className="flex items-center gap-1.5 text-sm text-muted-foreground/70 font-medium"
+   271→   271→            >
+   272→   272→              <Globe className="w-3.5 h-3.5" />
+   273→   273→              {name}
+   274→   274→            </div>
+   275→   275→          ))}
+   276→   276→        </div>
+   277→   277→      </div>
+   278→   278→    </section>
+   279→   279→  );
+   280→   280→}
+   281→   281→
+   282→   282→/* ─── PROBLEM SECTION ─── */
+   283→   283→function ProblemSection() {
+   284→   284→  const problems = [
+   285→   285→    {
+   286→   286→      stat: "47%",
+   287→   287→      label: "of pages are orphans",
+   288→   288→      desc: "Nearly half of all website pages have zero internal links pointing to them. Google may never find or rank them.",
+   289→   289→    },
+   290→   290→    {
+   291→   291→      stat: "60%+",
+   292→   292→      label: "of SEOs do it manually",
+   293→   293→      desc: "Most teams waste hours manually finding link opportunities. It's slow, inconsistent, and doesn't scale.",
+   294→   294→    },
+   295→   295→    {
+   296→   296→      stat: "WordPress only?",
+   297→   297→      label: "existing tools are limited",
+   298→   298→      desc: "LinkWhisper and competitors only work as WordPress plugins. If you use Shopify, Webflow, or a custom site, you're out of luck.",
+   299→   299→    },
+   300→   300→  ];
+   301→   301→
+   302→   302→  return (
+   303→   303→    <section className="py-20 sm:py-28">
+   304→   304→      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+   305→   305→        <FadeIn className="text-center mb-14">
+   306→   306→          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   307→   307→            Internal linking is broken
+   308→   308→          </h2>
+   309→   309→          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+   310→   310→            The #1 most underrated SEO lever is also the most neglected. Here's
+   311→   311→            what's costing you rankings every day.
+   312→   312→          </p>
+   313→   313→        </FadeIn>
+   314→   314→
+   315→   315→        <div className="grid md:grid-cols-3 gap-6">
+   316→   316→          {problems.map((p, i) => (
+   317→   317→            <FadeIn key={p.stat} delay={i * 0.1}>
+   318→   318→              <Card className="h-full border-border/60 hover:border-orange-200 dark:hover:border-orange-900/50 transition-colors">
+   319→   319→                <CardContent className="pt-6">
+   320→   320→                  <div className="text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-rose-500 bg-clip-text text-transparent mb-2">
+   321→   321→                    {p.stat}
+   322→   322→                  </div>
+   323→   323→                  <h3 className="font-semibold text-lg mb-2">{p.label}</h3>
+   324→   324→                  <p className="text-sm text-muted-foreground leading-relaxed">
+   325→   325→                    {p.desc}
+   326→   326→                  </p>
+   327→   327→                </CardContent>
+   328→   328→              </Card>
+   329→   329→            </FadeIn>
+   330→   330→          ))}
+   331→   331→        </div>
+   332→   332→      </div>
+   333→   333→    </section>
+   334→   334→  );
+   335→   335→}
+   336→   336→
+   337→   337→/* ─── FEATURES ─── */
+   338→   338→function Features() {
+   339→   339→  const features = [
+   340→   340→    {
+   341→   341→      icon: Brain,
+   342→   342→      title: "True AI-Powered Suggestions",
+   343→   343→      desc: "Not just keyword matching. LinkForge uses LLMs to understand the semantic context of every page and suggest links that actually make sense.",
+   344→   344→      color: "orange",
+   345→   345→    },
+   346→   346→    {
+   347→   347→      icon: Search,
+   348→   348→      title: "Real Website Crawling",
+   349→   349→      desc: "We actually crawl your website — every page, every heading, every paragraph. No sitemaps, no plugins, no guesswork.",
+   350→   350→      color: "teal",
+   351→   351→    },
+   352→   352→    {
+   353→   353→      icon: Globe,
+   354→   354→      title: "Any Website, Any CMS",
+   355→   355→      desc: "WordPress, Shopify, Webflow, Next.js, Ghost, or a fully custom build. If it has a URL, LinkForge works with it.",
+   356→   356→      color: "amber",
+   357→   357→    },
+   358→   358→    {
+   359→   359→      icon: FileText,
+   360→   360→      title: "Orphan Page Detection",
+   361→   361→      desc: "Instantly find every page on your site with zero internal links. These are free rankings you're leaving on the table.",
+   362→   362→      color: "rose",
+   363→   363→    },
+   364→   364→    {
+   365→   365→      icon: Zap,
+   366→   366→      title: "Bulk Actions & Export",
+   367→   367→      desc: "Review, approve, reject, or apply links in bulk. Export to CSV for your team. Process hundreds of suggestions in minutes.",
+   368→   368→      color: "orange",
+   369→   369→    },
+   370→   370→    {
+   371→   371→      icon: BarChart3,
+   372→   372→      title: "Link Analytics",
+   373→   373→      desc: "Track your link health over time. See how your internal linking structure improves with actionable dashboards.",
+   374→   374→      color: "teal",
+   375→   375→    },
+   376→   376→  ];
+   377→   377→
+   378→   378→  const colorMap: Record<string, string> = {
+   379→   379→    orange: "bg-orange-100 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400",
+   380→   380→    teal: "bg-teal-100 text-teal-600 dark:bg-teal-950/50 dark:text-teal-400",
+   381→   381→    amber: "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400",
+   382→   382→    rose: "bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400",
+   383→   383→  };
+   384→   384→
+   385→   385→  return (
+   386→   386→    <section id="features" className="py-20 sm:py-28 bg-muted/30">
+   387→   387→      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+   388→   388→        <FadeIn className="text-center mb-14">
+   389→   389→          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   390→   390→            Everything you need,{" "}
+   391→   391→            <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   392→   392→              nothing you don't
+   393→   393→            </span>
+   394→   394→          </h2>
+   395→   395→          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+   396→   396→            Six powerful features that replace hours of manual work with
+   397→   397→            minutes of AI-powered automation.
+   398→   398→          </p>
+   399→   399→        </FadeIn>
+   400→   400→
+   401→   401→        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+   402→   402→          {features.map((f, i) => (
+   403→   403→            <FadeIn key={f.title} delay={i * 0.07}>
+   404→   404→              <Card className="h-full border-border/60 hover:shadow-lg hover:shadow-orange-500/5 transition-all duration-300 group">
+   405→   405→                <CardContent className="pt-6">
+   406→   406→                  <div
+   407→   407→                    className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${colorMap[f.color]}`}
+   408→   408→                  >
+   409→   409→                    <f.icon className="w-5 h-5" />
+   410→   410→                  </div>
+   411→   411→                  <h3 className="font-semibold mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+   412→   412→                    {f.title}
+   413→   413→                  </h3>
+   414→   414→                  <p className="text-sm text-muted-foreground leading-relaxed">
+   415→   415→                    {f.desc}
+   416→   416→                  </p>
+   417→   417→                </CardContent>
+   418→   418→              </Card>
+   419→   419→            </FadeIn>
+   420→   420→          ))}
+   421→   421→        </div>
+   422→   422→      </div>
+   423→   423→    </section>
+   424→   424→  );
+   425→   425→}
+   426→   426→
+   427→   427→/* ─── HOW IT WORKS ─── */
+   428→   428→function HowItWorks({ onGetStarted }: { onGetStarted: () => void }) {
+   429→   429→  const steps = [
+   430→   430→    {
+   431→   431→      num: "01",
+   432→   432→      title: "Add Your Website",
+   433→   433→      desc: "Enter your site URL and we handle the rest. No plugins, no code changes, no WordPress required. Works with any platform.",
+   434→   434→      icon: Globe,
+   435→   435→    },
+   436→   436→    {
+   437→   437→      num: "02",
+   438→   438→      title: "AI Finds Link Opportunities",
+   439→   439→      desc: "Our crawler maps every page. The AI analyzes content, context, and relevance to generate smart internal link suggestions.",
+   440→   440→      icon: Brain,
+   441→   441→    },
+   442→   442→    {
+   443→   443→      num: "03",
+   444→   444→      title: "Review & Apply",
+   445→   445→      desc: "Review each suggestion with full context. Approve, reject, or bulk-apply. Export to CSV for your content team.",
+   446→   446→      icon: Zap,
+   447→   447→    },
+   448→   448→  ];
+   449→   449→
+   450→   450→  return (
+   451→   451→    <section id="how-it-works" className="py-20 sm:py-28">
+   452→   452→      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+   453→   453→        <FadeIn className="text-center mb-16">
+   454→   454→          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   455→   455→            Three steps to better rankings
+   456→   456→          </h2>
+   457→   457→          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+   458→   458→            From signup to your first batch of AI-generated link suggestions in
+   459→   459→            under 5 minutes.
+   460→   460→          </p>
+   461→   461→        </FadeIn>
+   462→   462→
+   463→   463→        <div className="grid md:grid-cols-3 gap-8">
+   464→   464→          {steps.map((s, i) => (
+   465→   465→            <FadeIn key={s.num} delay={i * 0.12}>
+   466→   466→              <div className="relative text-center md:text-left">
+   467→   467→                {/* Connector line (desktop) */}
+   468→   468→                {i < steps.length - 1 && (
+   469→   469→                  <div className="hidden md:block absolute top-10 left-[calc(50%+30px)] w-[calc(100%-60px)] h-px bg-gradient-to-r from-orange-300 via-amber-300 to-transparent dark:from-orange-800 dark:via-amber-800" />
+   470→   470→                )}
+   471→   471→
+   472→   472→                <div className="relative inline-flex mb-5">
+   473→   473→                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-200/50 dark:border-orange-900/30 flex items-center justify-center">
+   474→   474→                    <s.icon className="w-8 h-8 text-orange-500" />
+   475→   475→                  </div>
+   476→   476→                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white text-xs font-bold">
+   477→   477→                    {s.num}
+   478→   478→                  </div>
+   479→   479→                </div>
+   480→   480→
+   481→   481→                <h3 className="text-lg font-bold mb-2">{s.title}</h3>
+   482→   482→                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto md:mx-0">
+   483→   483→                  {s.desc}
+   484→   484→                </p>
+   485→   485→              </div>
+   486→   486→            </FadeIn>
+   487→   487→          ))}
+   488→   488→        </div>
+   489→   489→
+   490→   490→        <FadeIn className="text-center mt-14" delay={0.3}>
+   491→   491→          <Button
+   492→   492→            size="lg"
+   493→   493→            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-xl shadow-orange-500/20 h-12 px-8 text-base font-semibold"
+   494→   494→            onClick={onGetStarted}
+   495→   495→          >
+   496→   496→            Try It Free Now
+   497→   497→            <ArrowRight className="w-4 h-4 ml-2" />
+   498→   498→          </Button>
+   499→   499→        </FadeIn>
+   500→   500→      </div>
+   501→   501→    </section>
+   502→   502→  );
+   503→   503→}
+   504→   504→
+   505→   505→/* ─── COMPARISON TABLE ─── */
+   506→   506→function ComparisonTable() {
+   507→   507→  const rows = [
+   508→   508→    { feature: "Platform", lf: "Any Website", lw: "WordPress Only", lb: "Any Website" },
+   509→   509→    { feature: "AI Type", lf: "Semantic LLM", lw: "Keyword Match", lb: "Semantic AI" },
+   510→   510→    { feature: "Crawling", lf: "Real Crawl", lw: "Plugin-Based", lb: "Real Crawl" },
+   511→   511→    { feature: "Orphan Detection", lf: true, lw: true, lb: true },
+   512→   512→    { feature: "Bulk Operations", lf: true, lw: false, lb: true },
+   513→   513→    { feature: "CSV Export", lf: true, lw: false, lb: true },
+   514→   514→    { feature: "Link Analytics", lf: true, lw: "Basic", lb: false },
+   515→   515→    { feature: "Starting Price", lf: "Free", lw: "$97/yr", lb: "$11/mo" },
+   516→   516→  ];
+   517→   517→
+   518→   518→  return (
+   519→   519→    <section className="py-20 sm:py-28 bg-muted/30">
+   520→   520→      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+   521→   521→        <FadeIn className="text-center mb-14">
+   522→   522→          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   523→   523→            Why choose LinkForge AI?
+   524→   524→          </h2>
+   525→   525→          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+   526→   526→            See how we compare to the biggest names in internal linking.
+   527→   527→          </p>
+   528→   528→        </FadeIn>
+   529→   529→
+   530→   530→        <FadeIn>
+   531→   531→          <div className="rounded-xl border border-border/60 overflow-hidden">
+   532→   532→            <div className="overflow-x-auto">
+   533→   533→              <table className="w-full text-sm">
+   534→   534→                <thead>
+   535→   535→                  <tr className="bg-muted/80">
+   536→   536→                    <th className="text-left py-3.5 px-4 font-semibold text-foreground">
+   537→   537→                      Feature
+   538→   538→                    </th>
+   539→   539→                    <th className="text-center py-3.5 px-4 font-semibold text-orange-600 dark:text-orange-400">
+   540→   540→                      LinkForge AI
+   541→   541→                    </th>
+   542→   542→                    <th className="text-center py-3.5 px-4 font-semibold text-muted-foreground">
+   543→   543→                      LinkWhisper
+   544→   544→                    </th>
+   545→   545→                    <th className="text-center py-3.5 px-4 font-semibold text-muted-foreground">
+   546→   546→                      LinkBoss
+   547→   547→                    </th>
+   548→   548→                  </tr>
+   549→   549→                </thead>
+   550→   550→                <tbody>
+   551→   551→                  {rows.map((row, i) => (
+   552→   552→                    <tr
+   553→   553→                      key={row.feature}
+   554→   554→                      className={
+   555→   555→                        i % 2 === 0 ? "bg-background" : "bg-muted/30"
+   556→   556→                      }
+   557→   557→                    >
+   558→   558→                      <td className="py-3 px-4 font-medium text-foreground">
+   559→   559→                        {row.feature}
+   560→   560→                      </td>
+   561→   561→                      <td className="py-3 px-4 text-center">
+   562→   562→                        {typeof row.lf === "boolean" ? (
+   563→   563→                          <Check className="w-4 h-4 text-emerald-500 mx-auto" />
+   564→   564→                        ) : (
+   565→   565→                          <span className="font-medium text-foreground">
+   566→   566→                            {row.lf}
+   567→   567→                          </span>
+   568→   568→                        )}
+   569→   569→                      </td>
+   570→   570→                      <td className="py-3 px-4 text-center text-muted-foreground">
+   571→   571→                        {typeof row.lw === "boolean" ? (
+   572→   572→                          row.lw ? (
+   573→   573→                            <Check className="w-4 h-4 text-emerald-500 mx-auto" />
+   574→   574→                          ) : (
+   575→   575→                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+   576→   576→                          )
+   577→   577→                        ) : (
+   578→   578→                          row.lw
+   579→   579→                        )}
+   580→   580→                      </td>
+   581→   581→                      <td className="py-3 px-4 text-center text-muted-foreground">
+   582→   582→                        {typeof row.lb === "boolean" ? (
+   583→   583→                          row.lb ? (
+   584→   584→                            <Check className="w-4 h-4 text-emerald-500 mx-auto" />
+   585→   585→                          ) : (
+   586→   586→                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+   587→   587→                          )
+   588→   588→                        ) : (
+   589→   589→                          row.lb
+   590→   590→                        )}
+   591→   591→                      </td>
+   592→   592→                    </tr>
+   593→   593→                  ))}
+   594→   594→                </tbody>
+   595→   595→              </table>
+   596→   596→            </div>
+   597→   597→          </div>
+   598→   598→        </FadeIn>
+   599→   599→      </div>
+   600→   600→    </section>
+   601→   601→  );
+   602→   602→}
+   603→   603→
+   604→   604→/* ─── PRICING ─── */
+   605→   605→function Pricing({ onGetStarted }: { onGetStarted: () => void }) {
+   606→   606→  const plans = [
+   607→   607→    {
+   608→   608→      name: "Starter",
+   609→   609→      price: "Free",
+   610→   610→      period: "",
+   611→   611→      desc: "Perfect for trying LinkForge on a personal blog or small site.",
+   612→   612→      features: [
+   613→   613→        "1 website",
+   614→   614→        "50 pages per site",
+   615→   615→        "100 AI suggestions / month",
+   616→   616→        "Manual link review",
+   617→   617→        "Orphan page detection",
+   618→   618→      ],
+   619→   619→      cta: "Get Started Free",
+   620→   620→      highlighted: false,
+   621→   621→    },
+   622→   622→    {
+   623→   623→      name: "Pro",
+   624→   624→      price: "$49",
+   625→   625→      period: "/month",
+   626→   626→      desc: "For SEO professionals and growing businesses that need more power.",
+   627→   627→      features: [
+   628→   628→        "Up to 5 websites",
+   629→   629→        "500 pages per site",
+   630→   630→        "2,000 AI suggestions / month",
+   631→   631→        "Bulk approve / reject",
+   632→   632→        "CSV export",
+   633→   633→        "Link analytics dashboard",
+   634→   634→        "Priority support",
+   635→   635→      ],
+   636→   636→      cta: "Start Pro Trial",
+   637→   637→      highlighted: true,
+   638→   638→    },
+   639→   639→    {
+   640→   640→      name: "Agency",
+   641→   641→      price: "$149",
+   642→   642→      period: "/month",
+   643→   643→      desc: "For agencies and teams managing multiple client websites.",
+   644→   644→      features: [
+   645→   645→        "Up to 25 websites",
+   646→   646→        "5,000 pages per site",
+   647→   647→        "10,000 AI suggestions / month",
+   648→   648→        "Everything in Pro",
+   649→   649→        "API access",
+   650→   650→        "Dedicated support",
+   651→   651→        "White-label reports",
+   652→   652→      ],
+   653→   653→      cta: "Contact Sales",
+   654→   654→      highlighted: false,
+   655→   655→    },
+   656→   656→  ];
+   657→   657→
+   658→   658→  return (
+   659→   659→    <section id="pricing" className="py-20 sm:py-28">
+   660→   660→      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+   661→   661→        <FadeIn className="text-center mb-14">
+   662→   662→          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   663→   663→            Simple, transparent pricing
+   664→   664→          </h2>
+   665→   665→          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+   666→   666→            Start free. Upgrade when you need more. No hidden fees, no credit
+   667→   667→            system, no surprises.
+   668→   668→          </p>
+   669→   669→        </FadeIn>
+   670→   670→
+   671→   671→        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+   672→   672→          {plans.map((plan, i) => (
+   673→   673→            <FadeIn key={plan.name} delay={i * 0.1}>
+   674→   674→              <Card
+   675→   675→                className={`h-full relative flex flex-col ${
+   676→   676→                  plan.highlighted
+   677→   677→                    ? "border-orange-300 dark:border-orange-700 shadow-xl shadow-orange-500/10 scale-[1.02]"
+   678→   678→                    : "border-border/60"
+   679→   679→                }`}
+   680→   680→              >
+   681→   681→                {plan.highlighted && (
+   682→   682→                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+   683→   683→                    <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 px-3 py-0.5 text-xs font-semibold shadow-lg shadow-orange-500/20">
+   684→   684→                      Most Popular
+   685→   685→                    </Badge>
+   686→   686→                  </div>
+   687→   687→                )}
+   688→   688→                <CardContent className="pt-8 flex-1 flex flex-col">
+   689→   689→                  <h3 className="font-bold text-lg mb-1">{plan.name}</h3>
+   690→   690→                  <p className="text-sm text-muted-foreground mb-5">
+   691→   691→                    {plan.desc}
+   692→   692→                  </p>
+   693→   693→                  <div className="mb-6">
+   694→   694→                    <span className="text-4xl font-extrabold tracking-tight">
+   695→   695→                      {plan.price}
+   696→   696→                    </span>
+   697→   697→                    {plan.period && (
+   698→   698→                      <span className="text-muted-foreground text-sm">
+   699→   699→                        {plan.period}
+   700→   700→                      </span>
+   701→   701→                    )}
+   702→   702→                  </div>
+   703→   703→                  <ul className="space-y-3 mb-8 flex-1">
+   704→   704→                    {plan.features.map((f) => (
+   705→   705→                      <li
+   706→   706→                        key={f}
+   707→   707→                        className="flex items-start gap-2.5 text-sm text-muted-foreground"
+   708→   708→                      >
+   709→   709→                        <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+   710→   710→                        {f}
+   711→   711→                      </li>
+   712→   712→                    ))}
+   713→   713→                  </ul>
+   714→   714→                  <Button
+   715→   715→                    className={`w-full h-11 font-semibold ${
+   716→   716→                      plan.highlighted
+   717→   717→                        ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20"
+   718→   718→                        : ""
+   719→   719→                    }`}
+   720→   720→                    variant={plan.highlighted ? "default" : "outline"}
+   721→   721→                    onClick={onGetStarted}
+   722→   722→                  >
+   723→   723→                    {plan.cta}
+   724→   724→                    <ArrowRight className="w-4 h-4 ml-1.5" />
+   725→   725→                  </Button>
+   726→   726→                </CardContent>
+   727→   727→              </Card>
+   728→   728→            </FadeIn>
+   729→   729→          ))}
+   730→   730→        </div>
+   731→   731→      </div>
+   732→   732→    </section>
+   733→   733→  );
+   734→   734→}
+   735→   735→
+   736→   736→/* ─── FINAL CTA ─── */
+   737→   737→function FinalCTA({ onGetStarted }: { onGetStarted: () => void }) {
+   738→   738→  return (
+   739→   739→    <section className="py-20 sm:py-28">
+   740→   740→      <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+   741→   741→        <FadeIn>
+   742→   742→          <div className="relative rounded-2xl bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-teal-500/10 border border-orange-200/50 dark:border-orange-900/30 p-10 sm:p-16 overflow-hidden">
+   743→   743→            {/* Decorative */}
+   744→   744→            <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-400/10 rounded-full blur-[60px]" />
+   745→   745→            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-teal-400/10 rounded-full blur-[60px]" />
+   746→   746→
+   747→   747→            <div className="relative">
+   748→   748→              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+   749→   749→                Ready to fix your internal links?
+   750→   750→              </h2>
+   751→   751→              <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
+   752→   752→                Join hundreds of SEOs who switched from manual linking to
+   753→   753→                AI-powered automation. Free to start, no credit card required.
+   754→   754→              </p>
+   755→   755→              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+   756→   756→                <Button
+   757→   757→                  size="lg"
+   758→   758→                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-xl shadow-orange-500/25 h-12 px-8 text-base font-semibold"
+   759→   759→                  onClick={onGetStarted}
+   760→   760→                >
+   761→   761→                  Get Started Free
+   762→   762→                  <ArrowRight className="w-4 h-4 ml-2" />
+   763→   763→                </Button>
+   764→   764→              </div>
+   765→   765→              <p className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1.5">
+   766→   766→                <Shield className="w-3 h-3" />
+   767→   767→                No credit card required. Free plan includes 1 site and 100
+   768→   768→                suggestions/month.
+   769→   769→              </p>
+   770→   770→            </div>
+   771→   771→          </div>
+   772→   772→        </FadeIn>
+   773→   773→      </div>
+   774→   774→    </section>
+   775→   775→  );
+   776→   776→}
+   777→   777→
+   778→   778→/* ─── FOOTER ─── */
+   779→   779→function Footer() {
+   780→   780→  return (
+   781→   781→    <footer className="border-t border-border/50 py-10 mt-auto">
+   782→   782→      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+   783→   783→        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+   784→   784→          <div className="flex items-center gap-2">
+   785→   785→            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+   786→   786→              <Link2 className="w-3 h-3 text-white" />
+   787→   787→            </div>
+   788→   788→            <span className="text-sm font-semibold">
+   789→   789→              Link<span className="text-orange-500">Forge</span> AI
+   790→   790→            </span>
+   791→   791→          </div>
+   792→   792→          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+   793→   793→            <a href="#features" className="hover:text-foreground transition-colors">
+   794→   794→              Features
+   795→   795→            </a>
+   796→   796→            <a href="#pricing" className="hover:text-foreground transition-colors">
+   797→   797→              Pricing
+   798→   798→            </a>
+   799→   799→            <span>Privacy Policy</span>
+   800→   800→            <span>Terms of Service</span>
+   801→   801→          </div>
+   802→   802→          <p className="text-xs text-muted-foreground">
+   803→   803→            &copy; {new Date().getFullYear()} LinkForge AI
+   804→   804→          </p>
+   805→   805→        </div>
+   806→   806→      </div>
+   807→   807→    </footer>
+   808→   808→  );
+   809→   809→}
+   810→   810→
+   811→   811→/* ═══════════════════════════════════════════════════════
+   812→   812→   MAIN LANDING PAGE EXPORT
+   813→   813→   ═══════════════════════════════════════════════════════ */
+   814→   814→export function LandingPage() {
+   815→   815→  const setShowLanding = useAppStore((s) => s.setShowLanding);
+   816→   816→
+   817→   817→  function handleGetStarted() {
+   818→   818→    setShowLanding(false);
+   819→   819→  }
+   820→   820→
+   821→   821→  return (
+   822→   822→    <div className="min-h-screen flex flex-col bg-background text-foreground">
+   823→   823→      <Navbar onGetStarted={handleGetStarted} />
+   824→   824→      <main className="flex-1">
+   825→   825→        <Hero onGetStarted={handleGetStarted} />
+   826→   826→        <LogoBar />
+   827→   827→        <ProblemSection />
+   828→   828→        <Features />
+   829→   829→        <HowItWorks onGetStarted={handleGetStarted} />
+   830→   830→        <ComparisonTable />
+   831→   831→        <Pricing onGetStarted={handleGetStarted} />
+   832→   832→        <FinalCTA onGetStarted={handleGetStarted} />
+   833→   833→      </main>
+   834→   834→      <Footer />
+   835→   835→    </div>
+   836→   836→  );
+   837→   837→}

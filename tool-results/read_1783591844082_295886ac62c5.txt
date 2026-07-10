@@ -1,0 +1,1028 @@
+     1→"use client";
+     2→
+     3→import { useState } from "react";
+     4→import { motion } from "framer-motion";
+     5→import {
+     6→  Link2,
+     7→  ArrowRight,
+     8→  Search,
+     9→  Brain,
+    10→  Globe,
+    11→  BarChart3,
+    12→  Check,
+    13→  Menu,
+    14→  AlertTriangle,
+    15→  Layers,
+    16→  Sparkles,
+    17→  TrendingUp,
+    18→  X,
+    19→  Twitter,
+    20→  Linkedin,
+    21→  Github,
+    22→  ChevronRight,
+    23→  Sun,
+    24→  Moon,
+    25→} from "lucide-react";
+    26→import { Button } from "@/components/ui/button";
+    27→import { Badge } from "@/components/ui/badge";
+    28→import { Card, CardContent } from "@/components/ui/card";
+    29→import {
+    30→  Accordion,
+    31→  AccordionContent,
+    32→  AccordionItem,
+    33→  AccordionTrigger,
+    34→} from "@/components/ui/accordion";
+    35→import {
+    36→  Sheet,
+    37→  SheetContent,
+    38→  SheetHeader,
+    39→  SheetTitle,
+    40→  SheetTrigger,
+    41→} from "@/components/ui/sheet";
+    42→import {
+    43→  Table,
+    44→  TableBody,
+    45→  TableCell,
+    46→  TableHead,
+    47→  TableHeader,
+    48→  TableRow,
+    49→} from "@/components/ui/table";
+    50→import { Separator } from "@/components/ui/separator";
+    51→import { useAppStore } from "@/lib/store";
+    52→import { useTheme } from "next-themes";
+    53→
+    54→/* ─── Scroll animation wrapper ─── */
+    55→function FadeIn({
+    56→  children,
+    57→  className,
+    58→  delay = 0,
+    59→}: {
+    60→  children: React.ReactNode;
+    61→  className?: string;
+    62→  delay?: number;
+    63→}) {
+    64→  return (
+    65→    <motion.div
+    66→      initial={{ opacity: 0, y: 30 }}
+    67→      whileInView={{ opacity: 1, y: 0 }}
+    68→      viewport={{ once: true, margin: "-60px" }}
+    69→      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    70→      className={className}
+    71→    >
+    72→      {children}
+    73→    </motion.div>
+    74→  );
+    75→}
+    76→
+    77→/* ─── CTA handler ─── */
+    78→function handleGetStarted() {
+    79→  useAppStore.getState().setShowLanding(false);
+    80→}
+    81→
+    82→function scrollToId(id: string) {
+    83→  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    84→}
+    85→
+    86→/* ─── 1. Navbar ─── */
+    87→function Navbar() {
+    88→  const [mobileOpen, setMobileOpen] = useState(false);
+    89→  const { theme, setTheme } = useTheme();
+    90→  const links = [
+    91→    { label: "Features", href: "#features" },
+    92→    { label: "How It Works", href: "#how-it-works" },
+    93→    { label: "Pricing", href: "#pricing" },
+    94→    { label: "FAQ", href: "#faq" },
+    95→  ];
+    96→
+    97→  function handleNavClick(href: string) {
+    98→    setMobileOpen(false);
+    99→    const id = href.replace("#", "");
+   100→    scrollToId(id);
+   101→  }
+   102→
+   103→  return (
+   104→    <nav className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+   105→      <div className="max-w-6xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
+   106→        {/* Logo */}
+   107→        <div className="flex items-center gap-2">
+   108→          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+   109→            <Link2 className="w-4 h-4 text-white" />
+   110→          </div>
+   111→          <span className="text-xl font-bold tracking-tight">
+   112→            Link<span className="text-orange-500">Forge</span>
+   113→          </span>
+   114→        </div>
+   115→
+   116→        {/* Desktop Nav Links */}
+   117→        <div className="hidden md:flex items-center gap-8">
+   118→          {links.map((link) => (
+   119→            <button
+   120→              key={link.href}
+   121→              onClick={() => handleNavClick(link.href)}
+   122→              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+   123→            >
+   124→              {link.label}
+   125→            </button>
+   126→          ))}
+   127→        </div>
+   128→
+   129→        {/* Desktop Actions */}
+   130→        <div className="hidden md:flex items-center gap-3">
+   131→          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
+   132→            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+   133→            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+   134→          </Button>
+   135→          <Button
+   136→            variant="ghost"
+   137→            className="text-sm text-muted-foreground hover:text-foreground"
+   138→            onClick={handleGetStarted}
+   139→          >
+   140→            Sign In
+   141→          </Button>
+   142→          <Button
+   143→            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25"
+   144→            onClick={handleGetStarted}
+   145→          >
+   146→            Get Started Free
+   147→          </Button>
+   148→        </div>
+   149→
+   150→        {/* Mobile Menu */}
+   151→        <div className="md:hidden">
+   152→          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+   153→            <SheetTrigger asChild>
+   154→              <Button variant="ghost" size="icon" aria-label="Open menu">
+   155→                <Menu className="w-5 h-5" />
+   156→              </Button>
+   157→            </SheetTrigger>
+   158→            <SheetContent side="right" className="w-72">
+   159→              <SheetHeader>
+   160→                <SheetTitle className="flex items-center gap-2">
+   161→                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+   162→                    <Link2 className="w-3.5 h-3.5 text-white" />
+   163→                  </div>
+   164→                  <span className="text-lg font-bold tracking-tight">
+   165→                    Link<span className="text-orange-500">Forge</span>
+   166→                  </span>
+   167→                </SheetTitle>
+   168→              </SheetHeader>
+   169→              <div className="flex flex-col gap-1 px-4 mt-4">
+   170→                {links.map((link) => (
+   171→                  <button
+   172→                    key={link.href}
+   173→                    onClick={() => handleNavClick(link.href)}
+   174→                    className="w-full text-left px-3 py-3 text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+   175→                  >
+   176→                    {link.label}
+   177→                  </button>
+   178→                ))}
+   179→                <Separator className="my-3" />
+   180→                <Button variant="ghost" size="icon" className="justify-start" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
+   181→                  <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+   182→                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+   183→                </Button>
+   184→                <Button
+   185→                  variant="ghost"
+   186→                  className="justify-start text-sm text-muted-foreground hover:text-foreground"
+   187→                  onClick={handleGetStarted}
+   188→                >
+   189→                  Sign In
+   190→                </Button>
+   191→                <Button
+   192→                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 w-full"
+   193→                  onClick={handleGetStarted}
+   194→                >
+   195→                  Get Started Free
+   196→                </Button>
+   197→              </div>
+   198→            </SheetContent>
+   199→          </Sheet>
+   200→        </div>
+   201→      </div>
+   202→    </nav>
+   203→  );
+   204→}
+   205→
+   206→/* ─── 2. Hero Section ─── */
+   207→function HeroSection() {
+   208→  return (
+   209→    <section className="relative pt-28 pb-20 px-4 sm:pt-36 sm:pb-28 overflow-hidden">
+   210→      {/* Decorative blurred circles */}
+   211→      <div className="absolute top-20 -left-32 w-72 h-72 bg-orange-300/20 rounded-full blur-3xl pointer-events-none" />
+   212→      <div className="absolute bottom-10 -right-32 w-72 h-72 bg-teal-300/20 rounded-full blur-3xl pointer-events-none" />
+   213→      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-200/10 rounded-full blur-3xl pointer-events-none" />
+   214→
+   215→      <div className="max-w-6xl mx-auto relative z-10">
+   216→        <div className="flex flex-col items-center text-center">
+   217→          {/* Badge */}
+   218→          <FadeIn>
+   219→            <Badge
+   220→              variant="secondary"
+   221→              className="mb-6 px-4 py-1.5 text-sm font-medium bg-orange-100 text-orange-700 hover:bg-orange-100 border-orange-200"
+   222→            >
+   223→              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+   224→              Now in Public Beta
+   225→            </Badge>
+   226→          </FadeIn>
+   227→
+   228→          {/* Headline */}
+   229→          <FadeIn delay={0.1}>
+   230→            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-3xl leading-tight">
+   231→              Smart Internal Linking{" "}
+   232→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   233→                for Any Website
+   234→              </span>
+   235→            </h1>
+   236→          </FadeIn>
+   237→
+   238→          {/* Subheadline */}
+   239→          <FadeIn delay={0.2}>
+   240→            <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl leading-relaxed">
+   241→              Automatically crawl your site, discover orphan pages, and get
+   242→              AI-powered link suggestions. Works with WordPress, Shopify,
+   243→              Webflow, or any website.
+   244→            </p>
+   245→          </FadeIn>
+   246→
+   247→          {/* CTA Buttons */}
+   248→          <FadeIn delay={0.3}>
+   249→            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+   250→              <Button
+   251→                size="lg"
+   252→                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 px-8 h-12 text-base"
+   253→                onClick={handleGetStarted}
+   254→              >
+   255→                Get Started Free
+   256→                <ArrowRight className="w-4 h-4 ml-2" />
+   257→              </Button>
+   258→              <Button
+   259→                variant="outline"
+   260→                size="lg"
+   261→                className="h-12 px-8 text-base"
+   262→                onClick={() => scrollToId("how-it-works")}
+   263→              >
+   264→                See How It Works
+   265→              </Button>
+   266→            </div>
+   267→          </FadeIn>
+   268→
+   269→          {/* Trust line */}
+   270→          <FadeIn delay={0.4}>
+   271→            <p className="mt-6 text-sm text-muted-foreground">
+   272→              Free to start. No credit card required.
+   273→            </p>
+   274→          </FadeIn>
+   275→
+   276→          {/* Hero Image */}
+   277→          <FadeIn delay={0.5}>
+   278→            <div className="mt-14 w-full max-w-4xl">
+   279→              <div className="relative rounded-2xl border border-border/60 shadow-2xl shadow-orange-500/5 overflow-hidden bg-card">
+   280→                <img
+   281→                  src="/hero-illustration.png"
+   282→                  alt="LinkForge Dashboard"
+   283→                  className="w-full h-auto"
+   284→                />
+   285→              </div>
+   286→            </div>
+   287→          </FadeIn>
+   288→        </div>
+   289→      </div>
+   290→    </section>
+   291→  );
+   292→}
+   293→
+   294→/* ─── 3. Social Proof Bar ─── */
+   295→function SocialProofBar() {
+   296→  const stats = [
+   297→    { value: "2.8B", label: "Link Building Market Size" },
+   298→    { value: "47%", label: "Pages Are Orphans" },
+   299→    { value: "40%", label: "Ranking Boost from Smart Links" },
+   300→    { value: "Any CMS", label: "WordPress, Shopify, Webflow, Next.js" },
+   301→  ];
+   302→
+   303→  return (
+   304→    <section className="py-12 px-4">
+   305→      <div className="max-w-5xl mx-auto">
+   306→        <FadeIn>
+   307→          <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 sm:p-8">
+   308→            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+   309→              {stats.map((stat, i) => (
+   310→                <div key={i} className="text-center">
+   311→                  <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   312→                    {stat.value}
+   313→                  </p>
+   314→                  <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+   315→                    {stat.label}
+   316→                  </p>
+   317→                </div>
+   318→              ))}
+   319→            </div>
+   320→          </div>
+   321→        </FadeIn>
+   322→      </div>
+   323→    </section>
+   324→  );
+   325→}
+   326→
+   327→/* ─── 4. Features Section ─── */
+   328→function FeaturesSection() {
+   329→  const features = [
+   330→    {
+   331→      icon: Brain,
+   332→      title: "AI-Powered Suggestions",
+   333→      description:
+   334→        "Understands semantic context, not just keyword matching. Get links that actually make sense.",
+   335→      color: "bg-orange-100 text-orange-600",
+   336→    },
+   337→    {
+   338→      icon: Globe,
+   339→      title: "Works With Any Website",
+   340→      description:
+   341→        "WordPress, Shopify, Webflow, Next.js, or any custom site. No plugins needed.",
+   342→      color: "bg-teal-100 text-teal-600",
+   343→    },
+   344→    {
+   345→      icon: Search,
+   346→      title: "Real Web Crawling",
+   347→      description:
+   348→        "Actually crawls your website to discover pages, analyze structure, and find linking opportunities.",
+   349→      color: "bg-amber-100 text-amber-600",
+   350→    },
+   351→    {
+   352→      icon: AlertTriangle,
+   353→      title: "Orphan Page Detection",
+   354→      description:
+   355→        "Find pages with zero internal links and fix them in clicks. Never lose traffic to dead-end pages again.",
+   356→      color: "bg-rose-100 text-rose-600",
+   357→    },
+   358→    {
+   359→      icon: Layers,
+   360→      title: "Bulk Operations",
+   361→      description:
+   362→        "Review, approve, and apply hundreds of link suggestions at once. Export to CSV for manual implementation.",
+   363→      color: "bg-orange-100 text-orange-600",
+   364→    },
+   365→    {
+   366→      icon: BarChart3,
+   367→      title: "Analytics Dashboard",
+   368→      description:
+   369→        "Track your link health over time. Monitor orphan pages, link growth, and site structure improvements.",
+   370→      color: "bg-teal-100 text-teal-600",
+   371→    },
+   372→  ];
+   373→
+   374→  return (
+   375→    <section id="features" className="py-20 px-4">
+   376→      <div className="max-w-6xl mx-auto">
+   377→        <FadeIn>
+   378→          <div className="text-center mb-14">
+   379→            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+   380→              Everything You Need to Master{" "}
+   381→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   382→                Internal Linking
+   383→              </span>
+   384→            </h2>
+   385→            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+   386→              Powerful tools designed to help SEO professionals, agencies, and
+   387→              website owners build smarter internal link structures.
+   388→            </p>
+   389→          </div>
+   390→        </FadeIn>
+   391→
+   392→        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+   393→          {features.map((feature, i) => {
+   394→            const Icon = feature.icon;
+   395→            return (
+   396→              <FadeIn key={i} delay={i * 0.08}>
+   397→                <Card className="h-full border-border/60 hover:shadow-lg transition-shadow duration-300">
+   398→                  <CardContent className="p-6">
+   399→                    <div
+   400→                      className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-4`}
+   401→                    >
+   402→                      <Icon className="w-6 h-6" />
+   403→                    </div>
+   404→                    <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+   405→                    <p className="text-sm text-muted-foreground leading-relaxed">
+   406→                      {feature.description}
+   407→                    </p>
+   408→                  </CardContent>
+   409→                </Card>
+   410→              </FadeIn>
+   411→            );
+   412→          })}
+   413→        </div>
+   414→      </div>
+   415→    </section>
+   416→  );
+   417→}
+   418→
+   419→/* ─── 5. How It Works Section ─── */
+   420→function HowItWorksSection() {
+   421→  const steps = [
+   422→    {
+   423→      number: "01",
+   424→      icon: Globe,
+   425→      title: "Add Your Website",
+   426→      description:
+   427→        "Enter your URL. We'll crawl your entire site in minutes, mapping every page and its content.",
+   428→      color: "bg-orange-100 text-orange-600",
+   429→    },
+   430→    {
+   431→      number: "02",
+   432→      icon: Sparkles,
+   433→      title: "Get AI Suggestions",
+   434→      description:
+   435→        "Our AI analyzes every page pair and suggests contextually relevant internal links with optimal anchor text.",
+   436→      color: "bg-teal-100 text-teal-600",
+   437→    },
+   438→    {
+   439→      number: "03",
+   440→      icon: TrendingUp,
+   441→      title: "Apply & Rank",
+   442→      description:
+   443→        "Review suggestions, approve the best ones, and watch your rankings improve. Export or apply directly.",
+   444→      color: "bg-amber-100 text-amber-600",
+   445→    },
+   446→  ];
+   447→
+   448→  return (
+   449→    <section id="how-it-works" className="py-20 px-4 bg-muted/30">
+   450→      <div className="max-w-6xl mx-auto">
+   451→        <FadeIn>
+   452→          <div className="text-center mb-14">
+   453→            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+   454→              Start Getting Better Rankings{" "}
+   455→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   456→                in 3 Steps
+   457→              </span>
+   458→            </h2>
+   459→            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+   460→              From adding your site to seeing ranking improvements — it takes
+   461→              minutes, not hours.
+   462→            </p>
+   463→          </div>
+   464→        </FadeIn>
+   465→
+   466→        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 relative">
+   467→          {/* Connecting line (desktop only) */}
+   468→          <div className="hidden md:block absolute top-20 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5 bg-gradient-to-r from-orange-300 via-teal-300 to-amber-300" />
+   469→
+   470→          {steps.map((step, i) => {
+   471→            const Icon = step.icon;
+   472→            return (
+   473→              <FadeIn key={i} delay={i * 0.15}>
+   474→                <div className="relative flex flex-col items-center text-center">
+   475→                  {/* Step number + icon */}
+   476→                  <div className="relative z-10 w-16 h-16 rounded-2xl bg-background border border-border/60 shadow-sm flex items-center justify-center mb-6">
+   477→                    <Icon className={`w-7 h-7 ${step.color.split(" ")[1]}`} />
+   478→                  </div>
+   479→
+   480→                  {/* Number badge */}
+   481→                  <div className="absolute -top-2 -right-2 z-20 w-7 h-7 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold flex items-center justify-center">
+   482→                    {step.number}
+   483→                  </div>
+   484→
+   485→                  <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+   486→                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+   487→                    {step.description}
+   488→                  </p>
+   489→                </div>
+   490→              </FadeIn>
+   491→            );
+   492→          })}
+   493→        </div>
+   494→      </div>
+   495→    </section>
+   496→  );
+   497→}
+   498→
+   499→/* ─── 6. Competitor Comparison ─── */
+   500→function ComparisonSection() {
+   501→  const rows = [
+   502→    {
+   503→      feature: "Any CMS / Framework",
+   504→      linkforge: true,
+   505→      linkwhisper: false,
+   506→      linkwhisperNote: "WP only",
+   507→      linkboss: true,
+   508→    },
+   509→    {
+   510→      feature: "AI Semantic Analysis",
+   511→      linkforge: true,
+   512→      linkwhisper: false,
+   513→      linkwhisperNote: "keywords",
+   514→      linkboss: true,
+   515→    },
+   516→    {
+   517→      feature: "Real Web Crawling",
+   518→      linkforge: true,
+   519→      linkwhisper: false,
+   520→      linkwhisperNote: null,
+   521→      linkboss: false,
+   522→    },
+   523→    {
+   524→      feature: "Cloud-Based",
+   525→      linkforge: true,
+   526→      linkwhisper: false,
+   527→      linkwhisperNote: "plugin",
+   528→      linkboss: true,
+   529→    },
+   530→    {
+   531→      feature: "Orphan Detection",
+   532→      linkforge: true,
+   533→      linkwhisper: true,
+   534→      linkwhisperNote: null,
+   535→      linkboss: true,
+   536→    },
+   537→    {
+   538→      feature: "Starting Price",
+   539→      linkforge: null,
+   540→      linkwhisper: null,
+   541→      linkboss: null,
+   542→      linkforgePrice: "Free",
+   543→      linkwhisperPrice: "$97/yr",
+   544→      linkbossPrice: "$11/mo",
+   545→    },
+   546→  ];
+   547→
+   548→  function CellValue({
+   549→    isLinkforge,
+   550→    value,
+   551→    note,
+   552→    price,
+   553→  }: {
+   554→    isLinkforge?: boolean;
+   555→    value?: boolean | null;
+   556→    note?: string | null;
+   557→    price?: string;
+   558→  }) {
+   559→    if (price) {
+   560→      return (
+   561→        <span className={`font-semibold ${isLinkforge ? "text-orange-600" : ""}`}>
+   562→          {price}
+   563→        </span>
+   564→      );
+   565→    }
+   566→    if (value === true) {
+   567→      return (
+   568→        <span className="inline-flex items-center justify-center">
+   569→          <Check className="w-5 h-5 text-teal-500" />
+   570→        </span>
+   571→      );
+   572→    }
+   573→    if (value === false) {
+   574→      return (
+   575→        <span className="inline-flex items-center gap-1">
+   576→          <X className="w-5 h-5 text-rose-500" />
+   577→          {note && (
+   578→            <span className="text-xs text-muted-foreground">({note})</span>
+   579→          )}
+   580→        </span>
+   581→      );
+   582→    }
+   583→    return null;
+   584→  }
+   585→
+   586→  return (
+   587→    <section id="comparison" className="py-20 px-4">
+   588→      <div className="max-w-5xl mx-auto">
+   589→        <FadeIn>
+   590→          <div className="text-center mb-14">
+   591→            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+   592→              Why Teams Choose{" "}
+   593→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   594→                LinkForge
+   595→              </span>
+   596→            </h2>
+   597→            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+   598→              See how we compare to the competition across the features that
+   599→              matter most.
+   600→            </p>
+   601→          </div>
+   602→        </FadeIn>
+   603→
+   604→        <FadeIn>
+   605→          <div className="rounded-2xl border border-border/60 overflow-hidden shadow-sm">
+   606→            <Table>
+   607→              <TableHeader>
+   608→                <TableRow className="hover:bg-transparent">
+   609→                  <TableHead className="text-left pl-6 py-4 text-sm font-semibold">
+   610→                    Feature
+   611→                  </TableHead>
+   612→                  <TableHead className="text-center py-4 bg-orange-50 text-orange-700 text-sm font-bold">
+   613→                    LinkForge
+   614→                  </TableHead>
+   615→                  <TableHead className="text-center py-4 text-sm font-medium text-muted-foreground">
+   616→                    LinkWhisper
+   617→                  </TableHead>
+   618→                  <TableHead className="text-center pr-6 py-4 text-sm font-medium text-muted-foreground">
+   619→                    LinkBoss
+   620→                  </TableHead>
+   621→                </TableRow>
+   622→              </TableHeader>
+   623→              <TableBody>
+   624→                {rows.map((row, i) => (
+   625→                  <TableRow key={i}>
+   626→                    <TableCell className="pl-6 py-4 font-medium text-sm">
+   627→                      {row.feature}
+   628→                    </TableCell>
+   629→                    <TableCell className="py-4 text-center bg-orange-50/50">
+   630→                      {row.linkforgePrice ? (
+   631→                        <CellValue
+   632→                          isLinkforge
+   633→                          price={row.linkforgePrice}
+   634→                        />
+   635→                      ) : (
+   636→                        <CellValue isLinkforge value={row.linkforge} />
+   637→                      )}
+   638→                    </TableCell>
+   639→                    <TableCell className="py-4 text-center">
+   640→                      {row.linkwhisperPrice ? (
+   641→                        <CellValue price={row.linkwhisperPrice} />
+   642→                      ) : (
+   643→                        <CellValue
+   644→                          value={row.linkwhisper}
+   645→                          note={row.linkwhisperNote}
+   646→                        />
+   647→                      )}
+   648→                    </TableCell>
+   649→                    <TableCell className="py-4 text-center pr-6">
+   650→                      {row.linkbossPrice ? (
+   651→                        <CellValue price={row.linkbossPrice} />
+   652→                      ) : (
+   653→                        <CellValue value={row.linkboss} />
+   654→                      )}
+   655→                    </TableCell>
+   656→                  </TableRow>
+   657→                ))}
+   658→              </TableBody>
+   659→            </Table>
+   660→          </div>
+   661→        </FadeIn>
+   662→      </div>
+   663→    </section>
+   664→  );
+   665→}
+   666→
+   667→/* ─── 7. Pricing Preview ─── */
+   668→function PricingSection() {
+   669→  const plans = [
+   670→    {
+   671→      name: "Starter",
+   672→      price: "Free",
+   673→      period: "",
+   674→      description: "For personal blogs and small sites",
+   675→      features: [
+   676→        "1 site",
+   677→        "50 pages crawled",
+   678→        "100 suggestions/mo",
+   679→        "Basic orphan detection",
+   680→        "CSV export",
+   681→      ],
+   682→      cta: "Get Started",
+   683→      highlighted: false,
+   684→    },
+   685→    {
+   686→      name: "Pro",
+   687→      price: "$49",
+   688→      period: "/mo",
+   689→      description: "For growing businesses and agencies",
+   690→      features: [
+   691→        "5 sites",
+   692→        "500 pages crawled",
+   693→        "2,000 suggestions/mo",
+   694→        "Analytics dashboard",
+   695→        "Bulk operations",
+   696→        "Priority support",
+   697→      ],
+   698→      cta: "Start Free Trial",
+   699→      highlighted: true,
+   700→      badge: "Popular",
+   701→    },
+   702→    {
+   703→      name: "Agency",
+   704→      price: "$149",
+   705→      period: "/mo",
+   706→      description: "For large agencies and enterprises",
+   707→      features: [
+   708→        "25 sites",
+   709→        "5,000 pages crawled",
+   710→        "10,000 suggestions/mo",
+   711→        "API access",
+   712→        "White-label reports",
+   713→        "Dedicated support",
+   714→      ],
+   715→      cta: "Start Free Trial",
+   716→      highlighted: false,
+   717→    },
+   718→  ];
+   719→
+   720→  return (
+   721→    <section id="pricing" className="py-20 px-4 bg-muted/30">
+   722→      <div className="max-w-6xl mx-auto">
+   723→        <FadeIn>
+   724→          <div className="text-center mb-14">
+   725→            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+   726→              Simple,{" "}
+   727→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   728→                Transparent
+   729→              </span>{" "}
+   730→              Pricing
+   731→            </h2>
+   732→            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+   733→              Start free and scale as you grow. No hidden fees, no surprises.
+   734→            </p>
+   735→          </div>
+   736→        </FadeIn>
+   737→
+   738→        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start">
+   739→          {plans.map((plan, i) => (
+   740→            <FadeIn key={i} delay={i * 0.1}>
+   741→              <Card
+   742→                className={`relative h-full ${
+   743→                  plan.highlighted
+   744→                    ? "border-orange-300 shadow-xl shadow-orange-500/10 scale-[1.02]"
+   745→                    : "border-border/60"
+   746→                }`}
+   747→              >
+   748→                {plan.highlighted && (
+   749→                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+   750→                    <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 px-4 py-1 text-xs font-semibold">
+   751→                      {plan.badge}
+   752→                    </Badge>
+   753→                  </div>
+   754→                )}
+   755→                <CardContent className="p-6 sm:p-8">
+   756→                  <h3 className="text-lg font-semibold">{plan.name}</h3>
+   757→                  <p className="text-sm text-muted-foreground mt-1">
+   758→                    {plan.description}
+   759→                  </p>
+   760→                  <div className="mt-4 mb-6">
+   761→                    <span className="text-4xl font-bold">{plan.price}</span>
+   762→                    {plan.period && (
+   763→                      <span className="text-muted-foreground text-sm">
+   764→                        {plan.period}
+   765→                      </span>
+   766→                    )}
+   767→                  </div>
+   768→                  <Button
+   769→                    className={`w-full mb-6 h-11 ${
+   770→                      plan.highlighted
+   771→                        ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25"
+   772→                        : ""
+   773→                    }`}
+   774→                    variant={plan.highlighted ? "default" : "outline"}
+   775→                    onClick={handleGetStarted}
+   776→                  >
+   777→                    {plan.cta}
+   778→                    <ArrowRight className="w-4 h-4 ml-2" />
+   779→                  </Button>
+   780→                  <ul className="space-y-3">
+   781→                    {plan.features.map((feature, j) => (
+   782→                      <li
+   783→                        key={j}
+   784→                        className="flex items-center gap-3 text-sm text-muted-foreground"
+   785→                      >
+   786→                        <Check
+   787→                          className={`w-4 h-4 shrink-0 ${
+   788→                            plan.highlighted
+   789→                              ? "text-orange-500"
+   790→                              : "text-teal-500"
+   791→                          }`}
+   792→                        />
+   793→                        {feature}
+   794→                      </li>
+   795→                    ))}
+   796→                  </ul>
+   797→                </CardContent>
+   798→              </Card>
+   799→            </FadeIn>
+   800→          ))}
+   801→        </div>
+   802→      </div>
+   803→    </section>
+   804→  );
+   805→}
+   806→
+   807→/* ─── 8. FAQ Section ─── */
+   808→function FAQSection() {
+   809→  const faqs = [
+   810→    {
+   811→      question: "What is internal linking and why does it matter?",
+   812→      answer:
+   813→        "Internal links are hyperlinks that connect one page of your website to another page on the same site. They're critical for SEO because they help search engines understand your site's structure, distribute page authority (link equity) across your pages, and help visitors discover related content. Pages with more internal links tend to rank higher because search engines crawl them more frequently and understand their importance within your site hierarchy.",
+   814→    },
+   815→    {
+   816→      question: "How is LinkForge different from LinkWhisper?",
+   817→      answer:
+   818→        "LinkForge is a cloud-based platform that works with any website or CMS — not just WordPress. Unlike LinkWhisper, which is a WordPress plugin that relies on keyword matching, LinkForge uses real semantic AI to understand the context and meaning of your content. We also actually crawl your website (like a search engine would) to discover pages and analyze your site structure, giving you more accurate and comprehensive link suggestions.",
+   819→    },
+   820→    {
+   821→      question: "Does it work with my website platform?",
+   822→      answer:
+   823→        "Yes! LinkForge works with any website that has a URL. Whether you're using WordPress, Shopify, Webflow, Next.js, Gatsby, Wix, Squarespace, or a fully custom-built site — as long as we can crawl it, we can analyze it. There are no plugins or integrations required. Just enter your URL and we handle the rest.",
+   824→    },
+   825→    {
+   826→      question: "How does the AI generate link suggestions?",
+   827→      answer:
+   828→        "Our AI first crawls your website to discover all pages and extract their content. It then uses semantic analysis to understand the topic, context, and intent of each page. For every pair of pages, it evaluates whether a link between them would be contextually relevant and beneficial for both users and search engines. It also suggests optimal anchor text that reads naturally within the source page's content.",
+   829→    },
+   830→    {
+   831→      question: "Is there a free plan?",
+   832→      answer:
+   833→        "Yes! Our Starter plan is free forever and includes 1 site, up to 50 crawled pages, and 100 AI-powered link suggestions per month. It's perfect for personal blogs, small websites, or anyone who wants to try LinkForge before upgrading to a paid plan. No credit card required to sign up.",
+   834→    },
+   835→    {
+   836→      question: "Can I cancel anytime?",
+   837→      answer:
+   838→        "Absolutely. There are no contracts, no commitments, and no cancellation fees. You can upgrade, downgrade, or cancel your plan at any time from your account settings. If you cancel a paid plan, you'll continue to have access until the end of your current billing period, and your account will then revert to the free Starter plan.",
+   839→    },
+   840→  ];
+   841→
+   842→  return (
+   843→    <section id="faq" className="py-20 px-4">
+   844→      <div className="max-w-3xl mx-auto">
+   845→        <FadeIn>
+   846→          <div className="text-center mb-14">
+   847→            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+   848→              Frequently Asked{" "}
+   849→              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+   850→                Questions
+   851→              </span>
+   852→            </h2>
+   853→            <p className="mt-4 text-lg text-muted-foreground">
+   854→              Everything you need to know about LinkForge.
+   855→            </p>
+   856→          </div>
+   857→        </FadeIn>
+   858→
+   859→        <FadeIn>
+   860→          <Accordion type="single" collapsible className="w-full">
+   861→            {faqs.map((faq, i) => (
+   862→              <AccordionItem key={i} value={`item-${i}`}>
+   863→                <AccordionTrigger className="text-left text-sm sm:text-base font-medium hover:no-underline">
+   864→                  {faq.question}
+   865→                </AccordionTrigger>
+   866→                <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+   867→                  {faq.answer}
+   868→                </AccordionContent>
+   869→              </AccordionItem>
+   870→            ))}
+   871→          </Accordion>
+   872→        </FadeIn>
+   873→      </div>
+   874→    </section>
+   875→  );
+   876→}
+   877→
+   878→/* ─── 9. Final CTA Section ─── */
+   879→function FinalCTASection() {
+   880→  return (
+   881→    <section className="py-20 px-4">
+   882→      <div className="max-w-4xl mx-auto">
+   883→        <FadeIn>
+   884→          <div className="relative rounded-3xl bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 px-6 py-16 sm:px-12 sm:py-20 overflow-hidden">
+   885→            {/* Decorative elements */}
+   886→            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+   887→            <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+   888→
+   889→            <div className="relative z-10 text-center">
+   890→              <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+   891→                Ready to Boost Your Rankings?
+   892→              </h2>
+   893→              <p className="mt-4 text-lg text-neutral-400 max-w-2xl mx-auto">
+   894→                Join thousands of SEO professionals who trust LinkForge for
+   895→                smarter internal linking.
+   896→              </p>
+   897→              <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+   898→                <Button
+   899→                  size="lg"
+   900→                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 px-8 h-12 text-base"
+   901→                  onClick={handleGetStarted}
+   902→                >
+   903→                  Get Started Free
+   904→                  <ArrowRight className="w-4 h-4 ml-2" />
+   905→                </Button>
+   906→                <Button
+   907→                  variant="outline"
+   908→                  size="lg"
+   909→                  className="h-12 px-8 text-base border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+   910→                  onClick={() => scrollToId("how-it-works")}
+   911→                >
+   912→                  View Demo
+   913→                  <ChevronRight className="w-4 h-4 ml-2" />
+   914→                </Button>
+   915→              </div>
+   916→            </div>
+   917→          </div>
+   918→        </FadeIn>
+   919→      </div>
+   920→    </section>
+   921→  );
+   922→}
+   923→
+   924→/* ─── 10. Footer ─── */
+   925→function Footer() {
+   926→  const footerLinks = [
+   927→    { label: "Features", href: "#features" },
+   928→    { label: "Pricing", href: "#pricing" },
+   929→    { label: "FAQ", href: "#faq" },
+   930→    { label: "Blog", href: "https://linkforge.digital/blog" },
+   931→  ];
+   932→
+   933→  return (
+   934→    <footer className="border-t border-border/60 py-12 px-4">
+   935→      <div className="max-w-6xl mx-auto">
+   936→        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+   937→          {/* Logo + tagline */}
+   938→          <div className="flex flex-col items-center md:items-start gap-2">
+   939→            <a href="https://linkforge.digital" className="flex items-center gap-2">
+   940→              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+   941→                <Link2 className="w-3.5 h-3.5 text-white" />
+   942→              </div>
+   943→              <span className="text-lg font-bold tracking-tight">
+   944→                Link<span className="text-orange-500">Forge</span>
+   945→              </span>
+   946→            </a>
+   947→            <p className="text-sm text-muted-foreground">
+   948→              AI-powered internal linking for better SEO.
+   949→            </p>
+   950→          </div>
+   951→
+   952→          {/* Footer links */}
+   953→          <nav className="flex items-center gap-6">
+   954→            {footerLinks.map((link) => (
+   955→              <a
+   956→                key={link.label}
+   957→                href={link.href}
+   958→                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+   959→              >
+   960→                {link.label}
+   961→              </a>
+   962→            ))}
+   963→          </nav>
+   964→
+   965→          {/* Social icons */}
+   966→          <div className="flex items-center gap-4">
+   967→            <a
+   968→              href="https://twitter.com/linkforgedigital"
+   969→              target="_blank"
+   970→              rel="noopener noreferrer"
+   971→              className="text-muted-foreground hover:text-foreground transition-colors"
+   972→              aria-label="Twitter"
+   973→            >
+   974→              <Twitter className="w-5 h-5" />
+   975→            </a>
+   976→            <a
+   977→              href="https://linkedin.com/company/linkforgedigital"
+   978→              target="_blank"
+   979→              rel="noopener noreferrer"
+   980→              className="text-muted-foreground hover:text-foreground transition-colors"
+   981→              aria-label="LinkedIn"
+   982→            >
+   983→              <Linkedin className="w-5 h-5" />
+   984→            </a>
+   985→            <a
+   986→              href="https://github.com/linkforgedigital"
+   987→              target="_blank"
+   988→              rel="noopener noreferrer"
+   989→              className="text-muted-foreground hover:text-foreground transition-colors"
+   990→              aria-label="GitHub"
+   991→            >
+   992→              <Github className="w-5 h-5" />
+   993→            </a>
+   994→          </div>
+   995→        </div>
+   996→
+   997→        <Separator className="my-8" />
+   998→
+   999→        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+  1000→          <p>© {new Date().getFullYear()} LinkForge. All rights reserved.</p>
+  1001→          <p>
+  1002→            <a href="https://linkforge.digital" className="hover:text-foreground transition-colors">linkforge.digital</a>
+  1003→          </p>
+  1004→        </div>
+  1005→      </div>
+  1006→    </footer>
+  1007→  );
+  1008→}
+  1009→
+  1010→/* ─── Main Landing Page ─── */
+  1011→export function LandingPage() {
+  1012→  return (
+  1013→    <div className="min-h-screen flex flex-col bg-background">
+  1014→      <Navbar />
+  1015→      <main className="flex-1">
+  1016→        <HeroSection />
+  1017→        <SocialProofBar />
+  1018→        <FeaturesSection />
+  1019→        <HowItWorksSection />
+  1020→        <ComparisonSection />
+  1021→        <PricingSection />
+  1022→        <FAQSection />
+  1023→        <FinalCTASection />
+  1024→      </main>
+  1025→      <Footer />
+  1026→    </div>
+  1027→  );
+  1028→}

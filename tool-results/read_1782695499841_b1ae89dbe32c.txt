@@ -1,0 +1,675 @@
+     1→     1→import ZAI from 'z-ai-web-dev-sdk';
+     2→     2→
+     3→     3→// ============================================================
+     4→     4→// STOP WORDS
+     5→     5→// ============================================================
+     6→     6→const STOP_WORDS = new Set([
+     7→     7→  "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+     8→     8→  "have", "has", "had", "do", "does", "did", "will", "would", "could",
+     9→     9→  "should", "may", "might", "can", "shall", "to", "of", "in", "for",
+    10→    10→  "on", "with", "at", "by", "from", "as", "into", "through", "during",
+    11→    11→  "before", "after", "above", "below", "between", "out", "off", "over",
+    12→    12→  "under", "again", "further", "then", "once", "here", "there", "when",
+    13→    13→  "where", "why", "how", "all", "both", "each", "few", "more", "most",
+    14→    14→  "other", "some", "such", "no", "nor", "not", "only", "own", "same",
+    15→    15→  "so", "than", "too", "very", "just", "because", "but", "and", "or",
+    16→    16→  "if", "while", "about", "this", "that", "these", "those", "it", "its",
+    17→    17→  "they", "them", "their", "we", "you", "your", "he", "she", "his",
+    18→    18→  "her", "what", "which", "who", "whom"
+    19→    19→]);
+    20→    20→
+    21→    21→// ============================================================
+    22→    22→// SAMPLE POSTS DATA
+    23→    23→// ============================================================
+    24→    24→const SAMPLE_POSTS = [
+    25→    25→  {
+    26→    26→    id: 1,
+    27→    27→    title: "Complete Guide to Internal Linking for SEO",
+    28→    28→    slug: "complete-guide-to-internal-linking-for-seo",
+    29→    29→    excerpt:
+    30→    30→      "Internal linking is one of the most underutilized SEO strategies available. Learn how strategic internal links distribute PageRank across your site, improve crawlability, and boost rankings for your most important pages.",
+    31→    31→    content: `Internal linking is one of the most powerful yet frequently overlooked levers in your SEO toolkit. While most site owners obsess over acquiring backlinks, they ignore the link equity already flowing through their own domain. A well-architected internal linking strategy can mean the difference between a site that ranks on page one and one that languishes in obscurity.
+    32→    32→
+    33→    33→## Why Internal Links Matter
+    34→    34→
+    35→    35→Search engines use links to discover new pages and understand the relationship between pages on your site. When Googlebot crawls your homepage and follows an internal link to a deep product page, it assigns a portion of the homepage's authority — often called "link juice" or PageRank — to that destination page. This is not a theory; it is fundamental to how PageRank has worked since Google's inception.
+    36→    36→
+    37→    37→The key insight is that not all internal links are created equal. A link from your homepage passes significantly more authority than a link from a deeply buried blog post. Similarly, a link embedded in the body content of a page carries more weight than a link tucked away in a footer or sidebar. This is why strategic internal linking requires thinking about which pages on your site have the most authority and how you can channel that authority toward pages that need a ranking boost.
+    38→    38→
+    39→    39→## PageRank Flow and Link Architecture
+    40→    40→
+    41→    41→Think of your site as a river system. Your homepage is the main river — it receives the most external link equity and has the highest inherent authority. Category pages are tributaries, and individual posts and product pages are the streams that feed off them. The goal of internal linking is to ensure that every important page receives enough flow to thrive.
+    42→    42→
+    43→    43→A common mistake is linking indiscriminately. Adding "related posts" widgets that link to dozens of pages from every article may seem helpful, but it dilutes the link equity each link passes. Instead, be selective. Link to your 3-5 most relevant and important pages from each piece of content. This concentrates authority where it matters most.
+    44→    44→
+    45→    45→## Best Practices for Internal Linking
+    46→    46→
+    47→    47→First, use descriptive anchor text. Instead of linking the phrase "click here," use anchor text that describes the destination page's topic. For example, link the phrase "internal linking strategy" rather than "learn more." This gives search engines additional context about the target page.
+    48→    48→
+    49→    49→Second, link deep. Avoid linking only to your homepage or contact page. The real power of internal linking lies in connecting deep content pages to one another, creating a dense network of topical relevance that signals expertise to search engines.
+    50→    50→
+    51→    51→Third, audit your internal links regularly. Over time, content gets deleted, URLs change, and link equity gets trapped on pages that no longer serve a purpose. A quarterly internal link audit helps you identify and fix these issues before they compound.
+    52→    52→
+    53→    53→Finally, consider creating hub pages — comprehensive resources that serve as the central linking point for a topic cluster. A well-constructed hub page links out to all relevant subtopics and receives links back from each of them, creating a powerful topical authority signal.`
+    54→    54→  },
+    55→    55→  {
+    56→    56→    id: 2,
+    57→    57→    title: "How to Fix Orphan Pages on Your Website",
+    58→    58→    slug: "how-to-fix-orphan-pages-on-your-website",
+    59→    59→    excerpt:
+    60→    60→      "Orphan pages are pages that no other page on your site links to, making them nearly invisible to search engines. Learn how to detect orphan pages, understand their impact on crawl budget, and implement fixes that improve your site's overall SEO performance.",
+    61→    61→    content: `An orphan page is any page on your website that has zero internal links pointing to it. These pages exist in a vacuum — they are accessible via a direct URL, but no user or search engine crawler would naturally discover them by following links from other pages on your site. Orphan pages represent a significant but often invisible SEO problem.
+    62→    62→
+    63→    63→## Why Orphan Pages Are a Problem
+    64→    64→
+    65→    65→When Googlebot crawls your site, it follows links from page to page, building an index of your content. If a page has no internal links, Googlebot may never discover it — or if it does discover it through an external link or sitemap, it assigns the page very low importance because no other page on your site vouches for it.
+    66→    66→
+    67→    67→Orphan pages also waste crawl budget. Google allocates a finite crawl budget to each site based on its authority and server capacity. Every time Googlebot attempts to crawl an orphan page that provides little value, it consumes budget that could have been spent crawling and re-indexing your most important content.
+    68→    68→
+    69→    69→## Detecting Orphan Pages
+    70→    70→
+    71→    71→The most reliable way to find orphan pages is to compare your sitemap or server logs against your internal link graph. Tools like Screaming Frog, Ahrefs, and Sitebulb can crawl your site and generate a report of pages with zero internal inlinks. You can also use Google Search Console's URL Inspection tool to check individual pages.
+    72→    72→
+    73→    73→Look for pages that appear in your XML sitemap but have no internal links. These are the most common orphans. Also check for pages that receive organic traffic but have no internal link path — these represent missed opportunities to strengthen their rankings through internal linking.
+    74→    74→
+    75→    75→## Common Causes of Orphan Pages
+    76→    76→
+    77→    77→Orphan pages typically arise from a few common scenarios. Deleted or archived content that was removed from navigation but not redirected creates orphans. New pages published without being linked from any existing content are another source. Blog archives, tag pages, and author pages are frequently orphaned when themes are updated or navigation is restructured.
+    78→    78→
+    79→    79→E-commerce sites are particularly susceptible. When products are discontinued or categories are reorganized, the old URLs often linger as orphans. Similarly, promotional landing pages created for campaigns frequently become orphans once the campaign ends.
+    80→    80→
+    81→    81→## How to Fix Orphan Pages
+    82→    82→
+    83→    83→For valuable content, add internal links from relevant pages. Identify 2-3 existing pages that naturally relate to the orphan and add contextual links within their body content. For content that is outdated or low-quality, consider consolidating it with a similar page using a 301 redirect. For pages that serve no purpose, return a 410 status code to tell search engines the page is permanently gone.
+    84→    84→
+    85→    85→Implement a regular orphan page audit as part of your technical SEO routine. Every quarter, crawl your site and review the orphan page report. This proactive approach prevents orphan pages from accumulating and ensures your entire content library is accessible to both users and search engines.`
+    86→    86→  },
+    87→    87→  {
+    88→    88→    id: 3,
+    89→    89→    title: "Anchor Text Optimization: Best Practices for 2024",
+    90→    90→    slug: "anchor-text-optimization-best-practices-2024",
+    91→    91→    excerpt:
+    92→    92→      "Anchor text tells search engines what the linked page is about. Learn the difference between exact match, partial match, and descriptive anchors, and discover how to optimize your anchor text profile without triggering over-optimization penalties.",
+    93→    93→    content: `Anchor text is the clickable text of a hyperlink, and it is one of the strongest on-page ranking signals that search engines use to understand the topic and relevance of a linked page. Getting your anchor text strategy right can significantly impact your rankings — getting it wrong can trigger algorithmic penalties that are difficult to recover from.
+    94→    94→
+    95→    95→## Types of Anchor Text
+    96→    96→
+    97→    97→Exact match anchor text uses the target keyword verbatim. If your target page is about "dog training tips," an exact match anchor would be the phrase "dog training tips." These anchors are powerful but dangerous in excess. Google's Penguin algorithm specifically targets sites with unnatural concentrations of exact match anchor text.
+    98→    98→
+    99→    99→Partial match anchors include the target keyword along with other words. "Practical dog training tips for beginners" is a partial match for the keyword "dog training tips." These are generally safer and more natural-looking than exact match anchors.
+   100→   100→
+   101→   101→Descriptive anchors describe the content of the target page without necessarily containing the target keyword. "A comprehensive guide to training your new puppy" might link to a page about dog training tips. These anchors feel the most natural to readers and are increasingly favored by search engines.
+   102→   102→
+   103→   103→Branded anchors use your brand or domain name. Links like "see the full guide on Moz" or "according to Ahrefs research" are branded anchors. These are the safest and most natural type, and every healthy backlink profile has a significant percentage of branded anchors.
+   104→   104→
+   105→   105→## The Over-Optimization Trap
+   106→   106→
+   107→   107→In the early 2010s, SEOs discovered that exact match anchor text was a powerful ranking signal and began aggressively optimizing it. Google responded with the Penguin algorithm in 2012, which penalized sites with unnatural anchor text profiles. The lesson is clear: anchor text should vary naturally.
+   108→   108→
+   109→   109→A natural anchor text profile includes a mix of exact match, partial match, descriptive, branded, and generic anchors like "click here" or "this resource." The exact ratio varies by niche, but a good rule of thumb is that no single anchor text variation should account for more than 5-10% of your total backlinks.
+   110→   110→
+   111→   111→## Internal Anchor Text Best Practices
+   112→   112→
+   113→   113→For internal links, you have full control over the anchor text, so use that control wisely. Every internal link should use descriptive, keyword-rich anchor text that accurately represents the destination page. Avoid generic anchors like "read more" or "click here" for internal links — you are wasting a valuable optimization opportunity.
+   114→   114→
+   115→   115→Vary your internal anchor text. If you have 20 internal links pointing to your pillar page on content marketing, use 15-20 different anchor text variations. This looks natural to search engines and provides more contextual information about the target page.
+   116→   116→
+   117→   117→Finally, ensure your anchor text is helpful to readers. The primary purpose of a link is to direct users to relevant content. If your anchor text reads unnaturally or feels forced, it hurts the user experience and may signal manipulation to search engines.`
+   118→   118→  },
+   119→   119→  {
+   120→   120→    id: 4,
+   121→   121→    title: "WordPress SEO: The Ultimate Checklist",
+   122→   122→    slug: "wordpress-seo-ultimate-checklist",
+   123→   123→    excerpt:
+   124→   124→      "A comprehensive WordPress SEO checklist covering on-page optimization, essential plugins, site speed improvements, structured data implementation, and more. Follow this guide to ensure your WordPress site is fully optimized for search engines.",
+   125→   125→    content: `WordPress powers over 43% of all websites on the internet, making it the most popular content management system in the world. While WordPress is inherently SEO-friendly out of the box, there are numerous optimizations you need to implement to ensure your site ranks competitively. This checklist covers every critical SEO factor for WordPress sites.
+   126→   126→
+   127→   127→## Essential SEO Plugins
+   128→   128→
+   129→   129→Every WordPress site needs a solid SEO plugin. Yoast SEO and Rank Math are the two most popular options, both offering features like XML sitemap generation, meta tag management, content analysis, and schema markup. Choose one and configure it thoroughly — installing the plugin is only the first step.
+   130→   130→
+   131→   131→For site speed, install a caching plugin like WP Rocket or LiteSpeed Cache. Caching dramatically reduces server response times by serving static versions of your pages. Combine this with an image optimization plugin like ShortPixel or Imagify to compress images without visible quality loss.
+   132→   132→
+   133→   133→## On-Page Optimization
+   134→   134→
+   135→   135→Every page and post should have a unique, keyword-focused title tag under 60 characters and a compelling meta description under 155 characters. Use your primary keyword naturally in the first 100 words of your content, in at least one H2 heading, and throughout the body text at a natural density of 1-2%.
+   136→   136→
+   137→   137→Optimize your images by using descriptive file names, adding alt text that includes your target keyword when appropriate, and serving them in next-gen formats like WebP. Compress all images before uploading — large images are one of the most common causes of slow page load times.
+   138→   138→
+   139→   139→## Site Speed and Core Web Vitals
+   140→   140→
+   141→   141→Google's Core Web Vitals — LCP, FID, and CLS — are now ranking factors. Use Google PageSpeed Insights to measure your scores. For LCP, optimize your largest image or text block. For FID, minimize JavaScript execution time. For CLS, specify dimensions for all images and ads to prevent layout shifts.
+   142→   142→
+   143→   143→Choose a quality hosting provider. Cheap shared hosting often means slow server response times, which directly impacts all Core Web Vitals metrics. Managed WordPress hosts like Kinsta, WP Engine, or SiteGround offer optimized server configurations that significantly improve performance.
+   144→   144→
+   145→   145→## Structured Data and Schema Markup
+   146→   146→
+   147→   147→Implement schema markup to help search engines understand your content. For articles, use Article schema. For products, use Product schema with pricing and availability. For how-to guides, use HowTo schema. Most SEO plugins can generate basic schema, but for complex implementations, consider a dedicated schema plugin or custom JSON-LD.
+   148→   148→
+   149→   149→Local businesses should implement LocalBusiness schema with NAP (name, address, phone) information. Recipe sites should use Recipe schema. FAQ pages should use FAQPage schema. The more structured data you provide, the richer your search results will appear.
+   150→   150→
+   151→   151→## Technical SEO for WordPress
+   152→   152→
+   153→   153→Set up proper permalink structure using %postname% to create clean, keyword-rich URLs. Generate and submit an XML sitemap to Google Search Console. Configure robots.txt to block admin pages and unnecessary directories from crawling. Enable HTTPS across your entire site and set up 301 redirects from HTTP to HTTPS.
+   154→   154→
+   155→   155→Regularly audit your site for broken links using a plugin like Broken Link Checker. Fix or redirect any 404 errors to preserve link equity. Finally, ensure your WordPress theme is mobile-responsive and passes Google's Mobile-Friendly test.`
+   156→   156→  },
+   157→   157→  {
+   158→   158→    id: 5,
+   159→   159→    title: "Understanding Google's Helpful Content Update",
+   160→   160→    slug: "understanding-googles-helpful-content-update",
+   161→   161→    excerpt:
+   162→   162→      "Google's Helpful Content Update rewards sites that create content primarily for people, not search engines. Learn what the update targets, how to assess your content quality, and actionable steps to ensure your site thrives under this algorithmic shift.",
+   163→   163→    content: `Google's Helpful Content Update, first launched in August 2022 and refined through subsequent iterations, represents a fundamental shift in how Google evaluates content quality. Unlike traditional algorithm updates that target specific spam techniques, this update assesses whether your content demonstrates genuine expertise and provides real value to human readers.
+   164→   164→
+   165→   165→## What the Helpful Content Update Targets
+   166→   166→
+   167→   167→The update is designed to demote content that is primarily created to rank in search engines rather than to help people. This includes content that summarizes information without adding unique insights, content written by people with no real expertise on the topic, and content that leaves readers feeling they need to search again to find better information.
+   168→   168→
+   169→   169→Google has been explicit about the signals it uses. Content that demonstrates first-hand experience, includes original research or data, provides a unique perspective, and comprehensively addresses the user's intent will be rewarded. Content that rehashes what is already available, is thin or superficial, or is clearly optimized for keywords at the expense of readability will be penalized.
+   170→   170→
+   171→   171→## Content Quality Signals
+   172→   172→
+   173→   173→Google evaluates content quality through multiple lenses. Expertise is assessed by looking at the author's credentials, the depth of the content, and whether it demonstrates genuine subject matter knowledge. Experience is evaluated by looking for first-hand accounts, original screenshots, case studies, and practical examples.
+   174→   174→
+   175→   175→Authoritativeness is measured by the quality and quantity of references to the content from other authoritative sources, as well as the overall reputation of the website and author. Trustworthiness is evaluated based on accuracy, transparency about sources and methodology, and the absence of misleading or deceptive information.
+   176→   176→
+   177→   177→E-E-A-T — Experience, Expertise, Authoritativeness, and Trustworthiness — is the framework Google uses. The helpful content update essentially operationalizes this framework by directly rewarding content that scores high on these dimensions.
+   178→   178→
+   179→   179→## How to Adapt Your Content Strategy
+   180→   180→
+   181→   181→Start by auditing your existing content. Identify pages that were created primarily for SEO purposes — thin listicles, content that merely summarizes other sources, and pages with no unique perspective. Either improve these pages by adding genuine expertise and original insights, or remove them entirely.
+   182→   182→
+   183→   183→For new content, adopt a "people-first" approach. Before writing, ask yourself: would this content be valuable even if search engines didn't exist? If the answer is no, you are probably creating content for the wrong reasons. Focus on solving real problems, sharing genuine expertise, and providing information that cannot be found elsewhere.
+   184→   184→
+   185→   185→Invest in subject matter experts as content creators. A detailed, nuanced article written by someone with 10 years of industry experience will consistently outperform a generic article written by a generalist content writer following an SEO brief.
+   186→   186→
+   187→   187→## Measuring the Impact
+   188→   188→
+   189→   189→Monitor your Google Search Console data after the update rolls out. Look for changes in impressions, clicks, and average position for your content pages. Pages that drop significantly may need to be rewritten or consolidated with stronger content. Pages that rise likely already demonstrate the quality signals Google is rewarding.`
+   190→   190→  },
+   191→   191→  {
+   192→   192→    id: 6,
+   193→   193→    title: "Technical SEO Audit: A Step-by-Step Guide",
+   194→   194→    slug: "technical-seo-audit-step-by-step-guide",
+   195→   195→    excerpt:
+   196→   196→      "A comprehensive technical SEO audit is the foundation of any successful SEO campaign. This step-by-step guide covers crawlability, indexation, site architecture, Core Web Vitals, and everything else you need to check to ensure your site is technically sound.",
+   197→   197→    content: `A technical SEO audit is a systematic examination of your website's technical infrastructure to identify issues that may be preventing search engines from crawling, indexing, and ranking your content effectively. Unlike content or link audits, a technical audit focuses on the behind-the-scenes elements that form the foundation of your SEO performance.
+   198→   198→
+   199→   199→## Step 1: Crawlability Assessment
+   200→   200→
+   201→   201→The first step in any technical audit is to ensure search engines can actually access your content. Use a tool like Screaming Frog or Sitebulb to crawl your site and identify crawl errors. Check for pages returning 4xx or 5xx status codes, pages blocked by robots.txt or meta tags, and redirect chains that waste crawl budget.
+   202→   202→
+   203→   203→Examine your XML sitemap. It should contain only canonical URLs and should not include pages that return errors, redirect, or are noindex. Submit your sitemap to Google Search Console and monitor for indexing errors. Check your robots.txt file to ensure it is not accidentally blocking important resources like CSS, JavaScript, or image files that Googlebot needs to render your pages correctly.
+   204→   204→
+   205→   205→## Step 2: Indexation Analysis
+   206→   206→
+   207→   207→Just because a page is crawlable does not mean it is indexed. Use Google Search Console's page indexing report to identify pages that are discovered but not indexed. Common causes include noindex tags, canonicalization issues, duplicate content without proper canonical tags, and low-quality signals that cause Google to skip indexing.
+   208→   208→
+   209→   209→Run a site:search query in Google to get a rough count of your indexed pages and compare it against the number of pages in your sitemap. Significant discrepancies indicate indexation problems that need investigation. Use the URL Inspection tool in Search Console to check the indexing status of individual pages.
+   210→   210→
+   211→   211→## Step 3: Site Architecture Review
+   212→   212→
+   213→   213→Your site architecture determines how link equity flows through your site and how efficiently search engines can discover your content. A flat architecture — where important pages are no more than 3-4 clicks from the homepage — is ideal. Deeply nested pages receive less link equity and are less likely to be crawled frequently.
+   214→   214→
+   215→   215→Map your site's hierarchy and identify any pages that are more than 4 clicks deep. Consider adding internal links from higher-level pages to bring these deeper pages closer to the surface. Review your navigation structure to ensure it reflects your site's most important topics and pages.
+   216→   216→
+   217→   217→## Step 4: Core Web Vitals and Performance
+   218→   218→
+   219→   219→Measure your Core Web Vitals using both lab data from Google PageSpeed Insights and field data from Chrome User Experience Report. Focus on Largest Contentful Paint (target under 2.5 seconds), First Input Delay (target under 100 milliseconds), and Cumulative Layout Shift (target under 0.1).
+   220→   220→
+   221→   221→Common performance issues include unoptimized images, render-blocking JavaScript, excessive DOM size, and slow server response times. Address each issue systematically, starting with the elements that have the biggest impact on page load time.
+   222→   222→
+   223→   223→## Step 5: Structured Data Validation
+   224→   224→
+   225→   225→Use Google's Rich Results Test to validate your structured data markup. Check for errors and warnings in Search Console's enhancements report. Ensure your schema markup is complete and accurate — missing required fields can prevent rich results from appearing in search.
+   226→   226→
+   227→   227→Review your most important page types — articles, products, FAQs, local business pages — and ensure each has appropriate schema markup. Test your pages with the URL Inspection tool to see how Google renders and interprets your structured data.`
+   228→   228→  },
+   229→   229→  {
+   230→   230→    id: 7,
+   231→   231→    title: "Content Pruning: How to Improve Your Site by Removing Content",
+   232→   232→    slug: "content-pruning-how-to-improve-your-site-by-removing-content",
+   233→   233→    excerpt:
+   234→   234→      "Content pruning is the strategic process of removing, consolidating, or updating underperforming content. Learn how to identify low-value pages, decide what to keep versus cut, and implement redirect strategies that preserve your site's overall SEO performance.",
+   235→   235→    content: `Content pruning is one of the most effective yet underutilized SEO strategies available. While most SEO efforts focus on creating new content, pruning focuses on strategically removing or improving existing content that is dragging down your site's overall performance. Google has indicated that having too much low-quality content can negatively impact how the search engine evaluates your entire site.
+   236→   236→
+   237→   237→## Why Content Pruning Matters
+   238→   238→
+   239→   239→Google's algorithms evaluate your site holistically. A site with 500 pages of mediocre content may rank lower overall than a site with 100 pages of exceptional content. This is because algorithms like the Helpful Content Update assess the overall quality level of your content library, not just individual pages.
+   240→   240→
+   241→   241→Low-quality content also consumes crawl budget, dilutes your site's topical authority, and creates maintenance overhead. Every page on your site is a liability — it needs to be kept up-to-date, secure, and fast. Pruning reduces this burden while concentrating your site's authority on your strongest content.
+   242→   242→
+   243→   243→## Identifying Pages to Prune
+   244→   244→
+   245→   245→Start by exporting your analytics data. Look for pages with zero or near-zero organic traffic over the past 12 months. Cross-reference this with your crawl data to find pages that have few or no internal links. Pages that score low on both traffic and internal links are prime candidates for pruning.
+   246→   246→
+   247→   247→Check each candidate page's search performance in Google Search Console. Pages that are indexed but receive no impressions are essentially invisible. Pages that receive impressions but zero clicks may have ranking issues that are not worth fixing if the content is outdated or low-quality.
+   248→   248→
+   249→   249→Assess content quality by reviewing the page itself. Look for thin content — pages with fewer than 300 words that do not serve a specific purpose. Look for outdated content — pages with information that is no longer accurate. Look for cannibalized content — multiple pages targeting the same keyword that compete with each other.
+   250→   250→
+   251→   251→## The Pruning Decision Framework
+   252→   252→
+   253→   253→For each candidate page, choose one of four actions. Keep and improve the page if it targets a valuable keyword and can be updated to meet quality standards. Consolidate with a similar page using a 301 redirect if two or more pages cover the same topic. Remove and 301 redirect to the most relevant existing page if the content is outdated and no longer needed. Remove and return a 410 status code if the page serves no purpose and there is no logical redirect target.
+   254→   254→
+   255→   255→## Implementing the Prune
+   256→   256→
+   257→   257→Execute your pruning plan in phases. Start with the lowest-quality pages and work your way up. For each page you remove, implement the appropriate redirect or status code. Update your internal links to point to the new destinations. Remove pruned pages from your XML sitemap. Monitor your rankings and traffic for 4-6 weeks after each phase to measure the impact.
+   258→   258→
+   259→   259→Most sites see a net positive effect from content pruning within 2-3 months. Rankings for remaining content often improve as Google recalculates your site's quality score without the drag of low-quality pages.`
+   260→   260→  },
+   261→   261→  {
+   262→   262→    id: 8,
+   263→   263→    title: "Link Equity: How Internal Links Distribute Authority",
+   264→   264→    slug: "link-equity-how-internal-links-distribute-authority",
+   265→   265→    excerpt:
+   266→   266→      "Link equity — also known as link juice or PageRank — flows through your site via internal and external links. Understanding how this authority distribution works is critical for building a site architecture that maximizes rankings for your most important pages.",
+   267→   267→    content: `Link equity is the value and authority that a link passes from one page to another. Originally conceptualized as PageRank in Google's foundational research paper, link equity remains a fundamental ranking factor. Every link on your site acts as a conduit for this authority, and understanding how it flows is essential for effective SEO.
+   268→   268→
+   269→   269→## How Link Equity Works
+   270→   270→
+   271→   271→When Page A links to Page B, a portion of Page A's authority is transferred to Page B. The amount of equity transferred depends on several factors. Pages with more authority pass more equity. Pages with fewer outgoing links pass more equity per link because the authority is divided among all outbound links. Links in the body content pass more equity than links in footers or sidebars.
+   272→   272→
+   273→   273→Google has confirmed that the first link on a page passes the most equity, a concept known as "first link priority." This means the most important internal link on any page should ideally be placed early in the content. Navigation links, while important for usability, pass relatively little equity because they appear on every page and are far removed from the body content.
+   274→   274→
+   275→   275→## Hierarchical Linking
+   276→   276→
+   277→   277→The most effective way to distribute link equity is through a clear hierarchical site structure. Your homepage sits at the top and links to your main category pages. Category pages link to subcategories and important individual pages. Individual pages link to related content at the same level.
+   278→   278→
+   279→   279→This hierarchy ensures that your most important pages — homepage and main categories — receive the most link equity, while individual pages receive enough authority to rank for their target keywords. Breaking this hierarchy by linking directly from the homepage to dozens of individual pages dilutes the equity each link passes.
+   280→   280→
+   281→   281→## Hub Pages and Topic Clusters
+   282→   282→
+   283→   283→Hub pages are comprehensive resources that serve as the central authority node for a topic cluster. A well-constructed hub page covers a broad topic in depth and links to every relevant subtopic page. Each subtopic page links back to the hub page, creating a cycle of mutual reinforcement.
+   284→   284→
+   285→   285→This architecture is particularly powerful because it creates a clear topical signal. When Google sees a tightly interlinked cluster of pages all covering related subtopics, it interprets this as strong topical authority. The hub page accumulates equity from all subtopic pages, and each subtopic page receives relevant equity from the hub and from related subtopic pages.
+   286→   286→
+   287→   287→## Practical Link Equity Optimization
+   288→   288→
+   289→   289→Audit your most authoritative pages — typically your homepage, popular blog posts, and pages with strong backlinks — and ensure they link to your most important conversion and ranking pages. A single internal link from a high-authority page can be more valuable than dozens of links from low-authority pages.
+   290→   290→
+   291→   291→Reduce the number of links on pages that serve as major equity distributors. If your homepage has 150 links, each link passes only a small fraction of the homepage's total authority. Prioritize the links that matter most and remove or nofollow links that do not serve a strategic purpose.
+   292→   292→
+   293→   293→Finally, use nofollow strategically for links to less important pages like login screens, terms of service, or privacy policies. This prevents equity from flowing to pages that do not need it and concentrates it on your revenue-generating and ranking-critical content.`
+   294→   294→  }
+   295→   295→];
+   296→   296→
+   297→   297→// ============================================================
+   298→   298→// LLM INSTANCE (initialized at startup)
+   299→   299→// ============================================================
+   300→   300→let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
+   301→   301→
+   302→   302→async function initZAI() {
+   303→   303→  try {
+   304→   304→    zaiInstance = await ZAI.create();
+   305→   305→    console.log('✅ ZAI SDK initialized');
+   306→   306→  } catch (err) {
+   307→   307→    console.error('❌ ZAI SDK initialization failed:', err);
+   308→   308→  }
+   309→   309→}
+   310→   310→
+   311→   311→async function getZAI() {
+   312→   312→  if (!zaiInstance) {
+   313→   313→    zaiInstance = await ZAI.create();
+   314→   314→  }
+   315→   315→  return zaiInstance;
+   316→   316→}
+   317→   317→
+   318→   318→// ============================================================
+   319→   319→// CHUNKING: Paragraph-aware with heading context
+   320→   320→// ============================================================
+   321→   321→function chunkText(text: string): string[] {
+   322→   322→  const lines = text.split('\n');
+   323→   323→  const chunks: string[] = [];
+   324→   324→  let currentChunk = '';
+   325→   325→  let lastHeading = '';
+   326→   326→
+   327→   327→  for (const line of lines) {
+   328→   328→    // Track the most recent ## or ### heading
+   329→   329→    const headingMatch = line.match(/^(#{2,3})\s+(.+)/);
+   330→   330→    if (headingMatch) {
+   331→   331→      lastHeading = headingMatch[2].trim();
+   332→   332→    }
+   333→   333→
+   334→   334→    // Split on blank lines (paragraph boundaries)
+   335→   335→    if (line.trim() === '') {
+   336→   336→      if (currentChunk.trim()) {
+   337→   337→        // Prepend heading context if available
+   338→   338→        let finalChunk = currentChunk.trim();
+   339→   339→        if (lastHeading) {
+   340→   340→          const context = `## ${lastHeading}`;
+   341→   341→          if (context.length <= 500) {
+   342→   342→            finalChunk = context + '\n\n' + finalChunk;
+   343→   343→          }
+   344→   344→        }
+   345→   345→        chunks.push(finalChunk);
+   346→   346→        currentChunk = '';
+   347→   347→      }
+   348→   348→    } else {
+   349→   349→      currentChunk += (currentChunk ? '\n' : '') + line;
+   350→   350→    }
+   351→   351→  }
+   352→   352→
+   353→   353→  // Don't forget the last chunk
+   354→   354→  if (currentChunk.trim()) {
+   355→   355→    let finalChunk = currentChunk.trim();
+   356→   356→    if (lastHeading) {
+   357→   357→      const context = `## ${lastHeading}`;
+   358→   358→      if (context.length <= 500) {
+   359→   359→        finalChunk = context + '\n\n' + finalChunk;
+   360→   360→      }
+   361→   361→    }
+   362→   362→    chunks.push(finalChunk);
+   363→   363→  }
+   364→   364→
+   365→   365→  return chunks.filter((c) => c.trim().length > 0);
+   366→   366→}
+   367→   367→
+   368→   368→// ============================================================
+   369→   369→// RELEVANCE SCORING: TF overlap (simulates vector search)
+   370→   370→// ============================================================
+   371→   371→function tokenize(text: string): string[] {
+   372→   372→  return text
+   373→   373→    .toLowerCase()
+   374→   374→    .replace(/[^a-z0-9\s]/g, ' ')
+   375→   375→    .split(/\s+/)
+   376→   376→    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+   377→   377→}
+   378→   378→
+   379→   379→function buildFreqMap(tokens: string[]): Map<string, number> {
+   380→   380→  const freq = new Map<string, number>();
+   381→   381→  for (const t of tokens) {
+   382→   382→    freq.set(t, (freq.get(t) || 0) + 1);
+   383→   383→  }
+   384→   384→  return freq;
+   385→   385→}
+   386→   386→
+   387→   387→function computeRelevance(textA: string, textB: string): number {
+   388→   388→  const tokensA = tokenize(textA);
+   389→   389→  const tokensB = tokenize(textB);
+   390→   390→
+   391→   391→  if (tokensA.length === 0 || tokensB.length === 0) return 0;
+   392→   392→
+   393→   393→  const freqA = buildFreqMap(tokensA);
+   394→   394→  const freqB = buildFreqMap(tokensB);
+   395→   395→
+   396→   396→  let overlap = 0;
+   397→   397→  for (const [word, countB] of freqB) {
+   398→   398→    const countA = freqA.get(word);
+   399→   399→    if (countA !== undefined) {
+   400→   400→      overlap += Math.min(countA, countB);
+   401→   401→    }
+   402→   402→  }
+   403→   403→
+   404→   404→  const maxTotal = Math.max(tokensA.length, tokensB.length);
+   405→   405→  return overlap / maxTotal;
+   406→   406→}
+   407→   407→
+   408→   408→// ============================================================
+   409→   409→// LLM ANCHOR TEXT GENERATION
+   410→   410→// ============================================================
+   411→   411→const ANCHOR_SYSTEM_PROMPT = `You are an expert SEO copywriter specializing in internal linking. Your task is to suggest natural anchor text for an internal link.
+   412→   412→
+   413→   413→SOURCE TEXT (where the link will be placed):
+   414→   414→{source_chunk}
+   415→   415→
+   416→   416→TARGET POST (where the link points to):
+   417→   417→Title: {target_title}
+   418→   418→Excerpt: {target_excerpt}
+   419→   419→
+   420→   420→RULES:
+   421→   421→1. Find a sentence in the source text where a link to the target post would feel natural
+   422→   422→2. The anchor text should be 3-8 words, descriptive, and match the target post's topic
+   423→   423→3. Never use generic anchor text like "click here" or "read more"
+   424→   424→4. The anchor should read naturally within the sentence — a reader shouldn't notice it's a link
+   425→   425→5. Prefer partial-match or descriptive anchors over exact-match
+   426→   426→
+   427→   427→Respond with ONLY valid JSON, no other text:
+   428→   428→{"sentence": "the full sentence from source where link goes", "anchor_text": "the 3-8 word anchor", "reason": "why this is a good link"}
+   429→   429→If no natural link opportunity exists, respond with:
+   430→   430→{"skip": true, "reason": "brief explanation"}`;
+   431→   431→
+   432→   432→function generateFallbackAnchor(title: string): string {
+   433→   433→  // Simple fallback: take the title, remove common prefixes, lowercase, shorten
+   434→   434→  let anchor = title
+   435→   435→    .replace(/^(the|a|an|complete|ultimate|comprehensive|how to|your)\s+/i, '')
+   436→   436→    .replace(/[:\-–—]/g, '')
+   437→   437→    .trim();
+   438→   438→  // If longer than 6 words, truncate
+   439→   439→  const words = anchor.split(/\s+/);
+   440→   440→  if (words.length > 6) {
+   441→   441→    anchor = words.slice(0, 6).join(' ');
+   442→   442→  }
+   443→   443→  return anchor.toLowerCase();
+   444→   444→}
+   445→   445→
+   446→   446→function findBestMatchingChunk(
+   447→   447→  chunks: string[],
+   448→   448→  targetTitle: string,
+   449→   449→  targetExcerpt: string
+   450→   450→): string {
+   451→   451→  // Score each chunk against the target post to find the best fit
+   452→   452→  let bestChunk = chunks[0];
+   453→   453→  let bestScore = -1;
+   454→   454→  const targetText = `${targetTitle} ${targetExcerpt}`;
+   455→   455→
+   456→   456→  for (const chunk of chunks) {
+   457→   457→    const score = computeRelevance(chunk, targetText);
+   458→   458→    if (score > bestScore) {
+   459→   459→      bestScore = score;
+   460→   460→      bestChunk = chunk;
+   461→   461→    }
+   462→   462→  }
+   463→   463→  return bestChunk;
+   464→   464→}
+   465→   465→
+   466→   466→async function generateAnchorText(
+   467→   467→  sourceChunk: string,
+   468→   468→  targetTitle: string,
+   469→   469→  targetExcerpt: string
+   470→   470→): Promise<{ sentence: string; anchor_text: string } | null> {
+   471→   471→  const prompt = ANCHOR_SYSTEM_PROMPT
+   472→   472→    .replace('{source_chunk}', sourceChunk.slice(0, 2000))
+   473→   473→    .replace('{target_title}', targetTitle)
+   474→   474→    .replace('{target_excerpt}', targetExcerpt);
+   475→   475→
+   476→   476→  try {
+   477→   477→    const zai = await getZAI();
+   478→   478→    const completion = await zai.chat.completions.create({
+   479→   479→      messages: [
+   480→   480→        { role: 'assistant', content: prompt },
+   481→   481→        { role: 'user', content: 'Generate the anchor text suggestion now.' }
+   482→   482→      ],
+   483→   483→      thinking: { type: 'disabled' }
+   484→   484→    });
+   485→   485→
+   486→   486→    const raw = completion.choices[0]?.message?.content?.trim();
+   487→   487→    if (!raw) return null;
+   488→   488→
+   489→   489→    // Try to parse JSON from the response
+   490→   490→    // The LLM might wrap it in markdown code blocks
+   491→   491→    const jsonStr = raw.replace(/```json?\s*/gi, '').replace(/```/g, '').trim();
+   492→   492→    const parsed = JSON.parse(jsonStr);
+   493→   493→
+   494→   494→    if (parsed.skip) return null;
+   495→   495→
+   496→   496→    return {
+   497→   497→      sentence: parsed.sentence || '',
+   498→   498→      anchor_text: parsed.anchor_text || ''
+   499→   499→    };
+   500→   500→  } catch {
+   501→   501→    // Fallback: generate a simple anchor from the title
+   502→   502→    const fallback = generateFallbackAnchor(targetTitle);
+   503→   503→    // Extract a representative sentence from the source chunk
+   504→   504→    const sentences = sourceChunk
+   505→   505→      .replace(/#{1,3}\s+.+/g, '') // Remove heading lines
+   506→   506→      .split(/[.!?]+/)
+   507→   507→      .map((s) => s.trim())
+   508→   508→      .filter((s) => s.length > 20);
+   509→   509→
+   510→   510→    return {
+   511→   511→      sentence: sentences[0] || sourceChunk.slice(0, 200),
+   512→   512→      anchor_text: fallback
+   513→   513→    };
+   514→   514→  }
+   515→   515→}
+   516→   516→
+   517→   517→// ============================================================
+   518→   518→// CONFIDENCE MAPPING
+   519→   519→// ============================================================
+   520→   520→function getConfidence(score: number): 'high' | 'medium' | 'low' {
+   521→   521→  if (score >= 0.15) return 'high';
+   522→   522→  if (score >= 0.08) return 'medium';
+   523→   523→  return 'low';
+   524→   524→}
+   525→   525→
+   526→   526→// ============================================================
+   527→   527→// HTTP SERVER
+   528→   528→// ============================================================
+   529→   529→const PORT = 3030;
+   530→   530→
+   531→   531→// Start server
+   532→   532→const server = Bun.serve({
+   533→   533→  port: PORT,
+   534→   534→  async fetch(req) {
+   535→   535→    const url = new URL(req.url);
+   536→   536→    const path = url.pathname;
+   537→   537→
+   538→   538→    // CORS headers
+   539→   539→    const headers = {
+   540→   540→      'Content-Type': 'application/json',
+   541→   541→      'Access-Control-Allow-Origin': '*',
+   542→   542→      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+   543→   543→      'Access-Control-Allow-Headers': 'Content-Type'
+   544→   544→    };
+   545→   545→
+   546→   546→    // Handle preflight
+   547→   547→    if (req.method === 'OPTIONS') {
+   548→   548→      return new Response(null, { status: 204, headers });
+   549→   549→    }
+   550→   550→
+   551→   551→    // GET / — Health check
+   552→   552→    if (path === '/' && req.method === 'GET') {
+   553→   553→      return Response.json(
+   554→   554→        { status: 'ok', service: 'linkforge-demo-engine' },
+   555→   555→        { headers }
+   556→   556→      );
+   557→   557→    }
+   558→   558→
+   559→   559→    // GET /posts — List sample posts (no full content)
+   560→   560→    if (path === '/posts' && req.method === 'GET') {
+   561→   561→      const posts = SAMPLE_POSTS.map(({ id, title, slug, excerpt }) => ({
+   562→   562→        id,
+   563→   563→        title,
+   564→   564→        slug,
+   565→   565→        excerpt
+   566→   566→      }));
+   567→   567→      return Response.json({ posts }, { headers });
+   568→   568→    }
+   569→   569→
+   570→   570→    // POST /suggest — Main pipeline
+   571→   571→    if (path === '/suggest' && req.method === 'POST') {
+   572→   572→      const startTime = performance.now();
+   573→   573→
+   574→   574→      try {
+   575→   575→        const body = await req.json();
+   576→   576→        const { text, title } = body;
+   577→   577→
+   578→   578→        if (!text || typeof text !== 'string' || text.trim().length === 0) {
+   579→   579→          return Response.json(
+   580→   580→            { error: 'Text field is required and must be a non-empty string' },
+   581→   581→            { status: 400, headers }
+   582→   582→          );
+   583→   583→        }
+   584→   584→
+   585→   585→        // Step 1: Chunk the input text
+   586→   586→        const chunks = chunkText(text);
+   587→   587→
+   588→   588→        // Combine all chunks for relevance scoring
+   589→   589→        const fullText = chunks.join(' ');
+   590→   590→
+   591→   591→        // Step 2: Compute relevance to each sample post
+   592→   592→        const scored = SAMPLE_POSTS.map((post) => {
+   593→   593→          const postText = `${post.title} ${post.excerpt} ${post.content}`;
+   594→   594→          const score = computeRelevance(fullText, postText);
+   595→   595→          return { post, score };
+   596→   596→        });
+   597→   597→
+   598→   598→        // Step 3: Select top 3-5 matches (minimum threshold 0.05)
+   599→   599→        const MIN_SCORE = 0.05;
+   600→   600→        const topMatches = scored
+   601→   601→          .filter((s) => s.score >= MIN_SCORE)
+   602→   602→          .sort((a, b) => b.score - a.score)
+   603→   603→          .slice(0, 5);
+   604→   604→
+   605→   605→        // Step 4: Generate anchor text for each match via LLM
+   606→   606→        const suggestions = [];
+   607→   607→
+   608→   608→        for (const match of topMatches) {
+   609→   609→          const bestChunk = findBestMatchingChunk(
+   610→   610→            chunks,
+   611→   611→            match.post.title,
+   612→   612→            match.post.excerpt
+   613→   613→          );
+   614→   614→
+   615→   615→          const result = await generateAnchorText(
+   616→   616→            bestChunk,
+   617→   617→            match.post.title,
+   618→   618→            match.post.excerpt
+   619→   619→          );
+   620→   620→
+   621→   621→          if (result) {
+   622→   622→            suggestions.push({
+   623→   623→              target_post: {
+   624→   624→                id: match.post.id,
+   625→   625→                title: match.post.title,
+   626→   626→                slug: match.post.slug,
+   627→   627→                excerpt: match.post.excerpt
+   628→   628→              },
+   629→   629→              relevance_score: Math.round(match.score * 1000) / 1000,
+   630→   630→              anchor_text: result.anchor_text,
+   631→   631→              context_sentence: result.sentence,
+   632→   632→              confidence: getConfidence(match.score)
+   633→   633→            });
+   634→   634→          }
+   635→   635→        }
+   636→   636→
+   637→   637→        const processingTimeMs = Math.round(performance.now() - startTime);
+   638→   638→
+   639→   639→        return Response.json(
+   640→   640→          {
+   641→   641→            chunks_count: chunks.length,
+   642→   642→            processing_time_ms: processingTimeMs,
+   643→   643→            suggestions
+   644→   644→          },
+   645→   645→          { headers }
+   646→   646→        );
+   647→   647→      } catch (err: unknown) {
+   648→   648→        const message =
+   649→   649→          err instanceof Error ? err.message : 'Internal server error';
+   650→   650→        return Response.json(
+   651→   651→          { error: message },
+   652→   652→          { status: 500, headers }
+   653→   653→        );
+   654→   654→      }
+   655→   655→    }
+   656→   656→
+   657→   657→    // 404
+   658→   658→    return Response.json(
+   659→   659→      { error: 'Not found', available_endpoints: ['GET /', 'GET /posts', 'POST /suggest'] },
+   660→   660→      { status: 404, headers }
+   661→   661→    );
+   662→   662→  }
+   663→   663→});
+   664→   664→
+   665→   665→process.on('uncaughtException', (err) => {
+   666→   666→  console.error('UNCAUGHT EXCEPTION:', err);
+   667→   667→});
+   668→   668→
+   669→   669→process.on('unhandledRejection', (reason) => {
+   670→   670→  console.error('UNHANDLED REJECTION:', reason);
+   671→   671→});
+   672→   672→
+   673→   673→console.log(`🚀 LinkForge Demo Engine running on port ${PORT}`);
+   674→   674→console.log(`📝 ZAI SDK will initialize on first /suggest call (lazy)`);
+   675→   675→
