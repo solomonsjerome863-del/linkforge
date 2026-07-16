@@ -11,11 +11,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const user = await db.user.findUnique({ where: { email: email.toLowerCase() } });
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await db.user.findUnique({
+      where: { email: normalizedEmail },
+    });
 
     // Always return success to prevent email enumeration
     if (!user) {
-      return NextResponse.json({ success: true, message: "If an account exists, a reset link has been generated." });
+      return NextResponse.json({
+        success: true,
+        message: "If an account exists, a reset link has been generated.",
+      });
     }
 
     // Generate reset token
@@ -27,6 +34,8 @@ export async function POST(request: NextRequest) {
       data: { resetToken: token, resetTokenExpiry: expiry },
     });
 
+    console.log(`[Forgot Password] Reset token generated for: ${user.email}`);
+
     // In production, send email here. For demo, return token.
     return NextResponse.json({
       success: true,
@@ -35,6 +44,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("Forgot password error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

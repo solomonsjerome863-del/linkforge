@@ -1,0 +1,113 @@
+:root {
+  --bg: #ffffff;
+  --bg-dark: #0f172a;
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+  --accent: #0d9488;
+  --accent-light: #14b8a6;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #f8fafc;
+  --surface: #f8fafc;
+  --border: #e2e8f0;
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+  --emerald: #10b981;
+  --font-heading: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --fs-display: 48px;
+  --fs-h1: 36px;
+  --fs-h2: 28px;
+  --fs-h3: 22px;
+  --fs-body: 18px;
+  --fs-small: 14px;
+  --fs-micro: 12px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.slide {
+  width: 1280px;
+  min-height: 720px;
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+  font-family: var(--font-body);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.badge-orange { background: #fff7ed; color: var(--primary); }
+.badge-teal { background: #f0fdfa; color: var(--accent); }
+.badge-rose { background: #fff1f2; color: var(--rose); }
+.badge-emerald { background: #ecfdf5; color: var(--emerald); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.card-dark {
+  background: var(--bg-dark);
+  border-radius: 16px;
+  padding: 24px;
+  color: var(--text-light);
+}
+
+.stat-number {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 20px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.accent-bar {
+  width: 4px;
+  height: 100%;
+  border-radius: 4px;
+  flex-shrink: 0;
+}

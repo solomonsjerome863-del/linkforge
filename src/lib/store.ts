@@ -53,7 +53,27 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ _hydrated: true });
     const stored = loadUser();
     if (stored) {
-      set({ user: stored as User, showLanding: false });
+      const user = stored as User;
+      set({ user, showLanding: false });
+
+      // Always check admin status at runtime (server-side env var)
+      // This ensures the Admin button appears even on first load
+      if (user.id && user.email) {
+        fetch("/api/auth/check-admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.id, email: user.email }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.isAdmin) {
+              const updated = { ...get().user, isAdmin: true } as User;
+              set({ user: updated });
+              saveUser(updated);
+            }
+          })
+          .catch(() => {});
+      }
     }
   },
   setUser: (user) => {

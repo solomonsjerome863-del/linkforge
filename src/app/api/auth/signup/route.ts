@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { db } from "@/lib/db";
-
-function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "linkforge-salt").digest("hex");
-}
+import { hashPassword } from "@/lib/password";
 
 function stripPasswordHash<T extends { passwordHash?: string | null }>(obj: T): Omit<T, "passwordHash"> {
   const { passwordHash: _, ...rest } = obj;
@@ -42,7 +38,7 @@ export async function POST(request: NextRequest) {
       data: {
         email: normalizedEmail,
         name: name || null,
-        passwordHash: hashPassword(password),
+        passwordHash: await hashPassword(password),
         emailVerified: true, // Auto-verified for demo; add email service for production
       },
     });
@@ -97,8 +93,14 @@ export async function POST(request: NextRequest) {
     // Generate some link suggestions
     await generateAndStoreSuggestions(demoSite.id, createdPages);
 
+    const safeUser = stripPasswordHash(user);
+
+    // Determine admin status at runtime (not build-time)
+    const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+    const isAdmin = adminEmail ? safeUser.email?.toLowerCase().trim() === adminEmail : false;
+
     return NextResponse.json({
-      user: stripPasswordHash(user),
+      user: { ...safeUser, isAdmin },
       site: demoSite,
     }, { status: 201 });
   } catch (error: unknown) {

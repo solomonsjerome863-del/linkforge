@@ -1,0 +1,90 @@
+{
+  "design": {
+    "title": "LinkForge Product Demo",
+    "style_name": "Modern SaaS Product Demo",
+    "palette": {
+      "background": "#ffffff",
+      "primary": "#f97316",
+      "accent": "#0d9488"
+    },
+    "typography": {
+      "heading": "Inter",
+      "body": "Inter",
+      "numeric": "JetBrains Mono"
+    },
+    "reference": "Modern SaaS product demo with orange/teal brand colors"
+  },
+  "global_css_path": "/home/z/my-project/download/slides/global.css",
+  "slides_dir": "/home/z/my-project/download/slides",
+  "language": "en",
+  "speaker_notes": "full",
+  "slides": [
+    {
+      "title": "Cover",
+      "layout": "cover",
+      "output_path": "/home/z/my-project/download/slides/slide_01.html",
+      "task_brief": "Cover slide for LinkForge Product Demo. Large bold headline 'LinkForge' with gradient-text class (orange to amber). Subtitle: 'Smart Internal Linking for Any Website'. Tagline below: 'AI-powered SEO tool that crawls your site, discovers orphan pages, and generates contextual internal link suggestions with optimal anchor text.' Bottom-left: a small 'Product Demo' badge with badge-orange class. Background: clean white with a large subtle orange gradient circle (blurred, opacity 0.08) in the top-right corner and a teal gradient circle (blurred, opacity 0.06) in the bottom-left. No images. Center-aligned layout vertically and horizontally."
+    },
+    {
+      "title": "The Problem",
+      "layout": "split text+image",
+      "output_path": "/home/z/my-project/download/slides/slide_02.html",
+      "task_brief": "Problem slide — 'The Hidden SEO Problem'. Left side (60% width): Headline 'Orphan Pages Are Killing Your Rankings'. Body text (3 bullet points with rose-colored left accent bars): '47% of website pages have zero internal links — Google may never find them.', 'Without internal links, page authority doesn't flow — every page competes alone.', 'Manual internal linking is tedious, inconsistent, and doesn't scale.' Each bullet should have a small rose/warning icon. Right side (40% width): Use image https://sfile.chatglm.cn/images-ppt/fe2eddaff7ad.png as a visual, contained in a rounded-2xl card with overflow-hidden and a subtle border. Image should be object-cover to fill the card space."
+    },
+    {
+      "title": "How It Works",
+      "layout": "timeline",
+      "output_path": "/home/z/my-project/download/slides/slide_03.html",
+      "task_brief": "3-step horizontal flow. Headline: 'How LinkForge Works'. Subtitle: 'Three simple steps to better internal linking.' Three equal-width columns with step-circles (1, 2, 3) in orange gradient backgrounds. Step 1: Icon: language, Title: 'Add Your Site', Description: 'Enter your website URL. LinkForge works with WordPress, Shopify, Webflow, Ghost, or any custom site — no plugins needed.' Step 2: Icon: search, Title: 'Crawl & Analyze', Description: 'Our engine discovers your pages via sitemap, crawls content, and uses AI to understand semantic relationships between pages.' Step 3: Icon: link, Title: 'Get Smart Links', Description: 'Receive AI-generated internal link suggestions with optimal anchor text, relevance scores, and surrounding context — ready to apply.' Connect steps with a horizontal orange gradient line/arrow between the columns. Use card class for each step box."
+    },
+    {
+      "title": "Smart Crawling",
+      "layout": "bento grid",
+      "output_path": "/home/z/my-project/download/slides/slide_04.html",
+      "task_brief": "Feature spotlight slide. Headline: 'Smart Crawling — Works With Any Website'. Bento grid layout (2x2). Top-left large card (spans 2 columns): 'Real Web Crawling' — 'LinkForge actually fetches and reads your pages using advanced page reading technology. It starts with your sitemap.xml, discovers every URL, then crawls each page to analyze content, headings, and structure. No APIs, no plugins — just your URL.' Top-right card: Platform icons/badges row showing: WordPress (badge-teal), Shopify (badge-emerald), Webflow (badge-orange), Ghost (badge with purple-ish tone), Custom (badge with muted tone). Label: 'Platform Agnostic'. Bottom-left card: 'Concurrent Crawling' — 'Crawls up to 3 pages simultaneously for fast results, even on large sites.' with a small speed/zap icon. Bottom-right card: 'Auto-Discovery' — 'Automatically finds pages through sitemap.xml and homepage link analysis. No manual URL entry needed.' with a radar/discover icon. Use card class for each. Add subtle shadows."
+    },
+    {
+      "title": "AI Suggestions",
+      "layout": "key message",
+      "output_path": "/home/z/my-project/download/slides/slide_05.html",
+      "task_brief": "Core feature slide. Headline: 'AI-Powered Link Suggestions'. Left side (55%): Description text: 'LinkForge uses advanced LLM technology to generate natural, contextually relevant internal link suggestions.' Below, show a mock suggestion card (card-dark class, bg-dark #0f172a): Source page: 'Complete Guide to On-Page SEO' → arrow (orange) → Target page: 'Internal Linking Best Practices'. Anchor text highlighted in orange: 'internal linking strategy'. Relevance score badge: '92%' in badge-emerald. Status badge: 'Pending' in badge-orange. Below the mock card: 'Surrounding context preview: \"...implementing a solid internal linking strategy can significantly boost your page authority and help search engines...\"' Right side (45%): Three feature callout cards stacked vertically: 1. 'Natural Anchor Text' — 'AI generates 2-5 word anchor text that reads naturally within your existing content.' 2. 'Relevance Scoring' — 'Every suggestion includes a TF-overlap relevance score. Green (>80%), Amber (>50%), Red (≤50%).' 3. 'Batch Operations' — 'Approve all, export to CSV or JSON, or review one by one.' Each with an icon on the left and text on the right."
+    },
+    {
+      "title": "Analytics",
+      "layout": "split text+image",
+      "output_path": "/home/z/my-project/download/slides/slide_06.html",
+      "task_brief": "Analytics feature slide. Headline: 'Interactive Link Network Graph'. Left side (45%): Description: 'Visualize your entire site's internal link structure as an interactive force-directed graph.' Three bullet points with teal accent bars: 'Orange nodes = orphan pages (no incoming links) — instantly see what needs attention.' 'Teal nodes = well-linked pages — your strongest content hubs.' 'Pan, zoom, and hover for detailed page info including word count and link counts.' Right side (55%): Use image https://sfile.chatglm.cn/images-ppt/fa6728d28215.png in a large rounded-2xl card with overflow-hidden. Below the image, show 4 mini KPI stat boxes in a 2x2 grid: 'Total Internal Links' (stat-number in orange), 'Pages Indexed' (stat-number in teal), 'Orphan Pages' (stat-number in rose), 'Avg Links/Page' (stat-number in amber). Each stat box uses card class with small label text and large number."
+    },
+    {
+      "title": "Orphan Detection",
+      "layout": "stats",
+      "output_path": "/home/z/my-project/download/slides/slide_07.html",
+      "task_brief": "Feature slide focused on orphan page detection. Headline: 'Never Lose a Page Again'. Subtitle: 'Orphan pages have zero incoming internal links — Google may never discover them.' Center layout with a large prominent stat callout: Big number '47%' in stat-number with rose color, label 'of website pages are orphans' below. Below that, three equal cards in a row: Card 1: 'Instant Detection' — 'LinkForge flags every orphan page with a warning badge across all views — Pages, Suggestions, and Analytics graph.' Card 2: 'Filter & Sort' — 'Quickly filter to see only orphan pages. Sort by word count, URL, or title to prioritize which to link first.' Card 3: 'One-Click Fix' — 'AI suggests the best internal links for each orphan page. Approve and export — done.' Each card has an icon at top. Use badge-rose for the 47% stat."
+    },
+    {
+      "title": "Pricing",
+      "layout": "comparison",
+      "output_path": "/home/z/my-project/download/slides/slide_08.html",
+      "task_brief": "Pricing slide. Headline: 'Simple, Transparent Pricing'. Subtitle: 'Start free. Upgrade when you're ready.' Four pricing cards in a row (equal width). Each card uses card class with a colored top border (4px). Card 1 - Starter: Top border emerald, 'Free' price, '1 site, 50 pages, 100 suggestions/mo'",
+      "Badge": "Free Forever",
+      "Pro": "Top border orange (primary), '$49/mo' price with small '/month' text, '5 sites, 500 pages, 2,000 suggestions'",
+      "Features": "AI-powered suggestions, Auto-apply, Priority support"
+    },
+    {
+      "Badge": "Most Popular",
+      "Business": "Top border teal (accent), '$149/mo' price, '25 sites, 5,000 pages, 10,000 suggestions'",
+      "Features": "Bulk actions, Analytics, API access, White-label"
+    },
+    {
+      "Badge": "Best Value",
+      "Enterprise": "Top border dark (bg-dark), 'Custom' price, 'Unlimited everything'",
+      "Features": "SOC 2, SSO, Plugin SDK, Dedicated support"
+    },
+    {
+      "title": "Get Started",
+      "layout": "closing",
+      "output_path": "/home/z/my-project/download/slides/slide_09.html",
+      "task_brief": "Closing CTA slide. Centered layout. Large bold headline: 'Ready to Fix Your Internal Links?' in gradient-text class. Subtitle: 'Join thousands of SEO professionals using LinkForge to boost their rankings.' Two CTA buttons side by side: Primary button (orange gradient background, white text, rounded-full, px-8 py-4): 'Get Started Free — No Credit Card Required'. Secondary button (outlined, border-2 border-primary, text-primary, rounded-full, px-8 py-4): 'View Full Demo at linkforge.digital'. Below buttons, three small trust indicators in a row: '14-Day Free Trial' with a checkmark icon, 'Works With Any CMS' with a globe icon, 'Cancel Anytime' with a shield icon. Background: white with subtle orange gradient circle (blurred, opacity 0.06) centered behind the headline area."
+    }
+  ]
+}

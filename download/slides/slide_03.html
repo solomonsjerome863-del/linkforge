@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, height=720, initial-scale=1.0">
+  <title>How LinkForge Works — LinkForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  </style>
+</head>
+<body>
+  <div class="slide" style="min-height: 720px; display:flex; flex-direction:column; padding:56px 64px;">
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:48px;">
+      <h2 style="font-family:var(--font-heading); font-size:36px; font-weight:800; color:var(--text); letter-spacing:-0.5px; margin-bottom:12px;">
+        How LinkForge Works
+      </h2>
+      <p style="font-size:18px; color:var(--text-muted); font-weight:400;">
+        Three simple steps to better internal linking.
+      </p>
+    </div>
+
+    <!-- Steps area -->
+    <div style="display:flex; align-items:stretch; gap:0; flex:1; position:relative;">
+
+      <!-- Connecting line behind steps -->
+      <div data-decor aria-hidden="true" style="position:absolute; top:56px; left:calc(16.67% + 24px); right:calc(16.67% + 24px); height:4px; background:linear-gradient(90deg, var(--primary) 0%, var(--amber) 100%); border-radius:4px; z-index:0;"></div>
+
+      <!-- Step 1 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:0 20px; position:relative; z-index:1;">
+        <div class="step-circle" style="background:linear-gradient(135deg, var(--primary), var(--amber)); margin-bottom:24px; box-shadow:0 4px 16px rgba(249,115,22,0.3);">
+          1
+        </div>
+        <div class="card" style="width:100%; text-align:center; height:calc(100% - 96px); display:flex; flex-direction:column; align-items:center; padding:28px 20px;">
+          <span class="material-icons" style="font-size:40px; color:var(--primary); margin-bottom:16px;">language</span>
+          <h3 style="font-family:var(--font-heading); font-size:22px; font-weight:700; color:var(--text); margin-bottom:14px;">
+            Add Your Site
+          </h3>
+          <p style="font-size:16px; color:var(--text-muted); line-height:1.65;">
+            Enter your website URL. LinkForge works with WordPress, Shopify, Webflow, Ghost, or any custom site — no plugins needed.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:0 20px; position:relative; z-index:1;">
+        <div class="step-circle" style="background:linear-gradient(135deg, var(--primary), var(--amber)); margin-bottom:24px; box-shadow:0 4px 16px rgba(249,115,22,0.3);">
+          2
+        </div>
+        <div class="card" style="width:100%; text-align:center; height:calc(100% - 96px); display:flex; flex-direction:column; align-items:center; padding:28px 20px;">
+          <span class="material-icons" style="font-size:40px; color:var(--primary); margin-bottom:16px;">search</span>
+          <h3 style="font-family:var(--font-heading); font-size:22px; font-weight:700; color:var(--text); margin-bottom:14px;">
+            Crawl &amp; Analyze
+          </h3>
+          <p style="font-size:16px; color:var(--text-muted); line-height:1.65;">
+            Our engine discovers your pages via sitemap, crawls content, and uses AI to understand semantic relationships between pages.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; padding:0 20px; position:relative; z-index:1;">
+        <div class="step-circle" style="background:linear-gradient(135deg, var(--primary), var(--amber)); margin-bottom:24px; box-shadow:0 4px 16px rgba(249,115,22,0.3);">
+          3
+        </div>
+        <div class="card" style="width:100%; text-align:center; height:calc(100% - 96px); display:flex; flex-direction:column; align-items:center; padding:28px 20px;">
+          <span class="material-icons" style="font-size:40px; color:var(--primary); margin-bottom:16px;">link</span>
+          <h3 style="font-family:var(--font-heading); font-size:22px; font-weight:700; color:var(--text); margin-bottom:14px;">
+            Get Smart Links
+          </h3>
+          <p style="font-size:16px; color:var(--text-muted); line-height:1.65;">
+            Receive AI-generated internal link suggestions with optimal anchor text, relevance scores, and surrounding context — ready to apply.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <aside data-notes class="hidden">
+    So how does LinkForge actually work? It comes down to three simple steps. Step one: you add your website URL. That's it — no plugins to install, no API keys to configure. LinkForge is platform agnostic and works with WordPress, Shopify, Webflow, Ghost, or any custom-built site. Step two: our engine goes to work. It starts by reading your sitemap.xml to discover every URL on your site, then it actually crawls and reads the content of each page. We use AI to analyze the semantic relationships between all your pages — understanding topics, context, and which pages are topically related. Step three: you get smart link suggestions. The AI generates internal link recommendations with optimal anchor text that reads naturally, plus a relevance score so you can prioritize, and surrounding context so you know exactly where each link fits. It's really that straightforward.
+  </aside>
+</body>
+</html>

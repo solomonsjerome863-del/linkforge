@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Never Lose a Page Again</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="slide flex flex-col" style="padding: 64px 72px;">
+
+    <!-- Decorative background elements -->
+    <div data-decor aria-hidden="true" style="position:absolute; top:-80px; right:-80px; width:360px; height:360px; border-radius:50%; background:radial-gradient(circle, rgba(244,63,94,0.07) 0%, transparent 70%); filter:blur(40px);"></div>
+    <div data-decor aria-hidden="true" style="position:absolute; bottom:-60px; left:-60px; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 70%); filter:blur(40px);"></div>
+
+    <!-- Headline area -->
+    <div style="margin-bottom: 12px;">
+      <h1 style="font-family: var(--font-heading); font-size: var(--fs-h1); font-weight: 800; color: var(--text); letter-spacing: -0.02em;">
+        Never Lose a Page Again
+      </h1>
+    </div>
+    <p style="font-size: var(--fs-body); color: var(--text-muted); margin-bottom: 40px; max-width: 640px; line-height: 1.6;">
+      Orphan pages have zero incoming internal links — Google may never discover them.
+    </p>
+
+    <!-- Large 47% stat callout -->
+    <div style="display:flex; align-items:center; justify-content:center; margin-bottom: 44px; gap: 16px;">
+      <div class="badge-rose badge" style="padding: 6px 20px; font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;">
+        Industry Average
+      </div>
+      <div style="display:flex; align-items:baseline; gap: 8px;">
+        <span class="stat-number" style="font-size: 80px; color: var(--rose); line-height:1;">47%</span>
+      </div>
+      <span style="font-size: 20px; color: var(--text-muted); font-weight: 500;">of website pages are orphans</span>
+    </div>
+
+    <!-- Three feature cards -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: auto;">
+
+      <!-- Card 1: Instant Detection -->
+      <div class="card" style="display:flex; flex-direction:column; align-items:flex-start; padding: 28px 24px;">
+        <div style="width:44px; height:44px; border-radius:12px; background: #fff1f2; display:flex; align-items:center; justify-content:center; margin-bottom: 16px;">
+          <span class="material-icons" style="color: var(--rose); font-size: 24px;">warning_amber</span>
+        </div>
+        <h3 style="font-family: var(--font-heading); font-size: var(--fs-h3); font-weight: 700; color: var(--text); margin-bottom: 10px;">Instant Detection</h3>
+        <p style="font-size: var(--fs-body); color: var(--text-muted); line-height: 1.6;">
+          LinkForge flags every orphan page with a warning badge across all views — Pages, Suggestions, and Analytics graph.
+        </p>
+      </div>
+
+      <!-- Card 2: Filter & Sort -->
+      <div class="card" style="display:flex; flex-direction:column; align-items:flex-start; padding: 28px 24px;">
+        <div style="width:44px; height:44px; border-radius:12px; background: #fff7ed; display:flex; align-items:center; justify-content:center; margin-bottom: 16px;">
+          <span class="material-icons" style="color: var(--primary); font-size: 24px;">filter_list</span>
+        </div>
+        <h3 style="font-family: var(--font-heading); font-size: var(--fs-h3); font-weight: 700; color: var(--text); margin-bottom: 10px;">Filter & Sort</h3>
+        <p style="font-size: var(--fs-body); color: var(--text-muted); line-height: 1.6;">
+          Quickly filter to see only orphan pages. Sort by word count, URL, or title to prioritize which to link first.
+        </p>
+      </div>
+
+      <!-- Card 3: One-Click Fix -->
+      <div class="card" style="display:flex; flex-direction:column; align-items:flex-start; padding: 28px 24px;">
+        <div style="width:44px; height:44px; border-radius:12px; background: #ecfdf5; display:flex; align-items:center; justify-content:center; margin-bottom: 16px;">
+          <span class="material-icons" style="color: var(--emerald); font-size: 24px;">bolt</span>
+        </div>
+        <h3 style="font-family: var(--font-heading); font-size: var(--fs-h3); font-weight: 700; color: var(--text); margin-bottom: 10px;">One-Click Fix</h3>
+        <p style="font-size: var(--fs-body); color: var(--text-muted); line-height: 1.6;">
+          AI suggests the best internal links for each orphan page. Approve and export — done.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <aside data-notes class="hidden">
+    This slide highlights one of the most critical features of LinkForge — orphan page detection. Studies show that nearly half of all website pages have zero incoming internal links, meaning Google may never discover or rank them. That 47% figure is an industry average backed by multiple SEO audits. LinkForge solves this in three ways. First, Instant Detection: every orphan page is automatically flagged with a warning badge across all views — whether you're browsing the Pages list, reviewing Suggestions, or looking at the Analytics graph. You don't have to go looking for orphans; they find you. Second, Filter & Sort: once detected, you can quickly isolate orphan pages and sort them by word count, URL, or title. This makes it easy to prioritize — for example, you might want to link high-word-count pages first since they likely represent your most valuable content. Third, One-Click Fix: the AI engine suggests the best internal links for each orphan page based on semantic relevance. You simply review, approve, and export. No manual guesswork required.
+  </aside>
+</body>
+</html>

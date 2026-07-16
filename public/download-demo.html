@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkForge — Download Demo Materials</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 48px 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 15px;
+      margin-bottom: 36px;
+    }
+    .file-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+    .file-card:last-child { margin-bottom: 0; }
+    .file-card:hover {
+      background: #f8fafc;
+      border-color: #f97316;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(249,115,22,0.1);
+    }
+    .file-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 24px;
+    }
+    .icon-pptx { background: #fff7ed; }
+    .icon-md { background: #f0fdfa; }
+    .file-info { text-align: left; flex: 1; }
+    .file-name { font-weight: 700; font-size: 15px; color: #1e293b; }
+    .file-desc { font-size: 13px; color: #64748b; margin-top: 2px; }
+    .dl-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .file-card:hover .dl-arrow { background: #f97316; color: white; }
+    .dl-arrow svg { width: 20px; height: 20px; }
+    .hint {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-top: 28px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📥 Download Demo Materials</h1>
+    <p class="subtitle">Click a file below to download it to your computer</p>
+
+    <a href="/LinkForge_Demo.pptx" download class="file-card">
+      <div class="file-icon icon-pptx">📊</div>
+      <div class="file-info">
+        <div class="file-name">LinkForge_Demo.pptx</div>
+        <div class="file-desc">9-slide presentation with speaker notes (1.9 MB)</div>
+      </div>
+      <div class="dl-arrow">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+      </div>
+    </a>
+
+    <a href="/LinkForge_Demo_Script.md" download class="file-card">
+      <div class="file-icon icon-md">📝</div>
+      <div class="file-info">
+        <div class="file-name">LinkForge_Demo_Script.md</div>
+        <div class="file-desc">Word-for-word 5-min recording script (7.5 KB)</div>
+      </div>
+      <div class="dl-arrow">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+      </div>
+    </a>
+
+    <p class="hint">Click either file — it will save directly to your downloads folder</p>
+  </div>
+</body>
+</html>

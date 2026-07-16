@@ -14,6 +14,7 @@ export interface StoredUser {
   usageLinks: number;
   usageQueries: number;
   createdAt: string;
+  isAdmin?: boolean;
 }
 
 export function saveUser(user: StoredUser): void {

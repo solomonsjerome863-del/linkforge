@@ -16,6 +16,8 @@ import {
   CalendarDays,
   XCircle,
   ExternalLink,
+  Lock,
+  KeyRound,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -108,6 +110,13 @@ export function SettingsView() {
   const [name, setName] = useState(user?.name ?? "");
   const [isSavingName, setIsSavingName] = useState(false);
 
+  // Change Password
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [isChangingPwd, setIsChangingPwd] = useState(false);
+  const [showChangePwd, setShowChangePwd] = useState(false);
+
   // Preferences tab
   const [maxLinksPerPage, setMaxLinksPerPage] = useState(5);
   const [autoApproveThreshold, setAutoApproveThreshold] = useState(70);
@@ -138,6 +147,44 @@ export function SettingsView() {
         });
     }
   }, [user?.id]);
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user?.id) return;
+    if (newPwd !== confirmPwd) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (newPwd.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+    setIsChangingPwd(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          currentPassword: currentPwd,
+          newPassword: newPwd,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to change password");
+      }
+      toast.success("Password changed successfully! Use your new password next time you log in.");
+      setCurrentPwd("");
+      setNewPwd("");
+      setConfirmPwd("");
+      setShowChangePwd(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to change password");
+    } finally {
+      setIsChangingPwd(false);
+    }
+  }
 
   async function handleSaveName() {
     if (!name.trim()) {
@@ -257,6 +304,93 @@ export function SettingsView() {
                     Email cannot be changed. Contact support if needed.
                   </p>
                 </div>
+                <Separator />
+
+                {/* Change Password */}
+                {!showChangePwd ? (
+                  <div className="flex items-center gap-3">
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Password</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowChangePwd(true)}
+                    >
+                      <KeyRound className="w-3.5 h-3.5 mr-1.5" />
+                      Change Password
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
+                    <p className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-md p-2.5">
+                      You&apos;re already logged in, so you can set a new password directly.
+                      {currentPwd && " Leave current password blank to skip verification."}
+                    </p>
+                    <div className="space-y-2">
+                      <Label htmlFor="current-pwd">
+                        Current Password
+                        <span className="text-xs text-muted-foreground font-normal ml-1.5">(optional)</span>
+                      </Label>
+                      <Input
+                        id="current-pwd"
+                        type="password"
+                        placeholder="Leave blank to skip"
+                        value={currentPwd}
+                        onChange={(e) => setCurrentPwd(e.target.value)}
+                        disabled={isChangingPwd}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="new-pwd">New Password</Label>
+                      <Input
+                        id="new-pwd"
+                        type="password"
+                        placeholder="Min. 6 characters"
+                        value={newPwd}
+                        onChange={(e) => setNewPwd(e.target.value)}
+                        disabled={isChangingPwd}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-pwd">Confirm New Password</Label>
+                      <Input
+                        id="confirm-pwd"
+                        type="password"
+                        placeholder="Re-enter new password"
+                        value={confirmPwd}
+                        onChange={(e) => setConfirmPwd(e.target.value)}
+                        disabled={isChangingPwd}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="submit"
+                        disabled={isChangingPwd || !newPwd || !confirmPwd}
+                      >
+                        {isChangingPwd ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4 mr-2" />
+                        )}
+                        Update Password
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setShowChangePwd(false);
+                          setCurrentPwd("");
+                          setNewPwd("");
+                          setConfirmPwd("");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
                 <Separator />
                 <div className="flex items-center gap-3">
                   <Label>Current Plan</Label>

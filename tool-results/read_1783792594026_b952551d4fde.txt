@@ -1,0 +1,725 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import { useState, useEffect } from "react";
+     4→     4→import { motion } from "framer-motion";
+     5→     5→import {
+     6→     6→  User,
+     7→     7→  Mail,
+     8→     8→  Crown,
+     9→     9→  Zap,
+    10→    10→  Building2,
+    11→    11→  Rocket,
+    12→    12→  Check,
+    13→    13→  Loader2,
+    14→    14→  Save,
+    15→    15→  CreditCard,
+    16→    16→  CalendarDays,
+    17→    17→  XCircle,
+    18→    18→  ExternalLink,
+    19→    19→  Lock,
+    20→    20→  KeyRound,
+    21→    21→} from "lucide-react";
+    22→    22→import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+    23→    23→import { Button } from "@/components/ui/button";
+    24→    24→import { Input } from "@/components/ui/input";
+    25→    25→import { Label } from "@/components/ui/label";
+    26→    26→import { Badge } from "@/components/ui/badge";
+    27→    27→import { Separator } from "@/components/ui/separator";
+    28→    28→import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+    29→    29→import { Slider } from "@/components/ui/slider";
+    30→    30→import { Textarea } from "@/components/ui/textarea";
+    31→    31→import { useAppStore } from "@/lib/store";
+    32→    32→import { useLemonSqueezyCheckout } from "@/lib/use-lemonsqueezy";
+    33→    33→import { PLAN_LIMITS, type PlanType } from "@/lib/types";
+    34→    34→import { cn } from "@/lib/utils";
+    35→    35→import { toast } from "sonner";
+    36→    36→
+    37→    37→const PLANS: {
+    38→    38→  type: PlanType;
+    39→    39→  name: string;
+    40→    40→  price: string;
+    41→    41→  period: string;
+    42→    42→  icon: React.ElementType;
+    43→    43→  features: string[];
+    44→    44→  popular?: boolean;
+    45→    45→  dark?: boolean;
+    46→    46→  checkoutable?: boolean;
+    47→    47→}[] = [
+    48→    48→  {
+    49→    49→    type: "starter",
+    50→    50→    name: "Starter",
+    51→    51→    price: "Free",
+    52→    52→    period: "",
+    53→    53→    icon: Zap,
+    54→    54→    features: PLAN_LIMITS.starter.features,
+    55→    55→  },
+    56→    56→  {
+    57→    57→    type: "pro",
+    58→    58→    name: "Pro",
+    59→    59→    price: "$49",
+    60→    60→    period: "/mo",
+    61→    61→    icon: Crown,
+    62→    62→    features: PLAN_LIMITS.pro.features,
+    63→    63→    popular: true,
+    64→    64→    checkoutable: true,
+    65→    65→  },
+    66→    66→  {
+    67→    67→    type: "business",
+    68→    68→    name: "Business",
+    69→    69→    price: "$149",
+    70→    70→    period: "/mo",
+    71→    71→    icon: Building2,
+    72→    72→    features: PLAN_LIMITS.business.features,
+    73→    73→    checkoutable: true,
+    74→    74→  },
+    75→    75→  {
+    76→    76→    type: "enterprise",
+    77→    77→    name: "Enterprise",
+    78→    78→    price: "Custom",
+    79→    79→    period: "",
+    80→    80→    icon: Rocket,
+    81→    81→    features: PLAN_LIMITS.enterprise.features,
+    82→    82→    dark: true,
+    83→    83→  },
+    84→    84→];
+    85→    85→
+    86→    86→function getPlanBadgeColor(plan: PlanType) {
+    87→    87→  const map: Record<PlanType, string> = {
+    88→    88→    starter: "bg-muted text-muted-foreground",
+    89→    89→    pro: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+    90→    90→    business: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+    91→    91→    enterprise: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    92→    92→  };
+    93→    93→  return map[plan];
+    94→    94→}
+    95→    95→
+    96→    96→export function SettingsView() {
+    97→    97→  const user = useAppStore((s) => s.user);
+    98→    98→  const setUser = useAppStore((s) => s.setUser);
+    99→    99→
+   100→   100→  // Billing
+   101→   101→  const { openCheckout, isCheckingOut } = useLemonSqueezyCheckout();
+   102→   102→  const [subscriptionInfo, setSubscriptionInfo] = useState<{
+   103→   103→    subscriptionStatus: string | null;
+   104→   104→    subscriptionEndsAt: string | null;
+   105→   105→    isActive: boolean;
+   106→   106→  } | null>(null);
+   107→   107→  const [isCancelling, setIsCancelling] = useState(false);
+   108→   108→
+   109→   109→  // Account tab
+   110→   110→  const [name, setName] = useState(user?.name ?? "");
+   111→   111→  const [isSavingName, setIsSavingName] = useState(false);
+   112→   112→
+   113→   113→  // Change Password
+   114→   114→  const [currentPwd, setCurrentPwd] = useState("");
+   115→   115→  const [newPwd, setNewPwd] = useState("");
+   116→   116→  const [confirmPwd, setConfirmPwd] = useState("");
+   117→   117→  const [isChangingPwd, setIsChangingPwd] = useState(false);
+   118→   118→  const [showChangePwd, setShowChangePwd] = useState(false);
+   119→   119→
+   120→   120→  // Preferences tab
+   121→   121→  const [maxLinksPerPage, setMaxLinksPerPage] = useState(5);
+   122→   122→  const [autoApproveThreshold, setAutoApproveThreshold] = useState(70);
+   123→   123→  const [excludePatterns, setExcludePatterns] = useState("");
+   124→   124→  const [isSavingPrefs, setIsSavingPrefs] = useState(false);
+   125→   125→
+   126→   126→  useEffect(() => {
+   127→   127→    setName(user?.name ?? "");
+   128→   128→  }, [user?.name]);
+   129→   129→
+   130→   130→  // Fetch subscription info on mount
+   131→   131→  useEffect(() => {
+   132→   132→    if (user?.id) {
+   133→   133→      fetch(`/api/billing/portal?userId=${user.id}`)
+   134→   134→        .then((r) => r.json())
+   135→   135→        .then((data) => {
+   136→   136→          if (data.plan && data.plan !== user.plan) {
+   137→   137→            setUser({ ...user, plan: data.plan });
+   138→   138→          }
+   139→   139→          setSubscriptionInfo({
+   140→   140→            subscriptionStatus: data.subscriptionStatus,
+   141→   141→            subscriptionEndsAt: data.subscriptionEndsAt,
+   142→   142→            isActive: data.isActive,
+   143→   143→          });
+   144→   144→        })
+   145→   145→        .catch(() => {
+   146→   146→          // Subscription endpoint may not be available yet
+   147→   147→        });
+   148→   148→    }
+   149→   149→  }, [user?.id]);
+   150→   150→
+   151→   151→  async function handleChangePassword(e: React.FormEvent) {
+   152→   152→    e.preventDefault();
+   153→   153→    if (!user?.id) return;
+   154→   154→    if (newPwd !== confirmPwd) {
+   155→   155→      toast.error("New passwords do not match");
+   156→   156→      return;
+   157→   157→    }
+   158→   158→    if (newPwd.length < 6) {
+   159→   159→      toast.error("New password must be at least 6 characters");
+   160→   160→      return;
+   161→   161→    }
+   162→   162→    setIsChangingPwd(true);
+   163→   163→    try {
+   164→   164→      const res = await fetch("/api/auth/change-password", {
+   165→   165→        method: "POST",
+   166→   166→        headers: { "Content-Type": "application/json" },
+   167→   167→        body: JSON.stringify({
+   168→   168→          userId: user.id,
+   169→   169→          currentPassword: currentPwd,
+   170→   170→          newPassword: newPwd,
+   171→   171→        }),
+   172→   172→      });
+   173→   173→      const data = await res.json();
+   174→   174→      if (!res.ok) {
+   175→   175→        throw new Error(data.error || "Failed to change password");
+   176→   176→      }
+   177→   177→      toast.success("Password changed successfully! Use your new password next time you log in.");
+   178→   178→      setCurrentPwd("");
+   179→   179→      setNewPwd("");
+   180→   180→      setConfirmPwd("");
+   181→   181→      setShowChangePwd(false);
+   182→   182→    } catch (err) {
+   183→   183→      toast.error(err instanceof Error ? err.message : "Failed to change password");
+   184→   184→    } finally {
+   185→   185→      setIsChangingPwd(false);
+   186→   186→    }
+   187→   187→  }
+   188→   188→
+   189→   189→  async function handleSaveName() {
+   190→   190→    if (!name.trim()) {
+   191→   191→      toast.error("Name cannot be empty");
+   192→   192→      return;
+   193→   193→    }
+   194→   194→    setIsSavingName(true);
+   195→   195→    try {
+   196→   196→      await new Promise((r) => setTimeout(r, 400));
+   197→   197→      if (user) setUser({ ...user, name: name.trim() });
+   198→   198→      toast.success("Profile updated");
+   199→   199→    } catch {
+   200→   200→      toast.error("Failed to save changes");
+   201→   201→    } finally {
+   202→   202→      setIsSavingName(false);
+   203→   203→    }
+   204→   204→  }
+   205→   205→
+   206→   206→  async function handleSavePrefs() {
+   207→   207→    setIsSavingPrefs(true);
+   208→   208→    try {
+   209→   209→      await new Promise((r) => setTimeout(r, 400));
+   210→   210→      toast.success("Preferences saved");
+   211→   211→    } catch {
+   212→   212→      toast.error("Failed to save changes");
+   213→   213→    } finally {
+   214→   214→      setIsSavingPrefs(false);
+   215→   215→    }
+   216→   216→  }
+   217→   217→
+   218→   218→  async function handleCancelSubscription() {
+   219→   219→    if (!user?.id) return;
+   220→   220→    setIsCancelling(true);
+   221→   221→    try {
+   222→   222→      const res = await fetch("/api/billing/portal", {
+   223→   223→        method: "POST",
+   224→   224→        headers: { "Content-Type": "application/json" },
+   225→   225→        body: JSON.stringify({ userId: user.id }),
+   226→   226→      });
+   227→   227→      const data = await res.json();
+   228→   228→      if (res.ok) {
+   229→   229→        toast.success("Subscription cancelled. You'll keep access until the end of your billing period.");
+   230→   230→        setSubscriptionInfo((prev) =>
+   231→   231→          prev ? { ...prev, isActive: false, subscriptionStatus: "cancelled" } : prev
+   232→   232→        );
+   233→   233→      } else {
+   234→   234→        toast.error(data.error || "Failed to cancel subscription");
+   235→   235→      }
+   236→   236→    } catch {
+   237→   237→      toast.error("Failed to cancel subscription");
+   238→   238→    } finally {
+   239→   239→      setIsCancelling(false);
+   240→   240→    }
+   241→   241→  }
+   242→   242→
+   243→   243→  function formatDate(dateStr: string | null): string {
+   244→   244→    if (!dateStr) return "N/A";
+   245→   245→    return new Date(dateStr).toLocaleDateString("en-US", {
+   246→   246→      year: "numeric",
+   247→   247→      month: "long",
+   248→   248→      day: "numeric",
+   249→   249→    });
+   250→   250→  }
+   251→   251→
+   252→   252→  const currentPlanData = PLANS.find((p) => p.type === user?.plan);
+   253→   253→  const hasActiveSubscription = subscriptionInfo?.isActive ?? false;
+   254→   254→
+   255→   255→  return (
+   256→   256→    <div className="space-y-6">
+   257→   257→      <div>
+   258→   258→        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+   259→   259→        <p className="text-muted-foreground mt-1">
+   260→   260→          Manage your account, plan, and preferences.
+   261→   261→        </p>
+   262→   262→      </div>
+   263→   263→
+   264→   264→      <Tabs defaultValue="account" className="space-y-6">
+   265→   265→        <TabsList>
+   266→   266→          <TabsTrigger value="account">Account</TabsTrigger>
+   267→   267→          <TabsTrigger value="plan">Plan</TabsTrigger>
+   268→   268→          <TabsTrigger value="preferences">Preferences</TabsTrigger>
+   269→   269→        </TabsList>
+   270→   270→
+   271→   271→        {/* Account Tab */}
+   272→   272→        <TabsContent value="account">
+   273→   273→          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+   274→   274→            <Card>
+   275→   275→              <CardHeader>
+   276→   276→                <CardTitle className="text-base">Profile Information</CardTitle>
+   277→   277→                <CardDescription>Update your account details.</CardDescription>
+   278→   278→              </CardHeader>
+   279→   279→              <CardContent className="space-y-4">
+   280→   280→                <div className="space-y-2">
+   281→   281→                  <Label htmlFor="settings-name">Name</Label>
+   282→   282→                  <div className="relative max-w-sm">
+   283→   283→                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+   284→   284→                    <Input
+   285→   285→                      id="settings-name"
+   286→   286→                      value={name}
+   287→   287→                      onChange={(e) => setName(e.target.value)}
+   288→   288→                      className="pl-9"
+   289→   289→                      disabled={isSavingName}
+   290→   290→                    />
+   291→   291→                  </div>
+   292→   292→                </div>
+   293→   293→                <div className="space-y-2">
+   294→   294→                  <Label>Email</Label>
+   295→   295→                  <div className="relative max-w-sm">
+   296→   296→                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+   297→   297→                    <Input
+   298→   298→                      value={user?.email ?? ""}
+   299→   299→                      className="pl-9"
+   300→   300→                      disabled
+   301→   301→                    />
+   302→   302→                  </div>
+   303→   303→                  <p className="text-xs text-muted-foreground">
+   304→   304→                    Email cannot be changed. Contact support if needed.
+   305→   305→                  </p>
+   306→   306→                </div>
+   307→   307→                <Separator />
+   308→   308→
+   309→   309→                {/* Change Password */}
+   310→   310→                {!showChangePwd ? (
+   311→   311→                  <div className="flex items-center gap-3">
+   312→   312→                    <Lock className="w-4 h-4 text-muted-foreground" />
+   313→   313→                    <span className="text-sm text-muted-foreground">Password</span>
+   314→   314→                    <Button
+   315→   315→                      type="button"
+   316→   316→                      variant="outline"
+   317→   317→                      size="sm"
+   318→   318→                      onClick={() => setShowChangePwd(true)}
+   319→   319→                    >
+   320→   320→                      <KeyRound className="w-3.5 h-3.5 mr-1.5" />
+   321→   321→                      Change Password
+   322→   322→                    </Button>
+   323→   323→                  </div>
+   324→   324→                ) : (
+   325→   325→                  <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
+   326→   326→                    <p className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-md p-2.5">
+   327→   327→                      You&apos;re already logged in, so you can set a new password directly.
+   328→   328→                      {currentPwd && " Leave current password blank to skip verification."}
+   329→   329→                    </p>
+   330→   330→                    <div className="space-y-2">
+   331→   331→                      <Label htmlFor="current-pwd">
+   332→   332→                        Current Password
+   333→   333→                        <span className="text-xs text-muted-foreground font-normal ml-1.5">(optional)</span>
+   334→   334→                      </Label>
+   335→   335→                      <Input
+   336→   336→                        id="current-pwd"
+   337→   337→                        type="password"
+   338→   338→                        placeholder="Leave blank to skip"
+   339→   339→                        value={currentPwd}
+   340→   340→                        onChange={(e) => setCurrentPwd(e.target.value)}
+   341→   341→                        disabled={isChangingPwd}
+   342→   342→                      />
+   343→   343→                    </div>
+   344→   344→                    <div className="space-y-2">
+   345→   345→                      <Label htmlFor="new-pwd">New Password</Label>
+   346→   346→                      <Input
+   347→   347→                        id="new-pwd"
+   348→   348→                        type="password"
+   349→   349→                        placeholder="Min. 6 characters"
+   350→   350→                        value={newPwd}
+   351→   351→                        onChange={(e) => setNewPwd(e.target.value)}
+   352→   352→                        disabled={isChangingPwd}
+   353→   353→                      />
+   354→   354→                    </div>
+   355→   355→                    <div className="space-y-2">
+   356→   356→                      <Label htmlFor="confirm-pwd">Confirm New Password</Label>
+   357→   357→                      <Input
+   358→   358→                        id="confirm-pwd"
+   359→   359→                        type="password"
+   360→   360→                        placeholder="Re-enter new password"
+   361→   361→                        value={confirmPwd}
+   362→   362→                        onChange={(e) => setConfirmPwd(e.target.value)}
+   363→   363→                        disabled={isChangingPwd}
+   364→   364→                      />
+   365→   365→                    </div>
+   366→   366→                    <div className="flex items-center gap-2">
+   367→   367→                      <Button
+   368→   368→                        type="submit"
+   369→   369→                        disabled={isChangingPwd || !newPwd || !confirmPwd}
+   370→   370→                      >
+   371→   371→                        {isChangingPwd ? (
+   372→   372→                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+   373→   373→                        ) : (
+   374→   374→                          <Save className="w-4 h-4 mr-2" />
+   375→   375→                        )}
+   376→   376→                        Update Password
+   377→   377→                      </Button>
+   378→   378→                      <Button
+   379→   379→                        type="button"
+   380→   380→                        variant="ghost"
+   381→   381→                        onClick={() => {
+   382→   382→                          setShowChangePwd(false);
+   383→   383→                          setCurrentPwd("");
+   384→   384→                          setNewPwd("");
+   385→   385→                          setConfirmPwd("");
+   386→   386→                        }}
+   387→   387→                      >
+   388→   388→                        Cancel
+   389→   389→                      </Button>
+   390→   390→                    </div>
+   391→   391→                  </form>
+   392→   392→                )}
+   393→   393→
+   394→   394→                <Separator />
+   395→   395→                <div className="flex items-center gap-3">
+   396→   396→                  <Label>Current Plan</Label>
+   397→   397→                  <Badge
+   398→   398→                    variant="secondary"
+   399→   399→                    className={cn("text-xs", getPlanBadgeColor(user?.plan ?? "starter"))}
+   400→   400→                  >
+   401→   401→                    {(user?.plan ?? "starter").charAt(0).toUpperCase() +
+   402→   402→                      (user?.plan ?? "starter").slice(1)}
+   403→   403→                  </Badge>
+   404→   404→                </div>
+   405→   405→                <Button
+   406→   406→                  onClick={handleSaveName}
+   407→   407→                  disabled={isSavingName || name === (user?.name ?? "")}
+   408→   408→                >
+   409→   409→                  {isSavingName ? (
+   410→   410→                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+   411→   411→                  ) : (
+   412→   412→                    <Save className="w-4 h-4 mr-2" />
+   413→   413→                  )}
+   414→   414→                  Save Changes
+   415→   415→                </Button>
+   416→   416→              </CardContent>
+   417→   417→            </Card>
+   418→   418→          </motion.div>
+   419→   419→        </TabsContent>
+   420→   420→
+   421→   421→        {/* Plan Tab */}
+   422→   422→        <TabsContent value="plan">
+   423→   423→          <div className="space-y-6">
+   424→   424→            {/* Active Subscription Card */}
+   425→   425→            {hasActiveSubscription && (
+   426→   426→              <motion.div
+   427→   427→                initial={{ opacity: 0, y: 6 }}
+   428→   428→                animate={{ opacity: 1, y: 0 }}
+   429→   429→              >
+   430→   430→                <Card className="border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/50 dark:bg-emerald-900/10">
+   431→   431→                  <CardHeader>
+   432→   432→                    <div className="flex items-center justify-between">
+   433→   433→                      <div className="flex items-center gap-2">
+   434→   434→                        <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+   435→   435→                        <CardTitle className="text-base">Active Subscription</CardTitle>
+   436→   436→                      </div>
+   437→   437→                      <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">
+   438→   438→                        {subscriptionInfo?.subscriptionStatus === "on_trial" ? "Trial" : "Active"}
+   439→   439→                      </Badge>
+   440→   440→                    </div>
+   441→   441→                  </CardHeader>
+   442→   442→                  <CardContent>
+   443→   443→                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+   444→   444→                      <div>
+   445→   445→                        <p className="text-muted-foreground">Plan</p>
+   446→   446→                        <p className="font-medium capitalize">
+   447→   447→                          {currentPlanData?.name ?? user?.plan}
+   448→   448→                        </p>
+   449→   449→                      </div>
+   450→   450→                      <div>
+   451→   451→                        <p className="text-muted-foreground">Status</p>
+   452→   452→                        <p className="font-medium capitalize">
+   453→   453→                          {subscriptionInfo?.subscriptionStatus}
+   454→   454→                        </p>
+   455→   455→                      </div>
+   456→   456→                      <div>
+   457→   457→                        <p className="text-muted-foreground">Renews / Ends</p>
+   458→   458→                        <div className="flex items-center gap-1.5">
+   459→   459→                          <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+   460→   460→                          <p className="font-medium">
+   461→   461→                            {formatDate(subscriptionInfo?.subscriptionEndsAt)}
+   462→   462→                          </p>
+   463→   463→                        </div>
+   464→   464→                      </div>
+   465→   465→                    </div>
+   466→   466→                    <Separator className="my-4" />
+   467→   467→                    <div className="flex items-center gap-3">
+   468→   468→                      <Button
+   469→   469→                        variant="outline"
+   470→   470→                        size="sm"
+   471→   471→                        className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800/50 dark:hover:bg-red-900/20"
+   472→   472→                        onClick={handleCancelSubscription}
+   473→   473→                        disabled={isCancelling}
+   474→   474→                      >
+   475→   475→                        {isCancelling ? (
+   476→   476→                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+   477→   477→                        ) : (
+   478→   478→                          <XCircle className="w-4 h-4 mr-2" />
+   479→   479→                        )}
+   480→   480→                        Cancel Subscription
+   481→   481→                      </Button>
+   482→   482→                      <p className="text-xs text-muted-foreground">
+   483→   483→                        You&apos;ll keep access until the end of your billing period.
+   484→   484→                      </p>
+   485→   485→                    </div>
+   486→   486→                  </CardContent>
+   487→   487→                </Card>
+   488→   488→              </motion.div>
+   489→   489→            )}
+   490→   490→
+   491→   491→            {/* Cancelled Subscription Notice */}
+   492→   492→            {subscriptionInfo?.subscriptionStatus === "cancelled" && !hasActiveSubscription && (
+   493→   493→              <motion.div
+   494→   494→                initial={{ opacity: 0, y: 6 }}
+   495→   495→                animate={{ opacity: 1, y: 0 }}
+   496→   496→              >
+   497→   497→                <Card className="border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/10">
+   498→   498→                  <CardContent className="p-4 flex items-center gap-3">
+   499→   499→                    <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+   500→   500→                    <div>
+   501→   501→                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+   502→   502→                        Subscription Cancelled
+   503→   503→                      </p>
+   504→   504→                      <p className="text-xs text-amber-600 dark:text-amber-400">
+   505→   505→                        Your plan access continues until{" "}
+   506→   506→                        {formatDate(subscriptionInfo?.subscriptionEndsAt)}.
+   507→   507→                        You can subscribe again below.
+   508→   508→                      </p>
+   509→   509→                    </div>
+   510→   510→                  </CardContent>
+   511→   511→                </Card>
+   512→   512→              </motion.div>
+   513→   513→            )}
+   514→   514→
+   515→   515→            {/* Plan Cards */}
+   516→   516→            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+   517→   517→              {PLANS.map((plan, i) => {
+   518→   518→                const isCurrent = user?.plan === plan.type;
+   519→   519→                const Icon = plan.icon;
+   520→   520→                return (
+   521→   521→                  <motion.div
+   522→   522→                    key={plan.type}
+   523→   523→                    initial={{ opacity: 0, y: 10 }}
+   524→   524→                    animate={{ opacity: 1, y: 0 }}
+   525→   525→                    transition={{ delay: i * 0.05 }}
+   526→   526→                  >
+   527→   527→                    <Card
+   528→   528→                      className={cn(
+   529→   529→                        "relative flex flex-col h-full",
+   530→   530→                        plan.popular && "border-2 border-orange-500/50 shadow-lg shadow-orange-500/10",
+   531→   531→                        plan.dark && "bg-neutral-950 text-white border-neutral-800 dark:bg-neutral-950"
+   532→   532→                      )}
+   533→   533→                    >
+   534→   534→                      {plan.popular && (
+   535→   535→                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+   536→   536→                          <Badge className="bg-gradient-to-r from-orange-500 to-amber-500 text-white border-0 text-xs">
+   537→   537→                            Most Popular
+   538→   538→                          </Badge>
+   539→   539→                        </div>
+   540→   540→                      )}
+   541→   541→                      <CardHeader className="pb-3">
+   542→   542→                        <div className="flex items-center gap-2">
+   543→   543→                          <Icon
+   544→   544→                            className={cn(
+   545→   545→                              "w-5 h-5",
+   546→   546→                              plan.dark
+   547→   547→                                ? "text-amber-400"
+   548→   548→                                : "text-orange-500"
+   549→   549→                            )}
+   550→   550→                          />
+   551→   551→                          <CardTitle className={cn("text-base", plan.dark && "text-white")}>{plan.name}</CardTitle>
+   552→   552→                        </div>
+   553→   553→                        <div className="pt-1">
+   554→   554→                          <span className={cn("text-3xl font-bold", plan.dark && "text-white")}>
+   555→   555→                            {plan.price}
+   556→   556→                          </span>
+   557→   557→                          {plan.period && (
+   558→   558→                            <span className={cn("text-sm text-muted-foreground", plan.dark && "text-neutral-400")}>
+   559→   559→                              {plan.period}
+   560→   560→                            </span>
+   561→   561→                          )}
+   562→   562→                        </div>
+   563→   563→                      </CardHeader>
+   564→   564→                      <CardContent className="flex-1 flex flex-col">
+   565→   565→                        <ul className="space-y-2 text-sm flex-1">
+   566→   566→                          {plan.features.map((feature, fi) => (
+   567→   567→                            <li key={fi} className="flex items-start gap-2">
+   568→   568→                              <Check className={cn("w-4 h-4 mt-0.5 shrink-0", plan.dark ? "text-teal-400" : "text-teal-600")} />
+   569→   569→                              <span className={plan.dark ? "text-neutral-300" : ""}>{feature}</span>
+   570→   570→                            </li>
+   571→   571→                          ))}
+   572→   572→                        </ul>
+   573→   573→                        <div className="mt-4">
+   574→   574→                          {isCurrent ? (
+   575→   575→                            <Button
+   576→   576→                              variant="outline"
+   577→   577→                              className="w-full"
+   578→   578→                              disabled
+   579→   579→                            >
+   580→   580→                              Current Plan
+   581→   581→                            </Button>
+   582→   582→                          ) : plan.checkoutable ? (
+   583→   583→                            <Button
+   584→   584→                              className={cn(
+   585→   585→                                "w-full",
+   586→   586→                                plan.popular
+   587→   587→                                  ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+   588→   588→                                  : plan.dark
+   589→   589→                                    ? "bg-white text-neutral-900 hover:bg-neutral-200"
+   590→   590→                                    : ""
+   591→   591→                              )}
+   592→   592→                              onClick={() => openCheckout(plan.type)}
+   593→   593→                              disabled={isCheckingOut}
+   594→   594→                            >
+   595→   595→                              {isCheckingOut ? (
+   596→   596→                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+   597→   597→                              ) : null}
+   598→   598→                              {plan.period ? "Upgrade" : "Contact Sales"}
+   599→   599→                              <ExternalLink className="w-3.5 h-3.5 ml-1.5 opacity-60" />
+   600→   600→                            </Button>
+   601→   601→                          ) : plan.type === "enterprise" ? (
+   602→   602→                            <Button
+   603→   603→                              className={cn(
+   604→   604→                                "w-full",
+   605→   605→                                plan.dark
+   606→   606→                                  ? "bg-white text-neutral-900 hover:bg-neutral-200"
+   607→   607→                                  : ""
+   608→   608→                              )}
+   609→   609→                              variant="outline"
+   610→   610→                              onClick={() =>
+   611→   611→                                toast.info(
+   612→   612→                                  "Enterprise inquiries: hello@linkforge.digital"
+   613→   613→                                )
+   614→   614→                              }
+   615→   615→                            >
+   616→   616→                              Contact Sales
+   617→   617→                            </Button>
+   618→   618→                          ) : (
+   619→   619→                            <Button
+   620→   620→                              variant="outline"
+   621→   621→                              className="w-full"
+   622→   622→                              disabled
+   623→   623→                            >
+   624→   624→                              Free
+   625→   625→                            </Button>
+   626→   626→                          )}
+   627→   627→                        </div>
+   628→   628→                      </CardContent>
+   629→   629→                    </Card>
+   630→   630→                  </motion.div>
+   631→   631→                );
+   632→   632→              })}
+   633→   633→            </div>
+   634→   634→          </div>
+   635→   635→        </TabsContent>
+   636→   636→
+   637→   637→        {/* Preferences Tab */}
+   638→   638→        <TabsContent value="preferences">
+   639→   639→          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+   640→   640→            <Card>
+   641→   641→              <CardHeader>
+   642→   642→                <CardTitle className="text-base">Link Generation Preferences</CardTitle>
+   643→   643→                <CardDescription>
+   644→   644→                  Configure how LinkForge generates and manages suggestions.
+   645→   645→                </CardDescription>
+   646→   646→              </CardHeader>
+   647→   647→              <CardContent className="space-y-6">
+   648→   648→                <div className="space-y-3 max-w-md">
+   649→   649→                  <div className="flex items-center justify-between">
+   650→   650→                    <Label>Max links per page</Label>
+   651→   651→                    <span className="text-sm font-mono font-medium text-orange-600 dark:text-orange-400">
+   652→   652→                      {maxLinksPerPage}
+   653→   653→                    </span>
+   654→   654→                  </div>
+   655→   655→                  <Slider
+   656→   656→                    value={[maxLinksPerPage]}
+   657→   657→                    onValueChange={([v]) => setMaxLinksPerPage(v)}
+   658→   658→                    min={1}
+   659→   659→                    max={20}
+   660→   660→                    step={1}
+   661→   661→                    className="[&_[role=slider]]:bg-orange-500"
+   662→   662→                  />
+   663→   663→                  <p className="text-xs text-muted-foreground">
+   664→   664→                    Maximum internal links the AI will suggest adding to a single page.
+   665→   665→                  </p>
+   666→   666→                </div>
+   667→   667→
+   668→   668→                <Separator />
+   669→   669→
+   670→   670→                <div className="space-y-3 max-w-md">
+   671→   671→                  <div className="flex items-center justify-between">
+   672→   672→                    <Label>Auto-approve threshold</Label>
+   673→   673→                    <span className="text-sm font-mono font-medium text-orange-600 dark:text-orange-400">
+   674→   674→                      {autoApproveThreshold}
+   675→   675→                    </span>
+   676→   676→                  </div>
+   677→   677→                  <Slider
+   678→   678→                    value={[autoApproveThreshold]}
+   679→   679→                    onValueChange={([v]) => setAutoApproveThreshold(v)}
+   680→   680→                    min={0}
+   681→   681→                    max={100}
+   682→   682→                    step={5}
+   683→   683→                    className="[&_[role=slider]]:bg-orange-500"
+   684→   684→                  />
+   685→   685→                  <p className="text-xs text-muted-foreground">
+   686→   686→                    Suggestions scoring above this value will be automatically approved.
+   687→   687→                  </p>
+   688→   688→                </div>
+   689→   689→
+   690→   690→                <Separator />
+   691→   691→
+   692→   692→                <div className="space-y-3 max-w-md">
+   693→   693→                  <Label htmlFor="exclude-patterns">Exclude URL Patterns</Label>
+   694→   694→                  <Textarea
+   695→   695→                    id="exclude-patterns"
+   696→   696→                    placeholder={"/tag/\n/category/uncategorized\n/page/"}
+   697→   697→                    value={excludePatterns}
+   698→   698→                    onChange={(e) => setExcludePatterns(e.target.value)}
+   699→   699→                    rows={5}
+   700→   700→                    className="font-mono text-sm"
+   701→   701→                  />
+   702→   702→                  <p className="text-xs text-muted-foreground">
+   703→   703→                    One pattern per line. Pages matching these patterns will be excluded from linking.
+   704→   704→                  </p>
+   705→   705→                </div>
+   706→   706→
+   707→   707→                <Button
+   708→   708→                  onClick={handleSavePrefs}
+   709→   709→                  disabled={isSavingPrefs}
+   710→   710→                >
+   711→   711→                  {isSavingPrefs ? (
+   712→   712→                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+   713→   713→                  ) : (
+   714→   714→                    <Save className="w-4 h-4 mr-2" />
+   715→   715→                  )}
+   716→   716→                  Save Preferences
+   717→   717→                </Button>
+   718→   718→              </CardContent>
+   719→   719→            </Card>
+   720→   720→          </motion.div>
+   721→   721→        </TabsContent>
+   722→   722→      </Tabs>
+   723→   723→    </div>
+   724→   724→  );
+   725→   725→}

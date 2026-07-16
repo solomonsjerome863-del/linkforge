@@ -47,17 +47,23 @@ export async function GET(request: NextRequest) {
           status: { in: ["approved", "applied"] },
         },
       }),
-      // Orphan pages: active pages that don't appear as a target of any suggestion
-      // We count pages that are NOT referenced as a targetPageId in any suggestion
-      db.$queryRaw<{ count: bigint }[]>`
-        SELECT COUNT(*) as count FROM Page p
-        WHERE p.siteId IN (SELECT id FROM Site WHERE userId = ${userId})
-        AND p.status = 'active'
-        AND p.id NOT IN (
-          SELECT DISTINCT targetPageId FROM LinkSuggestion
-          WHERE siteId IN (SELECT id FROM Site WHERE userId = ${userId})
-        )
-      `,
+      // Orphan pages: active pages not referenced as a target in any suggestion
+      (async () => {
+        const allActivePages = await db.page.findMany({
+          where: {
+            site: { userId },
+            status: "active",
+          },
+          select: { id: true },
+        });
+        const referencedTargetIds = await db.linkSuggestion.findMany({
+          where: { site: { userId } },
+          select: { targetPageId: true },
+          distinct: ["targetPageId"],
+        });
+        const referencedSet = new Set(referencedTargetIds.map((r) => r.targetPageId));
+        return allActivePages.filter((p) => !referencedSet.has(p.id)).length;
+      })(),
     ]);
 
     const stats = {
@@ -66,7 +72,7 @@ export async function GET(request: NextRequest) {
       totalSuggestions,
       pendingSuggestions,
       appliedLinks,
-      orphanPages: Number(orphanPages[0]?.count ?? 0),
+      orphanPages,
     };
 
     return NextResponse.json({ stats });

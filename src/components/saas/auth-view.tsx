@@ -167,8 +167,10 @@ export function AuthView() {
         }
         return res.json();
       })
-      .then(() => {
-        toast.success("Password reset! You can now sign in.");
+      .then((data) => {
+        const emailHint = data.email ? ` for ${data.email}` : "";
+        toast.success(`Password reset${emailHint}! You can now sign in.`);
+        setSigninEmail(forgotEmail);
         setMode("signin");
         setResetToken("");
         setResetPassword("");

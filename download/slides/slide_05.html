@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, height=720">
+  <title>AI-Powered Link Suggestions — LinkForge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+    body { margin: 0; padding: 0; background: #e5e7eb; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div class="slide" style="width:1280px;height:720px;overflow:hidden;background:#ffffff;position:relative;display:flex;flex-direction:column;font-family:'Inter','Segoe UI',system-ui,sans-serif;">
+
+    <!-- Decorative blob -->
+    <div data-decor aria-hidden="true" style="position:absolute;bottom:-100px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,0.06) 0%,transparent 70%);filter:blur(40px);pointer-events:none;"></div>
+
+    <!-- Header -->
+    <div style="padding:48px 72px 0 72px;position:relative;z-index:1;">
+      <h1 style="font-family:'Inter',sans-serif;font-size:36px;font-weight:800;color:#1e293b;margin:0;line-height:1.2;">
+        AI-Powered <span style="color:#f97316;">Link Suggestions</span>
+      </h1>
+    </div>
+
+    <!-- Main Content: 55/45 split -->
+    <div style="flex:1;display:flex;gap:32px;padding:24px 72px 48px 72px;position:relative;z-index:1;">
+
+      <!-- Left Side (55%) -->
+      <div style="flex:0 0 55%;display:flex;flex-direction:column;justify-content:center;gap:16px;">
+
+        <!-- Description -->
+        <p style="font-size:17px;color:#64748b;line-height:1.6;margin:0;">
+          LinkForge uses advanced LLM technology to generate natural, contextually relevant internal link suggestions.
+        </p>
+
+        <!-- Mock Suggestion Card (Dark) -->
+        <div class="card-dark" style="padding:20px 24px;border-radius:16px;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <!-- Source -->
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="material-icons" style="font-size:18px;color:#f97316;">description</span>
+              <span style="font-size:14px;color:#94a3b8;">Source:</span>
+              <span style="font-size:15px;color:#f8fafc;font-weight:600;">Complete Guide to On-Page SEO</span>
+            </div>
+            <!-- Arrow -->
+            <span class="material-icons" style="font-size:22px;color:#f97316;">arrow_forward</span>
+            <!-- Target -->
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="material-icons" style="font-size:18px;color:#14b8a6;">link</span>
+              <span style="font-size:14px;color:#94a3b8;">Target:</span>
+              <span style="font-size:15px;color:#f8fafc;font-weight:600;">Internal Linking Best Practices</span>
+            </div>
+          </div>
+          <!-- Anchor Text Row -->
+          <div style="margin-top:14px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:13px;color:#94a3b8;">Anchor text:</span>
+            <span style="background:#f97316;color:#fff;padding:3px 12px;border-radius:6px;font-size:14px;font-weight:600;font-family:'JetBrains Mono',monospace;">internal linking strategy</span>
+            <span class="badge badge-emerald" style="font-family:'JetBrains Mono',monospace;font-size:13px;">92%</span>
+            <span class="badge badge-orange">Pending</span>
+          </div>
+        </div>
+
+        <!-- Context Preview -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;">
+          <span style="font-size:13px;color:#64748b;font-weight:600;display:block;margin-bottom:6px;">Surrounding context preview:</span>
+          <p style="font-size:14px;color:#475569;line-height:1.65;margin:0;font-style:italic;">
+            "...implementing a solid <span style="color:#f97316;font-weight:700;font-style:normal;">internal linking strategy</span> can significantly boost your page authority and help search engines..."
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Side (45%) -->
+      <div style="flex:0 0 45%;display:flex;flex-direction:column;justify-content:center;gap:14px;">
+
+        <!-- Feature 1: Natural Anchor Text -->
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);">
+          <span class="material-icons" style="font-size:26px;color:#f97316;margin-top:2px;">text_fields</span>
+          <div>
+            <h3 style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#1e293b;margin:0 0 4px 0;">Natural Anchor Text</h3>
+            <p style="font-size:14px;color:#64748b;line-height:1.55;margin:0;">AI generates 2-5 word anchor text that reads naturally within your existing content.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Relevance Scoring -->
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);">
+          <span class="material-icons" style="font-size:26px;color:#0d9488;margin-top:2px;">analytics</span>
+          <div>
+            <h3 style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#1e293b;margin:0 0 4px 0;">Relevance Scoring</h3>
+            <p style="font-size:14px;color:#64748b;line-height:1.55;margin:0;">Every suggestion includes a TF-overlap relevance score. <span style="color:#10b981;font-weight:600;">Green (&gt;80%)</span>, <span style="color:#f59e0b;font-weight:600;">Amber (&gt;50%)</span>, <span style="color:#f43f5e;font-weight:600;">Red (≤50%)</span>.</p>
+          </div>
+        </div>
+
+        <!-- Feature 3: Batch Operations -->
+        <div class="card" style="display:flex;align-items:flex-start;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);">
+          <span class="material-icons" style="font-size:26px;color:#f59e0b;margin-top:2px;">list_alt</span>
+          <div>
+            <h3 style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#1e293b;margin:0 0 4px 0;">Batch Operations</h3>
+            <p style="font-size:14px;color:#64748b;line-height:1.55;margin:0;">Approve all, export to CSV or JSON, or review one by one — full control over your workflow.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <aside data-notes class="hidden">
+    This is the core of what makes LinkForge so powerful — our AI-powered link suggestion engine. We use advanced large language model technology to analyze the actual content on every page of your site, understand the semantic relationships, and then generate internal link suggestions that feel completely natural.
+
+    Let me walk you through what a suggestion looks like. On the left, you can see a real example: LinkForge suggests linking from "Complete Guide to On-Page SEO" to "Internal Linking Best Practices" using the anchor text "internal linking strategy." Notice how the anchor text is contextual — it's not keyword-stuffed, it reads like something a human editor would write.
+
+    Every suggestion comes with a relevance score — in this case 92%, shown in green — based on TF-overlap analysis. You can quickly see which suggestions are strongest and which need review. And for efficiency, you can approve all suggestions at once, export everything to CSV or JSON, or review each one individually. The choice is yours.
+  </aside>
+</body>
+</html>

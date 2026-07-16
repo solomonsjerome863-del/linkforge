@@ -14,6 +14,7 @@ export interface User {
   usageLinks: number;
   usageQueries: number;
   createdAt: string;
+  isAdmin?: boolean;
 }
 
 export interface Site {

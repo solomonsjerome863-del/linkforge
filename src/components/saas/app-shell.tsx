@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Link2,
   LayoutDashboard,
   Globe,
   FileText,
@@ -59,17 +58,25 @@ import { AdminView } from "./admin-view";
 import { PLAN_LIMITS, type PlanType } from "@/lib/types";
 import { toast } from "sonner";
 
-const NAV_ITEMS: {
+interface NavItem {
   view: AppView;
   label: string;
   icon: React.ElementType;
-}[] = [
+  isAdmin?: boolean;
+}
+
+const BASE_NAV_ITEMS: NavItem[] = [
   { view: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { view: "sites", label: "Sites", icon: Globe },
   { view: "pages", label: "Pages", icon: FileText },
   { view: "suggestions", label: "Suggestions", icon: Link2Icon },
   { view: "analytics", label: "Analytics", icon: BarChart3 },
   { view: "settings", label: "Settings", icon: Settings },
+];
+
+const EXTRA_NAV_ITEMS: NavItem[] = [
+  { view: "blueprint", label: "Technical Blueprint", icon: BookOpen },
+  { view: "admin", label: "Admin", icon: ShieldCheck, isAdmin: true },
 ];
 
 const VIEW_TITLES: Record<AppView, string> = {
@@ -116,6 +123,18 @@ function SidebarContent({
   const setActiveView = useAppStore((s) => s.setActiveView);
   const setUser = useAppStore((s) => s.setUser);
 
+  // Build the full nav items list dynamically — Admin only for admin users
+  const navItems = useMemo(() => {
+    const items: NavItem[] = [...BASE_NAV_ITEMS];
+    // Always add Blueprint
+    items.push(EXTRA_NAV_ITEMS[0]);
+    // Add Admin if user is admin
+    if (user?.isAdmin) {
+      items.push(EXTRA_NAV_ITEMS[1]);
+    }
+    return items;
+  }, [user?.isAdmin]);
+
   function handleNav(view: AppView) {
     setActiveView(view);
     onNavigate?.();
@@ -159,95 +178,51 @@ function SidebarContent({
 
       <Separator />
 
-      {/* Navigation */}
+      {/* Navigation — ALL items rendered by the same .map() loop */}
       <ScrollArea className="flex-1 px-3 py-3">
         <nav className="space-y-1">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item, index) => {
             const isActive = activeView === item.view;
             const Icon = item.icon;
+            // Add separator before Blueprint (index 6) when Admin follows
+            const showSeparatorBefore = item.view === "blueprint";
             return (
-              <TooltipProvider key={item.view} delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => handleNav(item.view)}
-                      className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      )}
-                    >
-                      <Icon className={cn("w-4 h-4", isActive && "text-orange-500")} />
-                      <span className="flex-1 text-left">{item.label}</span>
-                      {isActive && (
-                        <ChevronRight className="w-3 h-3 text-orange-500" />
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="lg:hidden">
-                    {item.label}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div key={item.view}>
+                {showSeparatorBefore && <Separator className="my-3" />}
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => handleNav(item.view)}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                          item.isAdmin && !isActive && "text-emerald-600 dark:text-emerald-400 font-semibold",
+                          isActive
+                            ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
+                            : !item.isAdmin && "text-muted-foreground hover:bg-muted hover:text-foreground",
+                          item.isAdmin && !isActive && "hover:bg-emerald-500/10"
+                        )}
+                      >
+                        <Icon className={cn("w-4 h-4", isActive && "text-orange-500", item.isAdmin && !isActive && "text-emerald-500 dark:text-emerald-400")} />
+                        <span className="flex-1 text-left">{item.label}</span>
+                        {isActive && (
+                          <ChevronRight className="w-3 h-3 text-orange-500" />
+                        )}
+                        {item.isAdmin && !isActive && (
+                          <Badge variant="outline" className="text-[9px] px-1 py-0 text-emerald-600 border-emerald-300 dark:text-emerald-400 dark:border-emerald-700">
+                            Admin
+                          </Badge>
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="lg:hidden">
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             );
           })}
-
-          <Separator className="my-3" />
-
-          {/* Blueprint link */}
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => handleNav("blueprint")}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    activeView === "blueprint"
-                      ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <BookOpen className={cn("w-4 h-4", activeView === "blueprint" && "text-orange-500")} />
-                  <span className="flex-1 text-left">Technical Blueprint</span>
-                  {activeView === "blueprint" && (
-                    <ChevronRight className="w-3 h-3 text-orange-500" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="lg:hidden">
-                Technical Blueprint
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {/* Admin link — only visible for admin user */}
-          {user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => handleNav("admin")}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    activeView === "admin"
-                      ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <ShieldCheck className={cn("w-4 h-4", activeView === "admin" && "text-orange-500")} />
-                  <span className="flex-1 text-left">Admin</span>
-                  {activeView === "admin" && (
-                    <ChevronRight className="w-3 h-3 text-orange-500" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="lg:hidden">
-                Admin Dashboard
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          )}
         </nav>
       </ScrollArea>
 
@@ -267,7 +242,7 @@ function SidebarContent({
       </div>
 
       {/* Sign out */}
-      <div className="px-3 pb-4">
+      <div className="px-3 pb-2">
         <Button
           variant="ghost"
           className="w-full justify-start text-muted-foreground hover:text-rose-600 hover:bg-rose-500/10"
@@ -277,6 +252,7 @@ function SidebarContent({
           Sign Out
         </Button>
       </div>
+
     </div>
   );
 }
