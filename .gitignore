@@ -61,3 +61,7 @@ db/
 proxy.log
 worklog.mdtool-results/
 upload/
+tool-results/
+worklog.md
+admin-test.png
+linkforge-store-header.png
