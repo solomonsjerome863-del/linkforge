@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   publisher: "LinkForge",
   icons: {
     icon: [
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
     ],
     apple: "/apple-touch-icon.png",
   },
@@ -103,7 +103,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
-      logo: `${SITE_URL}/favicon.svg`,
+      logo: `${SITE_URL}/logo.png`,
       description: SITE_DESCRIPTION,
       sameAs: [],
     },
