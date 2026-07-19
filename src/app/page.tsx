@@ -5,7 +5,25 @@ import { useAppStore } from "@/lib/store";
 import { LandingPage } from "@/components/saas/landing-page";
 import { AuthView } from "@/components/saas/auth-view";
 import { AppShell } from "@/components/saas/app-shell";
-import { Loader2, ShieldCheck, Download, X, FileText, FileVideo } from "lucide-react";
+import { Loader2, ShieldCheck, Download, X, FileText, FileVideo, ImageIcon, Palette } from "lucide-react";
+
+const LOGO_FILES = [
+  { key: "logo-v1", name: "Logo V1 — Dual Link", desc: "Orange + Teal interlocking", wide: false },
+  { key: "logo-v2", name: "Logo V2 — Node Chain", desc: "Connected nodes, amber gradient", wide: false },
+  { key: "logo-v3", name: "Logo V3 — Letter L", desc: "Stylized L + chain link", wide: false },
+  { key: "logo-v4", name: "Logo V4 — Full Wordmark", desc: "Icon + LinkForge text", wide: true },
+];
+
+const FAVICON_FILES = [
+  { key: "favicon-v1", name: "Favicon V1", desc: "Simple orange link" },
+  { key: "favicon-v2", name: "Favicon V2", desc: "Orange + Teal dual" },
+];
+
+const DOC_FILES = [
+  { key: "demo-pptx", name: "LinkForge_Demo.pptx", desc: "9-slide presentation with notes", icon: "pptx" },
+  { key: "demo-script", name: "Demo_Script.md", desc: "5-min recording script", icon: "md" },
+  { key: "store-header", name: "Store_Header.png", desc: "LemonSqueezy banner", icon: "img" },
+];
 
 export default function Page() {
   const user = useAppStore((s) => s.user);
@@ -14,6 +32,7 @@ export default function Page() {
   const hydrate = useAppStore((s) => s.hydrate);
   const setActiveView = useAppStore((s) => s.setActiveView);
   const [dlOpen, setDlOpen] = useState(false);
+  const [tab, setTab] = useState<"logos" | "favicons" | "files">("logos");
 
   useEffect(() => {
     hydrate();
@@ -31,7 +50,6 @@ export default function Page() {
     return (
       <>
         <AppShell />
-        {/* Floating Admin button — quick access for admin users */}
         {user.isAdmin && (
           <button
             onClick={() => setActiveView("admin")}
@@ -45,61 +63,116 @@ export default function Page() {
           </button>
         )}
 
-        {/* Floating Download button */}
+        {/* Floating Download Button */}
         <button
           onClick={() => setDlOpen(true)}
           className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full
                      bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm
                      shadow-lg shadow-orange-500/30 transition-all hover:scale-105"
-          aria-label="Download demo materials"
+          aria-label="Download brand assets"
         >
-          <Download className="w-5 h-5" />
-          Demo Files
+          <Palette className="w-5 h-5" />
+          Assets
         </button>
 
-        {/* Download Panel */}
+        {/* Download / Assets Panel */}
         {dlOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
                onClick={() => setDlOpen(false)}>
-            <div className="bg-background rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border"
+            <div className="bg-background rounded-2xl shadow-2xl w-full max-w-2xl border max-h-[90vh] flex flex-col"
                  onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold">Download Demo Materials</h3>
+              {/* Header */}
+              <div className="flex items-center justify-between p-5 border-b flex-shrink-0">
+                <h3 className="text-lg font-bold">Brand Assets & Downloads</h3>
                 <button onClick={() => setDlOpen(false)} className="p-1 rounded-lg hover:bg-muted transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="space-y-3">
-                <a
-                  href="/LinkForge_Demo.pptx"
-                  download
-                  className="flex items-center gap-4 p-4 rounded-xl border hover:bg-muted/50 transition-colors group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
-                    <FileVideo className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm">LinkForge_Demo.pptx</p>
-                    <p className="text-xs text-muted-foreground">9-slide presentation with speaker notes</p>
-                  </div>
-                  <Download className="w-5 h-5 text-muted-foreground group-hover:text-orange-600 transition-colors" />
-                </a>
-                <a
-                  href="/LinkForge_Demo_Script.md"
-                  download
-                  className="flex items-center gap-4 p-4 rounded-xl border hover:bg-muted/50 transition-colors group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-teal-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm">LinkForge_Demo_Script.md</p>
-                    <p className="text-xs text-muted-foreground">Word-for-word 5-min recording script</p>
-                  </div>
-                  <Download className="w-5 h-5 text-muted-foreground group-hover:text-teal-600 transition-colors" />
-                </a>
+
+              {/* Tabs */}
+              <div className="flex border-b px-5 flex-shrink-0">
+                {(["logos", "favicons", "files"] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors capitalize ${
+                      tab === t ? "border-orange-500 text-orange-600" : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-4">Click any file to download it to your computer</p>
+
+              {/* Content */}
+              <div className="p-5 overflow-y-auto flex-1">
+                {tab === "logos" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {LOGO_FILES.map((f) => (
+                      <a key={f.key} href={`/api/download?file=${f.key}`} download
+                         className="group border rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/10 transition-all">
+                        <div className={`bg-white flex items-center justify-center ${f.wide ? "h-32" : "h-36"}`}>
+                          <img src={`/api/preview-image?file=${f.key}`} alt={f.name}
+                               className={`object-contain p-4 ${f.wide ? "w-full h-full" : "w-28 h-28"}`} />
+                        </div>
+                        <div className="p-3 flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-sm">{f.name}</p>
+                            <p className="text-xs text-muted-foreground">{f.desc}</p>
+                          </div>
+                          <Download className="w-4 h-4 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                {tab === "favicons" && (
+                  <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                    {FAVICON_FILES.map((f) => (
+                      <a key={f.key} href={`/api/download?file=${f.key}`} download
+                         className="group border rounded-xl overflow-hidden hover:border-orange-400 hover:shadow-lg transition-all">
+                        <div className="bg-white h-40 flex items-center justify-center">
+                          <img src={`/api/preview-image?file=${f.key}`} alt={f.name} className="w-24 h-24 object-contain p-2" />
+                        </div>
+                        <div className="p-3 flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-sm">{f.name}</p>
+                            <p className="text-xs text-muted-foreground">{f.desc}</p>
+                          </div>
+                          <Download className="w-4 h-4 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                {tab === "files" && (
+                  <div className="space-y-3">
+                    {DOC_FILES.map((f) => (
+                      <a key={f.key} href={`/api/download?file=${f.key}`} download
+                         className="flex items-center gap-4 p-4 rounded-xl border hover:bg-muted/50 hover:border-orange-300 transition-all group">
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          f.icon === "pptx" ? "bg-orange-100" : f.icon === "md" ? "bg-teal-100" : "bg-amber-100"
+                        }`}>
+                          {f.icon === "pptx" && <FileVideo className="w-5 h-5 text-orange-600" />}
+                          {f.icon === "md" && <FileText className="w-5 h-5 text-teal-600" />}
+                          {f.icon === "img" && <ImageIcon className="w-5 h-5 text-amber-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm">{f.name}</p>
+                          <p className="text-xs text-muted-foreground">{f.desc}</p>
+                        </div>
+                        <Download className="w-5 h-5 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center py-3 border-t flex-shrink-0">
+                Click any card to download
+              </p>
             </div>
           </div>
         )}
