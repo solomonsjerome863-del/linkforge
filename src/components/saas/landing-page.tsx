@@ -104,7 +104,7 @@ function Navbar() {
       <div className="max-w-6xl mx-auto flex items-center justify-between h-16 px-4 sm:px-6">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <img src="/favicon-32.png" alt="LinkForge" className="w-8 h-8 rounded-lg" />
+          <img src="/logo-32.png" alt="LinkForge" className="w-8 h-8 rounded-lg" />
           <span className="text-xl font-bold tracking-tight">
             Link<span className="text-orange-500">Forge</span>
           </span>
@@ -155,7 +155,7 @@ function Navbar() {
             <SheetContent side="right" className="w-72">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <img src="/favicon-32.png" alt="LinkForge" className="w-7 h-7 rounded-lg" />
+                  <img src="/logo-32.png" alt="LinkForge" className="w-7 h-7 rounded-lg" />
                   <span className="text-lg font-bold tracking-tight">
                     Link<span className="text-orange-500">Forge</span>
                   </span>
@@ -932,7 +932,7 @@ function Footer() {
           {/* Logo + tagline */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <a href="https://linkforge.digital" className="flex items-center gap-2">
-              <img src="/favicon-32.png" alt="LinkForge" className="w-7 h-7 rounded-lg" />
+              <img src="/logo-32.png" alt="LinkForge" className="w-7 h-7 rounded-lg" />
               <span className="text-lg font-bold tracking-tight">
                 Link<span className="text-orange-500">Forge</span>
               </span>

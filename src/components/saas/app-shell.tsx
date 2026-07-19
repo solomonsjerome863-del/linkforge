@@ -149,7 +149,7 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-2 px-4 py-5">
-        <img src="/favicon-32.png" alt="LinkForge" className="w-8 h-8 rounded-lg shrink-0" />
+        <img src="/logo-32.png" alt="LinkForge" className="w-8 h-8 rounded-lg shrink-0" />
         <span className="text-lg font-bold tracking-tight">
           Link<span className="text-orange-500">Forge</span>
         </span>
