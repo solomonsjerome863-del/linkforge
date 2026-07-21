@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f97316"/>
+      <stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="iconBg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="white" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" rx="0" fill="url(#bg)"/>
+  <!-- Subtle pattern / decoration -->
+  <circle cx="1050" cy="100" r="200" fill="white" opacity="0.04"/>
+  <circle cx="1100" cy="550" r="150" fill="white" opacity="0.04"/>
+  <circle cx="200" cy="500" r="100" fill="white" opacity="0.03"/>
+  <!-- Icon area -->
+  <rect x="80" y="180" width="270" height="270" rx="60" fill="url(#iconBg)"/>
+  <!-- Stylized L -->
+  <path d="M145 390V210h40v120h108v40H145z" fill="white" transform="translate(10,15)"/>
+  <!-- Link node dot -->
+  <circle cx="295" cy="222" r="21" fill="white" opacity="0.95" transform="translate(10,15)"/>
+  <!-- Text -->
+  <text x="420" y="310" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="100" font-weight="800" fill="white" letter-spacing="-2">
+    Link<tspan fill="#fff3e0">Forge</tspan>
+  </text>
+  <text x="420" y="390" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="36" font-weight="500" fill="white" opacity="0.9" letter-spacing="0.5">
+    AI-Powered Internal Linking for SEO
+  </text>
+  <!-- Bottom bar -->
+  <rect x="0" y="580" width="1200" height="50" fill="black" opacity="0.15"/>
+  <text x="80" y="612" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.8">
+    linkforge.digital
+  </text>
+</svg>

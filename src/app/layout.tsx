@@ -53,8 +53,9 @@ export const metadata: Metadata = {
   publisher: "LinkForge",
   icons: {
     icon: [
-      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
   },
@@ -68,9 +69,9 @@ export const metadata: Metadata = {
     description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
     images: [
       {
-        url: "/logo.png",
-        width: 1024,
-        height: 1024,
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
         alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
       },
     ],
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description: "Generate smart internal link suggestions automatically. Better linking, better rankings.",
-    images: ["/logo.png"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -104,6 +105,7 @@ const jsonLd = {
       name: SITE_NAME,
       url: SITE_URL,
       logo: `${SITE_URL}/logo.png`,
+      image: `${SITE_URL}/og-image.png`,
       description: SITE_DESCRIPTION,
       sameAs: [],
     },

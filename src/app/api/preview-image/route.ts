@@ -3,12 +3,13 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 
 const IMAGES: Record<string, string> = {
-  "logo-v1": "public/logo-v1.png",
-  "logo-v2": "public/logo-v2.png",
-  "logo-v3": "public/logo-v3.png",
-  "logo-v4": "public/logo-v4-full.png",
-  "favicon-v1": "public/favicon-v1.png",
-  "favicon-v2": "public/favicon-v2.png",
+  "logo-svg": "public/logo.svg",
+  "logo-png": "public/logo.png",
+  "favicon-svg": "public/favicon.svg",
+  "og-image": "public/og-image.png",
+  "icon-512": "public/icon-512.png",
+  "icon-192": "public/icon-192.png",
+  "apple-touch-icon": "public/apple-touch-icon.png",
 };
 
 export async function GET(request: NextRequest) {

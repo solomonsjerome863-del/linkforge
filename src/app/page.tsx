@@ -8,21 +8,21 @@ import { AppShell } from "@/components/saas/app-shell";
 import { Loader2, ShieldCheck, Download, X, FileText, FileVideo, ImageIcon, Palette } from "lucide-react";
 
 const LOGO_FILES = [
-  { key: "logo-v1", name: "Logo V1 — Dual Link", desc: "Orange + Teal interlocking", wide: false },
-  { key: "logo-v2", name: "Logo V2 — Node Chain", desc: "Connected nodes, amber gradient", wide: false },
-  { key: "logo-v3", name: "Logo V3 — Letter L", desc: "Stylized L + chain link", wide: false },
-  { key: "logo-v4", name: "Logo V4 — Full Wordmark", desc: "Icon + LinkForge text", wide: true },
+  { key: "logo-svg", name: "Logo — SVG Wordmark", desc: "Scalable vector, any size", wide: true },
+  { key: "logo-png", name: "Logo — 1024×1024 PNG", desc: "Square icon for profiles", wide: false },
+  { key: "og-image", name: "OG Image — 1200×630", desc: "Social sharing card", wide: true },
 ];
 
 const FAVICON_FILES = [
-  { key: "favicon-v1", name: "Favicon V1", desc: "Simple orange link" },
-  { key: "favicon-v2", name: "Favicon V2", desc: "Orange + Teal dual" },
+  { key: "favicon-svg", name: "Favicon — SVG", desc: "Vector, infinitely sharp" },
+  { key: "icon-512", name: "Icon — 512×512 PNG", desc: "PWA large icon" },
+  { key: "icon-192", name: "Icon — 192×192 PNG", desc: "PWA small icon" },
+  { key: "apple-touch-icon", name: "Apple Touch Icon", desc: "180×180 for iOS" },
 ];
 
 const DOC_FILES = [
   { key: "demo-pptx", name: "LinkForge_Demo.pptx", desc: "9-slide presentation with notes", icon: "pptx" },
   { key: "demo-script", name: "Demo_Script.md", desc: "5-min recording script", icon: "md" },
-  { key: "store-header", name: "Store_Header.png", desc: "LemonSqueezy banner", icon: "img" },
 ];
 
 export default function Page() {
