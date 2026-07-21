@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { createCheckout } from "@/lib/lemonsqueezy";
+import { initializeCheckout, internalPlanToPaystackCode } from "@/lib/paystack";
+
+const PLAN_AMOUNTS: Record<string, number> = {
+  pro: 4900, // $49 in cents (Paystack USD uses cents)
+  business: 14900, // $149 in cents
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,22 +32,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check for env var — if not configured, return demo URL
-    if (!process.env.LEMONSQUEEZY_API_KEY || !process.env.LEMONSQUEEZY_STORE_ID) {
-      // Demo mode: return a mock checkout URL
+    // Check for Paystack env vars — if not configured, return demo URL
+    if (!process.env.PAYSTACK_SECRET_KEY || !process.env.PAYSTACK_PLAN_PRO || !process.env.PAYSTACK_PLAN_BUSINESS) {
       console.log(`[Checkout] Demo mode — would create checkout for ${email}, plan: ${plan}`);
-      const demoUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}?checkout=success&plan=${plan}`;
-      return NextResponse.json({ url: demoUrl, demo: true });
+      const demoUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}?checkout=paystack&plan=${plan}`;
+      return NextResponse.json({ authorization_url: demoUrl, demo: true });
     }
 
-    const checkoutUrl = await createCheckout({
-      plan,
-      userEmail: email,
-      userName: name || "",
+    // Get the Paystack plan code for this internal plan
+    const paystackPlanCode = internalPlanToPaystackCode(plan as "pro" | "business");
+    if (!paystackPlanCode) {
+      return NextResponse.json(
+        { error: "Paystack plan not configured" },
+        { status: 500 }
+      );
+    }
+
+    const result = await initializeCheckout({
+      email,
+      amount: PLAN_AMOUNTS[plan] || 4900,
+      plan: paystackPlanCode,
       userId,
+      userName: name || "",
+      internalPlan: plan as "pro" | "business",
     });
 
-    return NextResponse.json({ url: checkoutUrl });
+    return NextResponse.json({
+      authorization_url: result.authorization_url,
+      reference: result.reference,
+    });
   } catch (error) {
     console.error("[Checkout]", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

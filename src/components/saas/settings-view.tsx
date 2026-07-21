@@ -29,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppStore } from "@/lib/store";
-import { useLemonSqueezyCheckout } from "@/lib/use-lemonsqueezy";
+import { useCheckout } from "@/lib/use-checkout";
 import { PLAN_LIMITS, type PlanType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -98,7 +98,7 @@ export function SettingsView() {
   const setUser = useAppStore((s) => s.setUser);
 
   // Billing
-  const { openCheckout, isCheckingOut } = useLemonSqueezyCheckout();
+  const { openCheckout, isCheckingOut } = useCheckout();
   const [subscriptionInfo, setSubscriptionInfo] = useState<{
     subscriptionStatus: string | null;
     subscriptionEndsAt: string | null;

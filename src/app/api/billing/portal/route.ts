@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { cancelSubscription } from "@/lib/lemonsqueezy";
+import { disableSubscription } from "@/lib/paystack";
 
 /**
  * GET /api/billing/portal?userId=xxx
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
         subscriptionStatus: true,
         subscriptionEndsAt: true,
         trialEndsAt: true,
-        lemonSqueezyCustomerId: true,
-        lemonSqueezySubscriptionId: true,
+        paystackCustomerId: true,
+        paystackSubscriptionCode: true,
       },
     });
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       subscriptionEndsAt: user.subscriptionEndsAt?.toISOString() ?? null,
       trialEndsAt: user.trialEndsAt?.toISOString() ?? null,
       isActive,
-      hasPaymentMethod: !!user.lemonSqueezyCustomerId,
+      hasPaymentMethod: !!user.paystackCustomerId,
     });
   } catch (error) {
     console.error("[Billing Portal GET]", error);
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/billing/portal
- * Cancel the user's subscription
+ * Cancel the user's subscription (disable auto-renewal)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -64,19 +64,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (!user.lemonSqueezySubscriptionId) {
+    if (!user.paystackSubscriptionCode) {
       return NextResponse.json(
         { error: "No active subscription to cancel" },
         { status: 400 }
       );
     }
 
-    // If not in demo mode, cancel via LemonSqueezy API
-    if (process.env.LEMONSQUEEZY_API_KEY) {
+    // If not in demo mode, cancel via Paystack API
+    if (process.env.PAYSTACK_SECRET_KEY) {
       try {
-        await cancelSubscription(user.lemonSqueezySubscriptionId);
+        await disableSubscription(user.paystackSubscriptionCode);
       } catch (err) {
-        console.error("[Billing Portal] LemonSqueezy cancel failed:", err);
+        console.error("[Billing Portal] Paystack cancel failed:", err);
         // Still update DB — the subscription might already be cancelled
       }
     }

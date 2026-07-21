@@ -268,12 +268,13 @@ export function AppShell() {
     setSidebarOpen(false);
   }, [activeView, setSidebarOpen]);
 
-  // Handle checkout success redirect from LemonSqueezy
+  // Handle checkout success redirect from Paystack
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const checkoutSuccess = params.get("checkout");
-    if (checkoutSuccess === "success" && user?.id) {
+    const checkoutType = params.get("checkout");
+
+    if ((checkoutType === "paystack" || checkoutType === "success") && user?.id) {
       // Verify with server instead of trusting URL params
       fetch(`/api/billing/subscription?userId=${user.id}`)
         .then((r) => r.json())
@@ -281,6 +282,20 @@ export function AppShell() {
           if (data.plan && data.plan !== user.plan) {
             useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: data.plan as PlanType });
             toast.success(`🎉 ${(data.plan as string).charAt(0).toUpperCase() + (data.plan as string).slice(1)} plan activated! Welcome aboard.`);
+          } else if (checkoutType === "paystack") {
+            // Paystack redirect arrived but plan not yet updated — webhook might be delayed
+            // Poll once more after a short delay
+            setTimeout(() => {
+              fetch(`/api/billing/subscription?userId=${user.id}`)
+                .then((r) => r.json())
+                .then((data2) => {
+                  if (data2.plan && data2.plan !== useAppStore.getState().user?.plan) {
+                    useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: data2.plan as PlanType });
+                    toast.success(`🎉 ${(data2.plan as string).charAt(0).toUpperCase() + (data2.plan as string).slice(1)} plan activated!`);
+                  }
+                })
+                .catch(() => {});
+            }, 3000);
           }
         })
         .catch(() => {});

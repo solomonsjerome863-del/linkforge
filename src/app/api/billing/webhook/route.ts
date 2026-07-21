@@ -1,46 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import {
-  verifyWebhookSignature,
-  mapSubscriptionStatus,
-  variantIdToPlan,
-  type WebhookPayload,
-} from "@/lib/lemonsqueezy";
+import { verifyWebhookSignature, paystackPlanToInternal, fetchSubscription } from "@/lib/paystack";
 
 /**
  * POST /api/billing/webhook
- * Receives LemonSqueezy webhook events
+ * Receives Paystack webhook events
  */
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
-    const signature = request.headers.get("x-signature");
+    const signature = request.headers.get("x-paystack-signature");
 
-    // Verify webhook signature (skip in dev/demo mode)
-    if (process.env.LEMONSQUEEZY_WEBHOOK_SECRET && !await verifyWebhookSignature(rawBody, signature)) {
-      console.warn("[Webhook] Invalid signature");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    // Verify webhook signature (skip if secret not set — dev mode)
+    if (process.env.PAYSTACK_SECRET_KEY && signature) {
+      if (!verifyWebhookSignature(rawBody, signature)) {
+        console.warn("[Webhook] Invalid Paystack signature");
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      }
     }
 
-    const payload: WebhookPayload = JSON.parse(rawBody);
-    const eventName = payload.meta?.event_name;
-    const userId = payload.meta?.custom_data?.user_id;
-    const plan = payload.meta?.custom_data?.plan;
+    const payload = JSON.parse(rawBody);
+    const event = payload.event;
+    const data = payload.data;
 
-    console.log(`[Webhook] Event: ${eventName}, User: ${userId || "unknown"}, Plan: ${plan || "unknown"}`);
+    console.log(`[Webhook] Event: ${event}, Reference: ${data?.reference || "unknown"}`);
 
     // Store the event for audit
     await db.subscriptionEvent.create({
       data: {
-        userId: userId || null,
-        eventType: eventName,
+        eventType: event,
         payload: rawBody,
         processed: false,
       },
     });
 
+    // ─── Extract user_id and plan from metadata ──────────────────────────────
+    const metadata = data?.metadata?.custom_fields || [];
+    let userId: string | null = null;
+    let plan: string | null = null;
+    for (const field of metadata) {
+      if (field.variable_name === "user_id") userId = field.value;
+      if (field.variable_name === "plan") plan = field.value;
+    }
+
+    // Also try direct metadata fields (some Paystack events use flat metadata)
+    if (!userId) userId = data?.metadata?.user_id || null;
+    if (!plan) plan = data?.metadata?.plan || null;
+
+    // For subscription events, we might need to look up the customer email
+    const customerEmail = data?.customer?.email;
+
+    if (!userId && customerEmail) {
+      // Fallback: find user by email
+      const emailUser = await db.user.findUnique({ where: { email: customerEmail } });
+      if (emailUser) userId = emailUser.id;
+    }
+
     if (!userId) {
-      console.warn("[Webhook] No user_id in custom_data");
+      console.warn(`[Webhook] No user found for event ${event}, email: ${customerEmail || "unknown"}`);
       return NextResponse.json({ received: true });
     }
 
@@ -51,175 +68,116 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    const attrs = payload.data?.attributes;
-    const variantId = payload.data?.relationships?.variant?.data?.id;
-    const customerId = String(attrs?.customer_id || "");
-    const subscriptionId = payload.data?.id;
+    // ─── Handle events ──────────────────────────────────────────────────────
+    switch (event) {
+      case "charge.success": {
+        // One-time or first recurring charge succeeded
+        const planCode = data?.plan?.plan_code;
+        const internalPlan = planCode ? paystackPlanToInternal(planCode) : (plan as "pro" | "business" | null);
 
-    // Handle different events
-    switch (eventName) {
-      case "order_created": {
-        // One-time order — could be a subscription renewal payment
-        // Update customer ID if we don't have one
-        if (customerId && !user.lemonSqueezyCustomerId) {
+        if (internalPlan) {
+          const subCode = data?.subscription?.subscription_code;
+          const subStatus = data?.subscription?.status; // active, non-renewing
+
+          const status = subStatus === "non-renewing" ? "cancelled" : "active";
+          const endDate = data?.subscription?.next_payment_date
+            ? new Date(data.subscription.next_payment_date)
+            : null;
+
           await db.user.update({
             where: { id: userId },
-            data: { lemonSqueezyCustomerId: customerId },
+            data: {
+              plan: internalPlan,
+              subscriptionStatus: status,
+              paystackCustomerId: data?.customer?.customer_code || user.paystackCustomerId,
+              paystackSubscriptionCode: subCode || user.paystackSubscriptionCode,
+              paystackAuthorizationCode: data?.authorization?.authorization_code || user.paystackAuthorizationCode,
+              subscriptionEndsAt: endDate,
+            },
           });
+          console.log(`[Webhook] Charge success: ${internalPlan} for ${user.email}`);
         }
         break;
       }
 
-      case "subscription_created": {
-        // New subscription started (including trial)
-        const status = mapSubscriptionStatus(attrs?.status || "active");
-        const variantPlan = variantId ? variantIdToPlan(variantId) : plan;
+      case "subscription.create": {
+        const planCode = data?.plan?.plan_code;
+        const internalPlan = planCode ? paystackPlanToInternal(planCode) : (plan as "pro" | "business" | null);
+        const endDate = data?.next_payment_date ? new Date(data.next_payment_date) : null;
 
         await db.user.update({
           where: { id: userId },
           data: {
-            plan: variantPlan || "pro",
-            subscriptionStatus: status,
-            lemonSqueezyCustomerId: customerId || user.lemonSqueezyCustomerId,
-            lemonSqueezySubscriptionId: subscriptionId,
-            subscriptionEndsAt: attrs?.renews_at ? new Date(attrs.renews_at) : null,
-            trialEndsAt: attrs?.trial_ends_at ? new Date(attrs.trial_ends_at) : null,
+            plan: internalPlan || "pro",
+            subscriptionStatus: "active",
+            paystackCustomerId: data?.customer?.customer_code || user.paystackCustomerId,
+            paystackSubscriptionCode: data?.subscription_code,
+            subscriptionEndsAt: endDate,
           },
         });
-        console.log(`[Webhook] Subscription created: ${variantPlan} for ${user.email}`);
+        console.log(`[Webhook] Subscription created: ${internalPlan} for ${user.email}`);
         break;
       }
 
-      case "subscription_updated": {
-        // Plan change, pause, resume, etc.
-        const status = mapSubscriptionStatus(attrs?.status || "active");
-        const variantPlan = variantId ? variantIdToPlan(variantId) : null;
-
-        const updateData: Record<string, unknown> = {
-          subscriptionStatus: status,
-          subscriptionEndsAt: attrs?.renews_at ? new Date(attrs.renews_at) : null,
-        };
-        if (variantPlan) updateData.plan = variantPlan;
-        if (customerId) updateData.lemonSqueezyCustomerId = customerId;
-
-        await db.user.update({
-          where: { id: userId },
-          data: updateData,
-        });
-        console.log(`[Webhook] Subscription updated: ${status} for ${user.email}`);
-        break;
-      }
-
-      case "subscription_cancelled": {
+      case "subscription.not_renew": {
+        // Customer disabled auto-renewal (cancelled)
+        const endDate = data?.next_payment_date ? new Date(data.next_payment_date) : new Date();
         await db.user.update({
           where: { id: userId },
           data: {
             subscriptionStatus: "cancelled",
-            subscriptionEndsAt: attrs?.ends_at ? new Date(attrs.ends_at) : new Date(),
+            subscriptionEndsAt: endDate,
           },
         });
-        console.log(`[Webhook] Subscription cancelled for ${user.email}`);
+        console.log(`[Webhook] Subscription not renewing for ${user.email}`);
         break;
       }
 
-      case "subscription_expired": {
-        // Downgrade to starter
+      case "subscription.disable": {
+        // Subscription disabled (e.g., failed payments)
         await db.user.update({
           where: { id: userId },
-          data: {
-            plan: "starter",
-            subscriptionStatus: "expired",
-            subscriptionEndsAt: null,
-            lemonSqueezySubscriptionId: null,
-          },
+          data: { subscriptionStatus: "expired" },
         });
-        console.log(`[Webhook] Subscription expired for ${user.email} — downgraded to starter`);
+        console.log(`[Webhook] Subscription disabled for ${user.email}`);
         break;
       }
 
-      case "subscription_payment_failed": {
-        await db.user.update({
-          where: { id: userId },
-          data: { subscriptionStatus: "unpaid" },
-        });
-        break;
-      }
-
-      case "subscription_payment_recovered":
-      case "subscription_payment_success": {
+      case "subscription.enable": {
         await db.user.update({
           where: { id: userId },
           data: { subscriptionStatus: "active" },
         });
-        break;
-      }
-
-      case "subscription_paused": {
-        await db.user.update({
-          where: { id: userId },
-          data: { subscriptionStatus: "paused" },
-        });
-        break;
-      }
-
-      case "subscription_unpaused":
-      case "subscription_resumed": {
-        await db.user.update({
-          where: { id: userId },
-          data: { subscriptionStatus: "active" },
-        });
-        break;
-      }
-
-      case "subscription_plan_changed": {
-        const variantPlan = variantId ? variantIdToPlan(variantId) : plan;
-        if (variantPlan) {
-          await db.user.update({
-            where: { id: userId },
-            data: {
-              plan: variantPlan,
-              subscriptionStatus: "active",
-            },
-          });
-        }
-        break;
-      }
-
-      case "subscription_payment_refunded": {
-        // Keep subscription active but log the refund
-        console.log(`[Webhook] Payment refunded for ${user.email}`);
+        console.log(`[Webhook] Subscription re-enabled for ${user.email}`);
         break;
       }
 
       default:
-        console.log(`[Webhook] Unhandled event: ${eventName}`);
+        console.log(`[Webhook] Unhandled event: ${event}`);
     }
 
     // Mark event as processed
     const latestEvent = await db.subscriptionEvent.findFirst({
-      where: { userId, eventType: eventName },
+      where: { eventType: event },
       orderBy: { createdAt: "desc" },
     });
     if (latestEvent) {
       await db.subscriptionEvent.update({
         where: { id: latestEvent.id },
-        data: { processed: true },
+        data: { processed: true, userId },
       });
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error("[Webhook] Error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
 /**
  * GET /api/billing/webhook
- * Used by LemonSqueezy to verify the endpoint during setup
+ * Used by Paystack to verify the endpoint during setup
  */
 export async function GET() {
   return NextResponse.json({ status: "ok", service: "LinkForge billing webhook" });
