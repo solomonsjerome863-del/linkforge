@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "ids array is required and must not be empty" }, { status: 400 });
     }
 
+    if (ids.length > 500) {
+      return NextResponse.json({ error: "Batch size exceeds maximum of 500" }, { status: 400 });
+    }
+
     if (action !== "approve" && action !== "reject") {
       return NextResponse.json({ error: "action must be 'approve' or 'reject'" }, { status: 400 });
     }

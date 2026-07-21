@@ -132,7 +132,7 @@ function Navbar() {
           <Button
             variant="ghost"
             className="text-sm text-muted-foreground hover:text-foreground"
-            onClick={handleGetStarted}
+            onClick={() => useAppStore.getState().setShowLanding(false)}
           >
             Sign In
           </Button>
@@ -179,7 +179,7 @@ function Navbar() {
                 <Button
                   variant="ghost"
                   className="justify-start text-sm text-muted-foreground hover:text-foreground"
-                  onClick={handleGetStarted}
+                  onClick={() => useAppStore.getState().setShowLanding(false)}
                 >
                   Sign In
                 </Button>
@@ -597,7 +597,7 @@ function ComparisonSection() {
         </FadeIn>
 
         <FadeIn>
-          <div className="rounded-2xl border border-border/60 overflow-hidden shadow-sm">
+          <div className="rounded-2xl border border-border/60 overflow-x-auto shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -904,7 +904,7 @@ function FinalCTASection() {
                   className="h-12 px-8 text-base border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                   onClick={() => scrollToId("how-it-works")}
                 >
-                  View Demo
+                  See How It Works
                   <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
@@ -949,6 +949,13 @@ function Footer() {
                 key={link.label}
                 href={link.href}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={(e) => {
+                  if (link.href.startsWith("#")) {
+                    e.preventDefault();
+                    const id = link.href.replace("#", "");
+                    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
               >
                 {link.label}
               </a>

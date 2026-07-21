@@ -191,9 +191,15 @@ export function SettingsView() {
       toast.error("Name cannot be empty");
       return;
     }
+    if (!user?.id) return;
     setIsSavingName(true);
     try {
-      await new Promise((r) => setTimeout(r, 400));
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, name: name.trim() }),
+      });
+      if (!res.ok) throw new Error();
       if (user) setUser({ ...user, name: name.trim() });
       toast.success("Profile updated");
     } catch {
@@ -207,7 +213,7 @@ export function SettingsView() {
     setIsSavingPrefs(true);
     try {
       await new Promise((r) => setTimeout(r, 400));
-      toast.success("Preferences saved");
+      toast.success("Preferences saved locally");
     } catch {
       toast.error("Failed to save changes");
     } finally {

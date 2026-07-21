@@ -44,8 +44,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: checkoutUrl });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create checkout";
-    console.error("[Checkout]", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[Checkout]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

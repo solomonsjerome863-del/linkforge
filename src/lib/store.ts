@@ -17,6 +17,7 @@ interface AppState {
   user: User | null;
   _hydrated: boolean;
   setUser: (user: User | null) => void;
+  signOut: () => void;
   hydrate: () => void;
 
   // Navigation
@@ -27,9 +28,9 @@ interface AppState {
 
   // Data
   sites: Site[];
-  setSites: (sites: Site[]) => void;
+  setSites: (sites: Site[] | ((prev: Site[]) => Site[])) => void;
   suggestions: LinkSuggestion[];
-  setSuggestions: (suggestions: LinkSuggestion[]) => void;
+  setSuggestions: (suggestions: LinkSuggestion[] | ((prev: LinkSuggestion[]) => LinkSuggestion[])) => void;
   dashboardStats: DashboardStats | null;
   setDashboardStats: (stats: DashboardStats | null) => void;
 
@@ -76,6 +77,19 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     }
   },
+  signOut: () => {
+    clearUser();
+    set({
+      user: null,
+      showLanding: true,
+      sites: [],
+      suggestions: [],
+      dashboardStats: null,
+      selectedSiteId: null,
+      activeView: "dashboard",
+      isLoading: false,
+    });
+  },
   setUser: (user) => {
     set({ user, showLanding: !user });
     if (user) {
@@ -93,9 +107,11 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Data
   sites: [],
-  setSites: (sites) => set({ sites }),
+  setSites: (sites) =>
+    set({ sites: typeof sites === "function" ? sites(get().sites) : sites }),
   suggestions: [],
-  setSuggestions: (suggestions) => set({ suggestions }),
+  setSuggestions: (suggestions) =>
+    set({ suggestions: typeof suggestions === "function" ? suggestions(get().suggestions) : suggestions }),
   dashboardStats: null,
   setDashboardStats: (dashboardStats) => set({ dashboardStats }),
 

@@ -162,9 +162,8 @@ export async function verifyWebhookSignature(
       Buffer.from(expected)
     );
   } catch {
-    // Fallback: in dev/test mode without proper secret, accept the webhook
-    console.warn("[Webhook] Signature verification skipped (dev mode)");
-    return true;
+    console.error("[Webhook] Signature verification failed");
+    return false;
   }
 }
 

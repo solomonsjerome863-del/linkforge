@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("[Admin Stats]", error);
     return NextResponse.json(
-      { error: "Failed to fetch admin stats" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

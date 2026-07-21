@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -128,6 +128,14 @@ export function SitesView() {
   const [newUrl, setNewUrl] = useState("");
   const [newPlatform, setNewPlatform] = useState<Platform>("wordpress");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const crawlIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup crawl polling interval on unmount
+  useEffect(() => {
+    return () => {
+      if (crawlIntervalRef.current) clearInterval(crawlIntervalRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (user?.id) fetchSites();
@@ -187,7 +195,7 @@ export function SitesView() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setSites([...sites, data.site]);
+      setSites((prev) => [...prev, data.site]);
       setAddDialogOpen(false);
       resetForm();
       toast.success(`"${data.site.name}" added successfully`);
@@ -228,7 +236,7 @@ export function SitesView() {
       toast.success(`Crawl started for "${site.name}"`);
       // Optimistic update
       setSites(
-        sites.map((s) =>
+        (prev) => prev.map((s) =>
           s.id === site.id ? { ...s, status: "crawling" as SiteStatus } : s
         )
       );
@@ -240,8 +248,9 @@ export function SitesView() {
             const data = await pollRes.json();
             const updated = data.sites?.find((s: Site) => s.id === site.id);
             if (updated && updated.status !== "crawling") {
+              if (crawlIntervalRef.current) clearInterval(crawlIntervalRef.current);
+              crawlIntervalRef.current = null;
               setSites(data.sites);
-              clearInterval(interval);
               clearTimeout(t4);
               setShowCrawlProgress(false);
               setCrawlingId(null);
@@ -253,7 +262,8 @@ export function SitesView() {
             }
           }
         } catch {
-          clearInterval(interval);
+          if (crawlIntervalRef.current) clearInterval(crawlIntervalRef.current);
+          crawlIntervalRef.current = null;
           clearTimeout(t1);
           clearTimeout(t2);
           clearTimeout(t3);
@@ -262,6 +272,7 @@ export function SitesView() {
           setCrawlingId(null);
         }
       }, 3000);
+      crawlIntervalRef.current = interval;
     } catch {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -288,7 +299,7 @@ export function SitesView() {
         method: "DELETE",
       });
       if (!res.ok) throw new Error();
-      setSites(sites.filter((s) => s.id !== site.id));
+      setSites((prev) => prev.filter((s) => s.id !== site.id));
       toast.success(`"${site.name}" deleted`);
     } catch {
       toast.error("Failed to delete site");

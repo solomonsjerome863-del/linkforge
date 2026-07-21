@@ -37,11 +37,16 @@ export async function POST(request: NextRequest) {
     console.log(`[Forgot Password] Reset token generated for: ${user.email}`);
 
     // In production, send email here. For demo, return token.
-    return NextResponse.json({
+    const response: Record<string, unknown> = {
       success: true,
       message: "If an account exists, a reset link has been generated.",
-      devToken: token,
-    });
+    };
+
+    if (process.env.NODE_ENV === "development") {
+      response.devToken = token;
+    }
+
+    return NextResponse.json(response);
   } catch (error: unknown) {
     console.error("Forgot password error:", error);
     return NextResponse.json(

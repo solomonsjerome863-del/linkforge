@@ -64,6 +64,7 @@ export function SuggestionsView() {
   const sites = useAppStore((s) => s.sites);
   const suggestions = useAppStore((s) => s.suggestions);
   const setSuggestions = useAppStore((s) => s.setSuggestions);
+  const setActiveView = useAppStore((s) => s.setActiveView);
   const selectedSiteId = useAppStore((s) => s.selectedSiteId);
   const setSelectedSiteId = useAppStore((s) => s.setSelectedSiteId);
   const [isLoading, setIsLoading] = useState(true);
@@ -131,7 +132,7 @@ export function SuggestionsView() {
       });
       if (!res.ok) throw new Error();
       setSuggestions(
-        suggestions.map((s) =>
+        (prev) => prev.map((s) =>
           s.id === suggestionId ? { ...s, status: "approved" as SuggestionStatus } : s
         )
       );
@@ -153,7 +154,7 @@ export function SuggestionsView() {
       });
       if (!res.ok) throw new Error();
       setSuggestions(
-        suggestions.map((s) =>
+        (prev) => prev.map((s) =>
           s.id === suggestionId ? { ...s, status: "rejected" as SuggestionStatus } : s
         )
       );
@@ -182,7 +183,7 @@ export function SuggestionsView() {
       });
       if (!res.ok) throw new Error();
       setSuggestions(
-        suggestions.map((s) =>
+        (prev) => prev.map((s) =>
           s.status === "pending" ? { ...s, status: "approved" as SuggestionStatus } : s
         )
       );
@@ -495,6 +496,7 @@ export function SuggestionsView() {
                                 className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-500/10"
                                 onClick={() => handleApprove(suggestion.id)}
                                 disabled={actionLoading === suggestion.id}
+                                aria-label="Approve suggestion"
                               >
                                 {actionLoading === suggestion.id ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -508,6 +510,7 @@ export function SuggestionsView() {
                                 className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-500/10"
                                 onClick={() => handleReject(suggestion.id)}
                                 disabled={actionLoading === suggestion.id}
+                                aria-label="Reject suggestion"
                               >
                                 {actionLoading === suggestion.id ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />

@@ -121,8 +121,6 @@ function SidebarContent({
   const user = useAppStore((s) => s.user);
   const activeView = useAppStore((s) => s.activeView);
   const setActiveView = useAppStore((s) => s.setActiveView);
-  const setUser = useAppStore((s) => s.setUser);
-
   // Build the full nav items list dynamically — Admin only for admin users
   const navItems = useMemo(() => {
     const items: NavItem[] = [...BASE_NAV_ITEMS];
@@ -141,7 +139,7 @@ function SidebarContent({
   }
 
   function handleSignOut() {
-    setUser(null);
+    useAppStore.getState().signOut();
     onNavigate?.();
   }
 
@@ -194,6 +192,7 @@ function SidebarContent({
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => handleNav(item.view)}
+                        aria-current={isActive ? "page" as const : undefined}
                         className={cn(
                           "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                           item.isAdmin && !isActive && "text-emerald-600 dark:text-emerald-400 font-semibold",
@@ -274,21 +273,21 @@ export function AppShell() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const checkoutSuccess = params.get("checkout");
-    const plan = params.get("plan");
-    if (checkoutSuccess === "success" && plan) {
-      const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
-      toast.success(`🎉 ${planLabel} plan activated! Welcome aboard.`);
-      // Update local state
-      if (user) {
-        useAppStore.getState().setUser({ ...user, plan: plan as PlanType });
-      }
+    if (checkoutSuccess === "success" && user?.id) {
+      // Verify with server instead of trusting URL params
+      fetch(`/api/billing/subscription?userId=${user.id}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.plan && data.plan !== user.plan) {
+            useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: data.plan as PlanType });
+            toast.success(`🎉 ${(data.plan as string).charAt(0).toUpperCase() + (data.plan as string).slice(1)} plan activated! Welcome aboard.`);
+          }
+        })
+        .catch(() => {});
       // Clean URL
-      const url = new URL(window.location.href);
-      url.searchParams.delete("checkout");
-      url.searchParams.delete("plan");
-      window.history.replaceState({}, "", url.toString());
+      window.history.replaceState({}, "", window.location.pathname);
     }
-  }, [user]);
+  }, [user?.id, user?.plan]);
 
   function renderView() {
     switch (activeView) {
@@ -328,7 +327,7 @@ export function AppShell() {
             {/* Mobile menu */}
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation menu">
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
@@ -376,7 +375,7 @@ export function AppShell() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-rose-600 focus:text-rose-600"
-                  onClick={() => useAppStore.getState().setUser(null)}
+                  onClick={() => useAppStore.getState().signOut()}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out

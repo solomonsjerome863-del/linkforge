@@ -4,19 +4,16 @@ import { verifyPassword, hashPassword } from "@/lib/password";
 
 /**
  * Change password for an authenticated user.
- * 
- * Two modes:
- * 1. With currentPassword: verifies the old password before setting new one
- * 2. Without currentPassword: sets new password directly (user is already authenticated via session)
+ * Requires currentPassword to be provided and verified before setting a new one.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { userId, currentPassword, newPassword } = body;
 
-    if (!userId || !newPassword) {
+    if (!userId || !currentPassword || !newPassword) {
       return NextResponse.json(
-        { error: "User ID and new password are required" },
+        { error: "User ID, current password, and new password are required" },
         { status: 400 }
       );
     }
@@ -37,21 +34,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If current password is provided, verify it (supports both bcrypt and legacy SHA-256)
-    if (currentPassword) {
-      if (!user.passwordHash) {
-        return NextResponse.json(
-          { error: "No password set on this account" },
-          { status: 400 }
-        );
-      }
-      const result = await verifyPassword(currentPassword, user.passwordHash);
-      if (!result.valid) {
-        return NextResponse.json(
-          { error: "Current password is incorrect" },
-          { status: 401 }
-        );
-      }
+    // Verify current password (supports both bcrypt and legacy SHA-256)
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "No password set on this account" },
+        { status: 400 }
+      );
+    }
+    const result = await verifyPassword(currentPassword, user.passwordHash);
+    if (!result.valid) {
+      return NextResponse.json(
+        { error: "Current password is incorrect" },
+        { status: 401 }
+      );
     }
 
     // Hash and save the new password with bcrypt
@@ -61,7 +56,7 @@ export async function POST(request: NextRequest) {
       data: { passwordHash: newHash },
     });
 
-    console.log(`[Change Password] Password updated for user: ${user.email} (currentPwd${currentPassword ? " verified" : " skipped"})`);
+    console.log("[Change Password] Password updated for user:", user.email);
 
     return NextResponse.json({
       success: true,

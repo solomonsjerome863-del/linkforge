@@ -27,6 +27,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
     }
 
+    if (password.length > 128) {
+      return NextResponse.json({ error: "Password is too long" }, { status: 400 });
+    }
+
+    if (name && name.length > 200) {
+      return NextResponse.json({ error: "Name is too long" }, { status: 400 });
+    }
+
     // Check if user already exists
     const existingUser = await db.user.findFirst({ where: { email: { equals: normalizedEmail, mode: "insensitive" } } });
     if (existingUser) {
@@ -105,8 +113,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
   } catch (error: unknown) {
     console.error("Signup error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 

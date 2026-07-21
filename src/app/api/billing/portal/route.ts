@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("[Billing Portal GET]", error);
     return NextResponse.json(
-      { error: "Failed to fetch subscription info" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Billing Portal POST]", error);
     return NextResponse.json(
-      { error: "Failed to cancel subscription" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

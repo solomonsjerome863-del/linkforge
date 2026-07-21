@@ -7,7 +7,6 @@ import {
   Search,
   ArrowDownUp,
   AlertTriangle,
-  ArrowLeftRight,
   ArrowRightLeft,
   Inbox,
   Hash,

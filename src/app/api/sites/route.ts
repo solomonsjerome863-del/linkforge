@@ -41,6 +41,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "userId, name, and url are required" }, { status: 400 });
     }
 
+    // Validate URL format
+    if (url.length > 2048) {
+      return NextResponse.json({ error: "URL is too long" }, { status: 400 });
+    }
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
+      return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
+    }
+
+    if (parsedUrl.protocol !== "https:") {
+      return NextResponse.json({ error: "URL must start with https://" }, { status: 400 });
+    }
+
     const user = await validateUser(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });
@@ -51,7 +67,7 @@ export async function POST(request: NextRequest) {
         userId,
         name,
         url,
-        platform: platform || "wordpress",
+        platform: ["wordpress", "shopify", "webflow", "ghost", "custom"].includes(platform) ? platform : "wordpress",
         status: "pending",
       },
     });

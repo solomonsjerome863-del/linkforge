@@ -26,6 +26,35 @@ export async function POST(
       return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
+    // SSRF prevention: validate the site URL before crawling
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(site.url);
+    } catch {
+      return NextResponse.json({ error: "Invalid site URL" }, { status: 400 });
+    }
+
+    if (parsedUrl.protocol !== "https:") {
+      return NextResponse.json({ error: "Site URL must use HTTPS" }, { status: 400 });
+    }
+
+    const hostname = parsedUrl.hostname;
+    // Reject private/reserved IP ranges
+    if (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "::1" ||
+      hostname === "0.0.0.0" ||
+      /^10\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^169\.254\./.test(hostname) ||
+      hostname.endsWith(".local") ||
+      hostname.endsWith(".internal")
+    ) {
+      return NextResponse.json({ error: "Cannot crawl internal or private URLs" }, { status: 400 });
+    }
+
     // Create crawl job
     const crawlJob = await db.crawlJob.create({
       data: { siteId: id, status: "running", startedAt: new Date() },
@@ -110,7 +139,8 @@ export async function POST(
         data: { status: "failed", error: errorMessage, completedAt: new Date() },
       });
 
-      return NextResponse.json({ error: errorMessage }, { status: 500 });
+      console.error("Crawl failed:", crawlError);
+      return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
     }
   } catch (error: unknown) {
     console.error("Crawl error:", error);

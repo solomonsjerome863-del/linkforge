@@ -8,13 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
@@ -45,10 +38,16 @@ export function AuthView() {
   const [resetToken, setResetToken] = useState("");
   const [resetPassword, setResetPassword] = useState("");
 
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     if (!signinEmail || !signinPassword) {
       toast.error("Please fill in all fields");
+      return;
+    }
+    if (!EMAIL_REGEX.test(signinEmail)) {
+      toast.error("Please enter a valid email address");
       return;
     }
     setIsLoading(true);
@@ -81,6 +80,14 @@ export function AuthView() {
       toast.error("Please fill in all fields");
       return;
     }
+    if (!EMAIL_REGEX.test(signupEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    if (signupPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
     setIsLoading(true);
     fetch("/api/auth/signup", {
       method: "POST",
@@ -101,7 +108,7 @@ export function AuthView() {
       .then((data: { user: UserType }) => {
         setUser(data.user);
         setActiveView("dashboard");
-        toast.success("Account created with demo site!");
+        toast.success("Account created successfully!");
       })
       .catch((err) => {
         toast.error(err.message || "Sign up failed");
@@ -113,6 +120,10 @@ export function AuthView() {
     e.preventDefault();
     if (!forgotEmail) {
       toast.error("Please enter your email");
+      return;
+    }
+    if (!EMAIL_REGEX.test(forgotEmail)) {
+      toast.error("Please enter a valid email address");
       return;
     }
     setIsLoading(true);
@@ -183,7 +194,7 @@ export function AuthView() {
 
   function handleGuestMode() {
     const guestUser: UserType = {
-      id: "guest",
+      id: "guest_" + crypto.randomUUID(),
       email: "guest@linkforge.digital",
       name: "Guest User",
       image: null,
@@ -269,7 +280,9 @@ export function AuthView() {
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Enter the email associated with your account. In this demo, the reset token will be shown to you directly.
+                    {process.env.NODE_ENV === 'development'
+                      ? 'Enter the email associated with your account. In this demo, the reset token will be shown to you directly.'
+                      : 'A password reset link will be sent to your email.'}
                   </p>
                   <Button
                     type="submit"
