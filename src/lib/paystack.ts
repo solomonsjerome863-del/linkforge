@@ -26,7 +26,7 @@ export async function initializeCheckout(params: InitializeCheckoutParams): Prom
   authorization_url: string;
   reference: string;
 }> {
-  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/?checkout=paystack&reference=REFERENCE`;
+  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/?checkout=paystack`;
 
   const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
     method: "POST",

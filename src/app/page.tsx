@@ -63,17 +63,19 @@ export default function Page() {
           </button>
         )}
 
-        {/* Floating Download Button */}
-        <button
-          onClick={() => setDlOpen(true)}
-          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full
-                     bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm
-                     shadow-lg shadow-orange-500/30 transition-all hover:scale-105"
-          aria-label="Download brand assets"
-        >
-          <Palette className="w-5 h-5" />
-          Assets
-        </button>
+        {/* Floating Download Button (admin only) */}
+        {user.isAdmin && (
+          <button
+            onClick={() => setDlOpen(true)}
+            className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full
+                       bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm
+                       shadow-lg shadow-orange-500/30 transition-all hover:scale-105"
+            aria-label="Download brand assets"
+          >
+            <Palette className="w-5 h-5" />
+            Assets
+          </button>
+        )}
 
         {/* Download / Assets Panel */}
         {dlOpen && (
