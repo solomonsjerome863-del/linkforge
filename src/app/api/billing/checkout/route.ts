@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { initializeCheckout, internalPlanToPaystackCode } from "@/lib/paystack";
 
 const PLAN_AMOUNTS: Record<string, number> = {
-  pro: 4900, // $49 in cents (Paystack USD uses cents)
-  business: 14900, // $149 in cents
+  pro: 4900, // $49 USD in cents
+  business: 14900, // $149 USD in cents
 };
 
 export async function POST(request: NextRequest) {
