@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Sun,
   Moon,
+  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,6 +90,7 @@ function Navbar() {
   const links = [
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
+    { label: "Demo", href: "#demo" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
   ];
@@ -491,7 +493,68 @@ function HowItWorksSection() {
   );
 }
 
-/* ─── 6. Competitor Comparison ─── */
+/* ─── 6. Demo Video Section ─── */
+function DemoVideoSection() {
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <section id="demo" className="py-20 px-4">
+      <div className="max-w-5xl mx-auto">
+        <FadeIn>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              See LinkForge{" "}
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                in Action
+              </span>
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Watch how LinkForge crawls your site, finds link opportunities, and helps you rank higher on Google — in under a minute.
+            </p>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.2}>
+          <div className="relative rounded-2xl border border-border/60 shadow-2xl shadow-orange-500/10 overflow-hidden bg-card">
+            {playing ? (
+              <video
+                src="/linkforge-demo.webm"
+                controls
+                autoPlay
+                className="w-full aspect-video"
+                onEnded={() => setPlaying(false)}
+              />
+            ) : (
+              <button
+                onClick={() => setPlaying(true)}
+                className="relative w-full group cursor-pointer"
+              >
+                <img
+                  src="/landing-page-hero.png"
+                  alt="LinkForge Demo Preview"
+                  className="w-full aspect-video object-cover object-top"
+                />
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                  {/* Play button */}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-2xl shadow-orange-500/40 group-hover:scale-110 transition-transform">
+                    <Play className="w-8 h-8 text-white ml-1" />
+                  </div>
+                </div>
+                {/* Duration badge */}
+                <div className="absolute bottom-4 right-4 px-3 py-1 rounded-lg bg-black/60 text-white text-sm font-medium backdrop-blur-sm">
+                  0:25
+                </div>
+              </button>
+            )}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ─── 7. Competitor Comparison ─── */
 function ComparisonSection() {
   const rows = [
     {
@@ -1024,6 +1087,7 @@ export function LandingPage() {
         <SocialProofBar />
         <FeaturesSection />
         <HowItWorksSection />
+        <DemoVideoSection />
         <ComparisonSection />
         <PricingSection />
         <FAQSection />
