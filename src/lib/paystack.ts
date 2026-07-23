@@ -26,7 +26,8 @@ export async function initializeCheckout(params: InitializeCheckoutParams): Prom
   authorization_url: string;
   reference: string;
 }> {
-  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/?checkout=paystack`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://linkforge.digital";
+  const callbackUrl = `${appUrl}/?checkout=paystack`;
 
   const res = await fetch(`${PAYSTACK_BASE}/transaction/initialize`, {
     method: "POST",
@@ -37,7 +38,7 @@ export async function initializeCheckout(params: InitializeCheckoutParams): Prom
       plan: params.plan, // Paystack recurring plan code
       callback_url: callbackUrl,
       metadata: {
-        cancel_action: process.env.NEXT_PUBLIC_APP_URL || "",
+        cancel_action: appUrl,
         custom_fields: [
           {
             display_name: "User ID",
