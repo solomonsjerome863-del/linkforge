@@ -53,3 +53,18 @@ Stage Summary:
 - Performance: 5 pages in 1.1s, 20 pages in 2.3s (well within Vercel Hobby 10s timeout)
 - Removed dependencies: z-ai-web-dev-sdk page_reader (replaced with native fetch), experimental `after()` API
 - Ready for deploy to Vercel
+---
+Task ID: 2
+Agent: Main Agent
+Task: Verify price update (R999→R825) and admin subscriber management
+
+Work Log:
+- Verified Pro plan price already changed to R825 across all code files (landing-page.tsx, settings-view.tsx, checkout/route.ts PLAN_AMOUNTS = 82500)
+- Admin subscriber management already built: stats dashboard, user search, plan change dialog with upgrade/downgrade/remove, reason tracking, status display
+- Fixed last remaining R999 reference in .env.example
+- Noted Paystack callback URL still set to example.com (needs to be linkforge.digital)
+
+Stage Summary:
+- Price update R999→R825: COMPLETE (all files)
+- Admin subscriber management: COMPLETE (search users, change plans, remove subscriptions, dispute handling)
+- Remaining action for user: Update Paystack Callback URL from https://example.com to https://linkforge.digital
