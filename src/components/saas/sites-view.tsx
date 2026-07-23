@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -128,6 +128,9 @@ export function SitesView() {
   const [newUrl, setNewUrl] = useState("");
   const [newPlatform, setNewPlatform] = useState<Platform>("wordpress");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const crawlIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const crawlTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (user?.id) fetchSites();
   }, [user?.id]);
@@ -204,72 +207,93 @@ export function SitesView() {
     "Generating links...",
   ];
 
+  function stopCrawlPolling() {
+    if (crawlIntervalRef.current) {
+      clearInterval(crawlIntervalRef.current);
+      crawlIntervalRef.current = null;
+    }
+    if (crawlTimeoutRef.current) {
+      clearTimeout(crawlTimeoutRef.current);
+      crawlTimeoutRef.current = null;
+    }
+  }
+
   async function handleCrawl(site: Site) {
     setCrawlingId(site.id);
     setCrawlSiteName(site.name);
     setCrawlProgressStep(0);
     setShowCrawlProgress(true);
 
-    // Start progress animation timer
-    const t1 = setTimeout(() => setCrawlProgressStep(1), 3000);
-    const t2 = setTimeout(() => setCrawlProgressStep(2), 8000);
+    // Progress animation
+    const t1 = setTimeout(() => setCrawlProgressStep(1), 2000);
+    const t2 = setTimeout(() => setCrawlProgressStep(2), 6000);
+    const t3 = setTimeout(() => setCrawlProgressStep(3), 10000);
 
     try {
-      // The crawl now runs synchronously — the POST blocks until done (5-15s)
-      const controller = new AbortController();
-      const fetchTimer = setTimeout(() => controller.abort(), 60000); // 60s hard abort
-
       const res = await fetch(`/api/sites/${site.id}/crawl?userId=${user!.id}`, {
         method: "POST",
-        signal: controller.signal,
       });
-      clearTimeout(fetchTimer);
 
       if (!res.ok) {
+        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
         let errorMsg = "Unknown error";
         try {
           const body = await res.json();
           errorMsg = body.error || body.message || `Server error (${res.status})`;
-        } catch {
-          errorMsg = `Server error (${res.status})`;
-        }
+        } catch { errorMsg = `Server error (${res.status})`; }
         throw new Error(errorMsg);
       }
 
-      const data = await res.json();
-      clearTimeout(t1);
-      clearTimeout(t2);
+      toast.success(`Crawl started for "${site.name}"...`);
 
-      if (data.success) {
-        setCrawlProgressStep(3);
-        toast.success(`"${site.name}" — ${data.pagesSaved} pages crawled in ${Math.round(data.crawlTime / 1000)}s`);
-        // Refresh sites list to get updated data
-        await fetchSites();
-      } else {
-        throw new Error(data.message || "Crawl returned no pages");
-      }
+      // Poll every 3s until done (max 45s safety timeout)
+      let attempts = 0;
+      const maxAttempts = 15;
 
-      // Brief delay to show final step, then dismiss
-      setTimeout(() => {
-        setShowCrawlProgress(false);
-        setCrawlingId(null);
-      }, 1500);
-    } catch (err) {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      let message = "Failed to start crawl";
-      if (err instanceof Error) {
-        if (err.name === "AbortError") {
-          message = "Crawl timed out — the server took too long to respond";
-        } else {
-          message = err.message;
+      const interval = setInterval(async () => {
+        attempts++;
+        try {
+          const pollRes = await fetch(`/api/sites?userId=${user!.id}`);
+          if (!pollRes.ok) return;
+          const data = await pollRes.json();
+          const updated = data.sites?.find((s: Site) => s.id === site.id);
+
+          if (updated && updated.status !== "crawling") {
+            stopCrawlPolling();
+            clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+            setShowCrawlProgress(false);
+            setCrawlingId(null);
+            setSites(data.sites);
+
+            if (updated.status === "ready") {
+              toast.success(`"${site.name}" crawled — ${updated.pagesCount} pages saved!`);
+            } else if (updated.status === "error") {
+              toast.error(`Crawl failed: ${updated.error || "Unknown error"}`);
+            }
+          }
+        } catch {
+          // Poll error — just retry next interval
         }
-      }
+
+        // Safety: if polling takes too long, give up
+        if (attempts >= maxAttempts) {
+          stopCrawlPolling();
+          clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+          setShowCrawlProgress(false);
+          setCrawlingId(null);
+          toast.error("Crawl is taking too long — it may still be running in the background. Try refreshing.");
+          fetchSites();
+        }
+      }, 3000);
+
+      crawlIntervalRef.current = interval;
+    } catch (err) {
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+      const message = err instanceof Error ? err.message : "Failed to start crawl";
       toast.error(`Crawl error: ${message}`);
       setShowCrawlProgress(false);
       setCrawlingId(null);
-      // Refresh to get latest status
-      await fetchSites();
+      fetchSites();
     }
   }
 
