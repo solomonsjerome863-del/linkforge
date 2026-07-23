@@ -232,7 +232,16 @@ export function SitesView() {
       const res = await fetch(`/api/sites/${site.id}/crawl?userId=${user!.id}`, {
         method: "POST",
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        let errorMsg = "Unknown error";
+        try {
+          const body = await res.json();
+          errorMsg = body.error || body.message || `Server error (${res.status})`;
+        } catch {
+          errorMsg = `Server error (${res.status})`;
+        }
+        throw new Error(errorMsg);
+      }
       toast.success(`Crawl started for "${site.name}"`);
       // Optimistic update
       setSites(
@@ -273,12 +282,13 @@ export function SitesView() {
         }
       }, 3000);
       crawlIntervalRef.current = interval;
-    } catch {
+    } catch (err) {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
-      toast.error("Failed to start crawl");
+      const message = err instanceof Error ? err.message : "Failed to start crawl";
+      toast.error(`Crawl error: ${message}`);
       setShowCrawlProgress(false);
       setCrawlingId(null);
     }

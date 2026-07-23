@@ -121,12 +121,20 @@ function countWords(text: string): number {
 
 // ── Core Functions ──
 
-async function fetchPageContent(url: string): Promise<{ html: string; title: string; text: string } | null> {
+async function fetchPageContent(url: string, timeoutMs: number = 15000): Promise<{ html: string; title: string; text: string } | null> {
   try {
     const zai = await getZAI();
-    const result = await zai.functions.invoke("page_reader", { url });
+
+    // Race the page_reader against a timeout to prevent hanging
+    const result = await Promise.race([
+      zai.functions.invoke("page_reader", { url }),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Page reader timed out after ${timeoutMs}ms`)), timeoutMs)
+      ),
+    ]);
 
     if (result.code !== 200 || !result.data?.html) {
+      console.log(`[Crawler] Page reader returned ${result.code} for ${url}`);
       return null;
     }
 
@@ -150,8 +158,8 @@ async function discoverUrls(siteUrl: string, maxUrls: number): Promise<string[]>
 
   // Strategy 1: Try sitemap.xml first (parallel with homepage)
   const [sitemapResult, homeResult] = await Promise.all([
-    fetchPageContent(`${base}/sitemap.xml`),
-    fetchPageContent(base),
+    fetchPageContent(`${base}/sitemap.xml`, 8000),  // 8s timeout for sitemap
+    fetchPageContent(base, 15000),                 // 15s timeout for homepage
   ]);
 
   if (sitemapResult) {
