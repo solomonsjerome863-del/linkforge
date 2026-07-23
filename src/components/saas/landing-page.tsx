@@ -679,7 +679,7 @@ function PricingSection() {
     },
     {
       name: "Pro",
-      price: "R999",
+      price: "R825",
       period: "/mo",
       usdEquiv: "~$49",
       description: "For growing businesses and agencies",

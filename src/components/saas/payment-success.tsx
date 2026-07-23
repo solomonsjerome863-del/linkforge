@@ -19,7 +19,7 @@ const PLAN_META: Record<string, { icon: React.ElementType; color: string; gradie
     icon: Zap,
     color: "text-orange-500",
     gradient: "from-orange-500 to-amber-500",
-    price: "R999",
+    price: "R825",
     usdEquiv: "~$49",
     features: ["5 sites", "500 pages per site", "2,000 suggestions/mo", "Analytics dashboard", "Bulk operations", "Priority support"],
   },

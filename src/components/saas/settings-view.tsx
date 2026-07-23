@@ -56,7 +56,7 @@ const PLANS: {
   {
     type: "pro",
     name: "Pro",
-    price: "R999",
+    price: "R825",
     period: "/mo",
     icon: Crown,
     features: PLAN_LIMITS.pro.features,

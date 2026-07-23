@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { initializeCheckout, internalPlanToPaystackCode } from "@/lib/paystack";
 
 const PLAN_AMOUNTS: Record<string, number> = {
-  pro: 99900, // ZAR 999 in kobo (cents)
+  pro: 82500, // ZAR 825 in kobo (cents)
   business: 245500, // ZAR 2,455 in kobo (cents)
 };
 
