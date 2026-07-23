@@ -21,7 +21,6 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +49,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "next-themes";
+import { InternalLinkingDemo } from "./interactive-demo";
 
 /* ─── Scroll animation wrapper ─── */
 function FadeIn({
@@ -270,16 +270,10 @@ function HeroSection() {
             </p>
           </FadeIn>
 
-          {/* Hero Image */}
+          {/* Interactive Demo */}
           <FadeIn delay={0.5}>
             <div className="mt-14 w-full max-w-4xl">
-              <div className="relative rounded-2xl border border-border/60 shadow-2xl shadow-orange-500/5 overflow-hidden bg-card">
-                <img
-                  src="/hero-illustration.png"
-                  alt="LinkForge Dashboard"
-                  className="w-full h-auto"
-                />
-              </div>
+              <InternalLinkingDemo compact />
             </div>
           </FadeIn>
         </div>
@@ -495,8 +489,6 @@ function HowItWorksSection() {
 
 /* ─── 6. Demo Video Section ─── */
 function DemoVideoSection() {
-  const [playing, setPlaying] = useState(false);
-
   return (
     <section id="demo" className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
@@ -509,44 +501,47 @@ function DemoVideoSection() {
               </span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Watch how LinkForge crawls your site, finds link opportunities, and helps you rank higher on Google — in under a minute.
+              Watch how LinkForge crawls a real website, discovers orphan pages,
+              and generates AI-powered internal link suggestions — automatically.
             </p>
           </div>
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <div className="relative rounded-2xl border border-border/60 shadow-2xl shadow-orange-500/10 overflow-hidden bg-card">
-            {playing ? (
-              <video
-                src="/linkforge-demo.webm"
-                controls
-                autoPlay
-                className="w-full aspect-video"
-                onEnded={() => setPlaying(false)}
-              />
-            ) : (
-              <button
-                onClick={() => setPlaying(true)}
-                className="relative w-full group cursor-pointer"
-              >
-                <img
-                  src="/landing-page-hero.png"
-                  alt="LinkForge Demo Preview"
-                  className="w-full aspect-video object-cover object-top"
-                />
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                  {/* Play button */}
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-2xl shadow-orange-500/40 group-hover:scale-110 transition-transform">
-                    <Play className="w-8 h-8 text-white ml-1" />
-                  </div>
-                </div>
-                {/* Duration badge */}
-                <div className="absolute bottom-4 right-4 px-3 py-1 rounded-lg bg-black/60 text-white text-sm font-medium backdrop-blur-sm">
-                  0:25
-                </div>
-              </button>
-            )}
+          <div className="max-w-3xl mx-auto">
+            <InternalLinkingDemo />
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.4}>
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                <Search className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Real Crawling</p>
+                <p className="text-xs text-muted-foreground">Discovers every page</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card">
+              <div className="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Orphan Detection</p>
+                <p className="text-xs text-muted-foreground">Finds disconnected pages</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card">
+              <div className="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
+                <Brain className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">AI Suggestions</p>
+                <p className="text-xs text-muted-foreground">Smart link building</p>
+              </div>
+            </div>
           </div>
         </FadeIn>
       </div>

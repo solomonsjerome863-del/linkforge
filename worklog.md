@@ -102,3 +102,27 @@ Stage Summary:
 - Demo video: public/linkforge-demo.webm (landing page walkthrough)
 - Hero screenshot: public/landing-page-hero.png
 - Both accessible at linkforge.digital/linkforge-demo.webm and linkforge.digital/landing-page-hero.png
+---
+Task ID: 6
+Agent: Main Agent
+Task: Build interactive internal linking demo for landing page
+
+Work Log:
+- Created `src/components/saas/interactive-demo.tsx` — animated SVG visualization component
+- Simulates a fictional "FreshBite Food Blog" website (freshbite.co.za) with 10 pages
+- 5 animated phases: Crawling → Mapping → Analyzing → Suggesting → Complete
+- Shows orphan page detection (Smoothie Guide, FAQ) with red pulse animation
+- AI suggests 8 new internal links (dashed orange lines → solid green)
+- Link Score bar animates from 38% → 100% as suggestions are applied
+- Stats bar shows: Pages, Links, Orphans, New Links count
+- Auto-loops every ~14 seconds with smooth transitions
+- Integrated into hero section (compact mode, replaces static hero-illustration.png)
+- Replaced demo video section with larger version + 3 feature cards (Real Crawling, Orphan Detection, AI Suggestions)
+- Clean lint pass, verified compilation (200 OK, no errors)
+- Component uses pure React state + CSS transitions + SVG, no external dependencies
+
+Stage Summary:
+- New file: src/components/saas/interactive-demo.tsx (animated interactive demo)
+- Modified: src/components/saas/landing-page.tsx (hero + demo section integration)
+- Removed unused imports (Play, useState in demo section, Button, Badge)
+- Demo shows real internal linking workflow: crawl → map → find orphans → AI suggestions → complete
