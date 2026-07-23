@@ -679,8 +679,9 @@ function PricingSection() {
     },
     {
       name: "Pro",
-      price: "$49",
+      price: "R999",
       period: "/mo",
+      usdEquiv: "~$55",
       description: "For growing businesses and agencies",
       features: [
         "5 sites",
@@ -696,8 +697,9 @@ function PricingSection() {
     },
     {
       name: "Business",
-      price: "$149",
+      price: "R2,455",
       period: "/mo",
+      usdEquiv: "~$135",
       description: "For teams and growing businesses",
       features: [
         "25 sites",
@@ -758,6 +760,11 @@ function PricingSection() {
                       <span className="text-muted-foreground text-sm">
                         {plan.period}
                       </span>
+                    )}
+                    {(plan as { usdEquiv?: string }).usdEquiv && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        approx. {(plan as { usdEquiv?: string }).usdEquiv}
+                      </p>
                     )}
                   </div>
                   <Button

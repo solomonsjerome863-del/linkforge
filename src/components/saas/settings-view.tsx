@@ -56,7 +56,7 @@ const PLANS: {
   {
     type: "pro",
     name: "Pro",
-    price: "$49",
+    price: "R999",
     period: "/mo",
     icon: Crown,
     features: PLAN_LIMITS.pro.features,
@@ -66,7 +66,7 @@ const PLANS: {
   {
     type: "business",
     name: "Business",
-    price: "$149",
+    price: "R2,455",
     period: "/mo",
     icon: Building2,
     features: PLAN_LIMITS.business.features,
