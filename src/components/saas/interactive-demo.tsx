@@ -331,14 +331,16 @@ export function InternalLinkingDemo({ compact = false }: { compact?: boolean }) 
                   <circle
                     cx={page.x}
                     cy={page.y}
-                    r={16}
+                    r={18}
                     fill="none"
                     stroke="#ef4444"
                     strokeWidth={2}
-                    strokeOpacity={0.4}
+                    opacity={0.4}
                     filter="url(#orphan-glow)"
+                    className="origin-center"
                     style={{
                       animation: "orphan-pulse 1.5s ease-in-out infinite",
+                      transformOrigin: `${page.x}px ${page.y}px`,
                     }}
                   />
                 )}
@@ -467,20 +469,6 @@ export function InternalLinkingDemo({ compact = false }: { compact?: boolean }) 
         </div>
       </div>
 
-      {/* CSS for orphan pulse animation */}
-      <style jsx global>{`
-        @keyframes orphan-pulse {
-          0%,
-          100% {
-            stroke-opacity: 0.2;
-            r: 16;
-          }
-          50% {
-            stroke-opacity: 0.6;
-            r: 20;
-          }
-        }
-      `}</style>
     </div>
   );
 }
