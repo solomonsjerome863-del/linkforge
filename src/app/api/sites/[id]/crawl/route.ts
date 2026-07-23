@@ -3,6 +3,10 @@ import { db } from "@/lib/db";
 import { validateUser } from "@/lib/api-auth";
 import { crawlSite } from "@/lib/crawler";
 
+// Vercel Hobby: max 10s, Pro: up to 60s
+// Set to 10 to be safe on Hobby tier — the crawler is optimized for this limit
+export const maxDuration = 10;
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

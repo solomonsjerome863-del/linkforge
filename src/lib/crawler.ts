@@ -148,17 +148,14 @@ async function discoverUrls(siteUrl: string, maxUrls: number): Promise<string[]>
   const base = normalizeUrl(siteUrl);
   const discovered = new Set<string>();
 
-  // Strategy 1: Try sitemap.xml first
-  const sitemapUrl = `${base}/sitemap.xml`;
-  const sitemapResult = await fetchPageContent(sitemapUrl);
+  // Strategy 1: Try sitemap.xml first (parallel with homepage)
+  const [sitemapResult, homeResult] = await Promise.all([
+    fetchPageContent(`${base}/sitemap.xml`),
+    fetchPageContent(base),
+  ]);
+
   if (sitemapResult) {
-    const sitemapLinks = extractLinks(sitemapResult.html, base);
-    for (const link of sitemapLinks) {
-      if (!isContentTypeUrl(link) && link !== base) {
-        discovered.add(link);
-      }
-    }
-    // Also try parsing XML <loc> tags
+    // Parse XML <loc> tags from sitemap
     const locRegex = /<loc[^>]*>([^<]+)<\/loc>/gi;
     let locMatch: RegExpExecArray | null;
     while ((locMatch = locRegex.exec(sitemapResult.html)) !== null) {
@@ -167,29 +164,32 @@ async function discoverUrls(siteUrl: string, maxUrls: number): Promise<string[]>
         discovered.add(normalizeUrl(loc));
       }
     }
+    // Also extract href links from sitemap
+    const sitemapLinks = extractLinks(sitemapResult.html, base);
+    for (const link of sitemapLinks) {
+      if (!isContentTypeUrl(link) && link !== base) {
+        discovered.add(link);
+      }
+    }
     console.log(`[Crawler] Sitemap found ${discovered.size} URLs`);
   }
 
-  // Strategy 2: If sitemap didn't yield enough, crawl the homepage
-  if (discovered.size < 3) {
-    const homeResult = await fetchPageContent(base);
-    if (homeResult) {
-      const homeLinks = extractLinks(homeResult.html, base);
-      for (const link of homeLinks) {
-        if (link !== base && link !== `${base}/`) {
-          discovered.add(link);
-        }
+  // Always add links from homepage too
+  if (homeResult) {
+    const homeLinks = extractLinks(homeResult.html, base);
+    for (const link of homeLinks) {
+      if (link !== base && link !== `${base}/`) {
+        discovered.add(link);
       }
-      console.log(`[Crawler] Homepage discovered ${homeLinks.length} links, total now ${discovered.size}`);
     }
+    console.log(`[Crawler] Total discovered: ${discovered.size} URLs`);
   }
 
   // Add the homepage itself
   discovered.add(base);
 
-  // Return up to maxUrls (excluding base to keep it under the limit)
-  const allUrls = Array.from(discovered).slice(0, maxUrls);
-  return allUrls;
+  // Return up to maxUrls
+  return Array.from(discovered).slice(0, maxUrls);
 }
 
 /**
@@ -221,6 +221,8 @@ async function crawlSinglePage(url: string): Promise<CrawledPage | null> {
 
 /**
  * Full site crawl — discover URLs then fetch each page
+ * Optimized for Vercel Hobby tier (10s timeout): uses higher concurrency, no delays between batches,
+ * and limits total pages based on available time budget.
  */
 export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise<CrawlResult> {
   const base = normalizeUrl(siteUrl);
@@ -232,7 +234,7 @@ export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise
     discoveredUrlCount: 0,
   };
 
-  // Step 1: Discover URLs
+  // Step 1: Discover URLs (sitemap + homepage in parallel)
   const urls = await discoverUrls(base, maxPages);
   result.discoveredUrlCount = urls.length;
 
@@ -241,9 +243,9 @@ export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise
     return result;
   }
 
-  // Step 2: Fetch each page (sequential to respect rate limits)
-  // Process 3 pages concurrently
-  const CONCURRENCY = 3;
+  // Step 2: Fetch pages in larger batches with no inter-batch delay
+  // 6 concurrent to speed things up within the Vercel timeout
+  const CONCURRENCY = 6;
 
   for (let i = 0; i < urls.length; i += CONCURRENCY) {
     const batch = urls.slice(i, i + CONCURRENCY);
@@ -273,11 +275,6 @@ export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise
     // Stop if we have enough pages
     if (result.pages.length >= maxPages) {
       break;
-    }
-
-    // Small delay between batches
-    if (i + CONCURRENCY < urls.length) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
 
