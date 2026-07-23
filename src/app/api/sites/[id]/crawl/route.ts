@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { db } from "@/lib/db";
 import { validateUser } from "@/lib/api-auth";
 import { crawlSite } from "@/lib/crawler";
-
-// Vercel Hobby: max 10s, Pro: up to 60s
-// Set to 10 to be safe on Hobby tier — the crawler is optimized for this limit
-export const maxDuration = 10;
 
 export async function POST(
   request: NextRequest,
@@ -75,77 +72,90 @@ export async function POST(
 
     const maxPages = site.pageLimit || 50;
 
-    try {
-      // Crawl using the SDK-based crawler (works on Vercel serverless)
-      const crawlResult = await crawlSite(site.url, maxPages);
+    // ── Return immediately, crawl in background ──
+    // after() runs AFTER the response is sent and is NOT subject to Vercel's 10s timeout
+    after(async () => {
+      try {
+        console.log(`[Crawl] Background crawl started for ${site.url}, max ${maxPages} pages`);
 
-      if (crawlResult.pages.length === 0) {
-        throw new Error(
-          `Could not read ${site.url}. Make sure the URL is accessible and has content.`
-        );
+        const crawlResult = await crawlSite(site.url, maxPages);
+
+        if (crawlResult.pages.length === 0) {
+          await db.site.update({
+            where: { id },
+            data: {
+              status: "error",
+              error: `Could not read ${site.url}. Make sure the URL is accessible and has content.`,
+            },
+          });
+          await db.crawlJob.update({
+            where: { id: crawlJob.id },
+            data: { status: "failed", error: "No pages found", completedAt: new Date() },
+          });
+          return;
+        }
+
+        // Save crawled pages to database
+        const pagesToCreate = crawlResult.pages.map((page) => ({
+          url: page.url,
+          title: page.title,
+          content: page.content.slice(0, 50000),
+          textContent: page.textContent.slice(0, 30000),
+          headings: JSON.stringify(page.headings.length > 0 ? page.headings : ["Page"]),
+          wordCount: page.wordCount,
+          status: "active" as const,
+          siteId: id,
+        }));
+
+        if (pagesToCreate.length > 0) {
+          await db.page.createMany({ data: pagesToCreate });
+        }
+
+        await db.site.update({
+          where: { id },
+          data: {
+            status: "ready",
+            pagesCount: pagesToCreate.length,
+            lastCrawled: new Date(),
+          },
+        });
+
+        await db.crawlJob.update({
+          where: { id: crawlJob.id },
+          data: {
+            status: "completed",
+            pagesFound: crawlResult.discoveredUrlCount,
+            pagesSaved: pagesToCreate.length,
+            completedAt: new Date(),
+          },
+        });
+
+        console.log(`[Crawl] Background crawl complete: ${pagesToCreate.length} pages saved`);
+      } catch (crawlError) {
+        const errorMessage =
+          crawlError instanceof Error ? crawlError.message : "Crawl failed";
+
+        await db.site.update({
+          where: { id },
+          data: { status: "error", error: errorMessage },
+        });
+        await db.crawlJob.update({
+          where: { id: crawlJob.id },
+          data: { status: "failed", error: errorMessage, completedAt: new Date() },
+        });
+
+        console.error("[Crawl] Background crawl failed:", crawlError);
       }
+    });
 
-      // Save crawled pages to database
-      const pagesToCreate = crawlResult.pages.map((page) => ({
-        url: page.url,
-        title: page.title,
-        content: page.content.slice(0, 50000),
-        textContent: page.textContent.slice(0, 30000),
-        headings: JSON.stringify(page.headings.length > 0 ? page.headings : ["Page"]),
-        wordCount: page.wordCount,
-        status: "active" as const,
-        siteId: id,
-      }));
-
-      if (pagesToCreate.length > 0) {
-        await db.page.createMany({ data: pagesToCreate });
-      }
-
-      await db.site.update({
-        where: { id },
-        data: {
-          status: "ready",
-          pagesCount: pagesToCreate.length,
-          lastCrawled: new Date(),
-        },
-      });
-
-      await db.crawlJob.update({
-        where: { id: crawlJob.id },
-        data: {
-          status: "completed",
-          pagesFound: crawlResult.discoveredUrlCount,
-          pagesSaved: pagesToCreate.length,
-          completedAt: new Date(),
-        },
-      });
-
-      return NextResponse.json({
-        crawlJob: {
-          id: crawlJob.id,
-          status: "completed",
-          pagesFound: crawlResult.discoveredUrlCount,
-          pagesSaved: pagesToCreate.length,
-          completedAt: new Date().toISOString(),
-        },
-        pagesCount: pagesToCreate.length,
-      });
-    } catch (crawlError) {
-      const errorMessage =
-        crawlError instanceof Error ? crawlError.message : "Crawl failed";
-
-      await db.site.update({
-        where: { id },
-        data: { status: "error", error: errorMessage },
-      });
-      await db.crawlJob.update({
-        where: { id: crawlJob.id },
-        data: { status: "failed", error: errorMessage, completedAt: new Date() },
-      });
-
-      console.error("Crawl failed:", crawlError);
-      return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
-    }
+    // Return immediately — frontend polls for completion
+    return NextResponse.json({
+      crawlJob: {
+        id: crawlJob.id,
+        status: "running",
+      },
+      message: "Crawl started",
+    });
   } catch (error: unknown) {
     console.error("Crawl error:", error);
     return NextResponse.json(
