@@ -68,3 +68,37 @@ Stage Summary:
 - Price update R999→R825: COMPLETE (all files)
 - Admin subscriber management: COMPLETE (search users, change plans, remove subscriptions, dispute handling)
 - Remaining action for user: Update Paystack Callback URL from https://example.com to https://linkforge.digital
+---
+Task ID: 4
+Agent: Main Agent
+Task: Add prominent upgrade CTAs for free users
+
+Work Log:
+- Added orange gradient upgrade banner in sidebar (below nav, above usage bar) for starter users
+- Added "Upgrade" button with crown icon in top header bar (desktop only) for free users
+- Added full-width dashboard upgrade card with feature comparison, shimmer animation, and direct Paystack checkout button
+- Added shimmer keyframe animation to globals.css
+- All CTAs hidden for pro/business/enterprise users
+- Updated enterprise contact email from hello@ to admin@linkforge.digital
+- Pushed to GitHub
+
+Stage Summary:
+- 3 prominent upgrade touchpoints: sidebar banner, header button, dashboard hero card
+- Direct checkout from dashboard card (bypasses settings page)
+- Enterprise email updated
+---
+Task ID: 5
+Agent: Main Agent
+Task: Create marketing demo video
+
+Work Log:
+- Recorded agent-browser walkthrough of linkforge.digital landing page
+- Captured hero, features, how it works, comparison table, pricing, FAQ, and final CTA sections
+- Saved as /public/linkforge-demo.webm (1.4MB)
+- Captured high-res hero screenshot as /public/landing-page-hero.png (501KB)
+- Pushed both assets to GitHub
+
+Stage Summary:
+- Demo video: public/linkforge-demo.webm (landing page walkthrough)
+- Hero screenshot: public/landing-page-hero.png
+- Both accessible at linkforge.digital/linkforge-demo.webm and linkforge.digital/landing-page-hero.png
