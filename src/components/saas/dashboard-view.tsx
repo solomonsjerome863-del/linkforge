@@ -12,12 +12,16 @@ import {
   ExternalLink,
   Loader2,
   Inbox,
+  Crown,
+  Zap,
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/lib/store";
+import { useCheckout } from "@/lib/use-checkout";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { DashboardStats, Site, SiteStatus } from "@/lib/types";
@@ -84,6 +88,67 @@ function formatRelativeDate(dateStr: string | null): string {
   if (diffHrs < 24) return `${diffHrs}h ago`;
   const diffDays = Math.floor(diffHrs / 24);
   return `${diffDays}d ago`;
+}
+
+function UpgradeBanner() {
+  const { openCheckout, isCheckingOut } = useCheckout();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="border-orange-200 dark:border-orange-800/50 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 overflow-hidden relative">
+        {/* Decorative shimmer */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
+        <CardContent className="p-5 md:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                <Crown className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Unlock the full power of LinkForge</h3>
+                <p className="text-sm text-muted-foreground">Upgrade to Pro and supercharge your SEO</p>
+              </div>
+            </div>
+            <div className="flex-1 grid grid-cols-2 gap-3 sm:max-w-md">
+              {[
+                { icon: "5 sites", label: "vs 1 on free" },
+                { icon: "2,000 links", label: "vs 100 on free" },
+                { icon: "AI-powered", label: "smart suggestions" },
+                { icon: "Priority", label: "email support" },
+              ].map((item) => (
+                <div key={item.icon} className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                    <Zap className="w-3 h-3 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold">{item.icon}</p>
+                    <p className="text-[10px] text-muted-foreground">{item.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button
+              onClick={() => openCheckout("pro")}
+              disabled={isCheckingOut}
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 gap-2 shrink-0 px-6"
+            >
+              {isCheckingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Crown className="w-4 h-4" />
+              )}
+              Upgrade — R825/mo
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 }
 
 export function DashboardView() {
@@ -215,6 +280,11 @@ export function DashboardView() {
             );
           })}
         </div>
+      )}
+
+      {/* Upgrade CTA for free users */}
+      {user && (user.plan === "starter" || !user.plan) && !isLoading && (
+        <UpgradeBanner />
       )}
 
       {/* Quick Actions */}

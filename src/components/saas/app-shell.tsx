@@ -16,6 +16,9 @@ import {
   Sun,
   Moon,
   ShieldCheck,
+  Crown,
+  Zap,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +60,7 @@ import { PaymentSuccessScreen } from "./payment-success";
 import { BlueprintView } from "./blueprint-view";
 import { AdminView } from "./admin-view";
 import { PLAN_LIMITS, type PlanType } from "@/lib/types";
+import { useCheckout } from "@/lib/use-checkout";
 import { toast } from "sonner";
 
 interface NavItem {
@@ -226,6 +230,24 @@ function SidebarContent({
         </nav>
       </ScrollArea>
 
+      {/* Upgrade banner for free users */}
+      {user && (user.plan === "starter" || !user.plan) && (
+        <div className="px-3 pb-3">
+          <button
+            onClick={() => { setActiveView("settings"); onNavigate?.(); }}
+            className="w-full p-3 rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 text-white text-left hover:from-orange-600 hover:to-amber-600 transition-all shadow-lg shadow-orange-500/20 group"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Crown className="w-4 h-4" />
+              <span className="text-sm font-semibold">Upgrade to Pro</span>
+            </div>
+            <p className="text-[11px] text-white/80 leading-tight">
+              Unlock AI suggestions, 5 sites & more
+            </p>
+          </button>
+        </div>
+      )}
+
       {/* Usage footer */}
       <div className="px-4 py-3 border-t">
         <div className="text-xs text-muted-foreground mb-1">
@@ -374,6 +396,18 @@ export function AppShell() {
             <h1 className="text-lg font-semibold">{VIEW_TITLES[activeView]}</h1>
 
             <div className="flex-1" />
+
+            {/* Upgrade button for free users */}
+            {user && (user.plan === "starter" || !user.plan) && (
+              <Button
+                size="sm"
+                onClick={() => setActiveView("settings")}
+                className="hidden sm:inline-flex bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 gap-1.5"
+              >
+                <Crown className="w-3.5 h-3.5" />
+                Upgrade
+              </Button>
+            )}
 
             {/* Theme toggle */}
             <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme" className="relative">

@@ -193,3 +193,8 @@ pre code .decorator {
 pre code .number {
   color: #fda4af;
 }
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
