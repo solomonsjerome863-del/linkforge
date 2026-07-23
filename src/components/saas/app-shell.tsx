@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -53,6 +53,7 @@ import { PagesView } from "./pages-view";
 import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
 import { OnboardingWizard } from "./onboarding-wizard";
+import { PaymentSuccessScreen } from "./payment-success";
 import { BlueprintView } from "./blueprint-view";
 import { AdminView } from "./admin-view";
 import { PLAN_LIMITS, type PlanType } from "@/lib/types";
@@ -259,9 +260,12 @@ function SidebarContent({
 export function AppShell() {
   const user = useAppStore((s) => s.user);
   const activeView = useAppStore((s) => s.activeView);
+  const setActiveView = useAppStore((s) => s.setActiveView);
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);
   const setSidebarOpen = useAppStore((s) => s.setSidebarOpen);
   const { theme, setTheme } = useTheme();
+  const [checkoutSuccessPlan, setCheckoutSuccessPlan] = useState<PlanType | null>(null);
+  const [checkoutPollCount, setCheckoutPollCount] = useState(0);
 
   // Close sidebar on mobile when view changes
   useEffect(() => {
@@ -275,34 +279,40 @@ export function AppShell() {
     const checkoutType = params.get("checkout");
 
     if ((checkoutType === "paystack" || checkoutType === "success") && user?.id) {
-      // Verify with server instead of trusting URL params
-      fetch(`/api/billing/subscription?userId=${user.id}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.plan && data.plan !== user.plan) {
-            useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: data.plan as PlanType });
-            toast.success(`🎉 ${(data.plan as string).charAt(0).toUpperCase() + (data.plan as string).slice(1)} plan activated! Welcome aboard.`);
-          } else if (checkoutType === "paystack") {
-            // Paystack redirect arrived but plan not yet updated — webhook might be delayed
-            // Poll once more after a short delay
-            setTimeout(() => {
-              fetch(`/api/billing/subscription?userId=${user.id}`)
-                .then((r) => r.json())
-                .then((data2) => {
-                  if (data2.plan && data2.plan !== useAppStore.getState().user?.plan) {
-                    useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: data2.plan as PlanType });
-                    toast.success(`🎉 ${(data2.plan as string).charAt(0).toUpperCase() + (data2.plan as string).slice(1)} plan activated!`);
-                  }
-                })
-                .catch(() => {});
-            }, 3000);
-          }
-        })
-        .catch(() => {});
-      // Clean URL
+      // Clean URL immediately
       window.history.replaceState({}, "", window.location.pathname);
+
+      // Poll server to confirm plan activation (webhook may be delayed)
+      const pollSubscription = () => {
+        setCheckoutPollCount((prev) => prev + 1);
+        fetch(`/api/billing/subscription?userId=${user.id}`)
+          .then((r) => r.json())
+          .then((data) => {
+            const activatedPlan = data.plan as PlanType | undefined;
+            const oldPlan = useAppStore.getState().user?.plan;
+
+            if (activatedPlan && ("pro" === activatedPlan || "business" === activatedPlan || "enterprise" === activatedPlan)) {
+              // Update user in store
+              useAppStore.getState().setUser({ ...useAppStore.getState().user!, plan: activatedPlan });
+              // Show success screen
+              const planName = activatedPlan.charAt(0).toUpperCase() + activatedPlan.slice(1);
+              setCheckoutSuccessPlan(activatedPlan);
+              toast.success(`🎉 ${planName} plan activated!`);
+            } else if (checkoutPollCount < 5) {
+              // Webhook hasn't arrived yet — retry in 2s
+              setTimeout(pollSubscription, 2000);
+            } else {
+              // Give up polling after 5 attempts
+              toast.info("Payment confirmed! Your plan will activate shortly.");
+            }
+          })
+          .catch(() => {
+            if (checkoutPollCount < 3) setTimeout(pollSubscription, 2000);
+          });
+      };
+      pollSubscription();
     }
-  }, [user?.id, user?.plan]);
+  }, [user?.id, checkoutPollCount]);
 
   function renderView() {
     switch (activeView) {
@@ -326,6 +336,12 @@ export function AppShell() {
         return <DashboardView />;
     }
   }
+
+  const handleCloseSuccess = () => setCheckoutSuccessPlan(null);
+  const handleSuccessGoToSites = () => {
+    setCheckoutSuccessPlan(null);
+    setActiveView("sites");
+  };
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -402,6 +418,15 @@ export function AppShell() {
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-6">
+          {/* Payment success overlay */}
+          {checkoutSuccessPlan && (
+            <PaymentSuccessScreen
+              plan={checkoutSuccessPlan}
+              planName={checkoutSuccessPlan.charAt(0).toUpperCase() + checkoutSuccessPlan.slice(1)}
+              onClose={handleCloseSuccess}
+              onNavigateSites={handleSuccessGoToSites}
+            />
+          )}
           <OnboardingWizard />
           <AnimatePresence mode="wait">
             <motion.div
