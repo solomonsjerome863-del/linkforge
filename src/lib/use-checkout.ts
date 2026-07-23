@@ -18,7 +18,7 @@ export function useCheckout() {
 
       if (plan === "starter" || plan === "enterprise") {
         if (plan === "enterprise") {
-          toast.info("Enterprise inquiries: hello@linkforge.digital");
+          toast.info("Enterprise inquiries: admin@linkforge.digital");
         }
         return;
       }

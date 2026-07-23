@@ -615,7 +615,7 @@ export function SettingsView() {
                               variant="outline"
                               onClick={() =>
                                 toast.info(
-                                  "Enterprise inquiries: hello@linkforge.digital"
+                                  "Enterprise inquiries: admin@linkforge.digital"
                                 )
                               }
                             >
