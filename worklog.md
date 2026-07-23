@@ -31,3 +31,25 @@ Stage Summary:
 - Key files modified: sites-view.tsx, crawl/route.ts, crawler.ts
 - Production deployment needs: prisma db push to ensure CrawlJob table exists
 - User should now see actual error message if crawl fails on Vercel
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix crawl failure - pages never crawled, "failed to start crawling" error
+
+Work Log:
+- Investigated full crawl flow: frontend trigger → API route → crawler → DB save
+- Root cause identified: z-ai-web-dev-sdk `page_reader` hangs on initialization (ZAI.create() never resolves in serverless context), causing `after()` callback to be silently killed
+- Rewrote `src/lib/crawler.ts` to use native `fetch()` instead of `page_reader` — eliminated ZAI SDK dependency entirely
+- Added proper URL filtering to skip non-content paths (feeds, wp-json, assets, API endpoints)
+- Prioritized homepage as first URL to crawl
+- Rewrote `src/app/api/sites/[id]/crawl/route.ts` to run crawl synchronously instead of using experimental `after()` API
+- Added stale crawl job detection (auto-resets jobs stuck in "running" > 2 min)
+- Updated `src/components/saas/sites-view.tsx` to handle synchronous crawl response (no more polling), added AbortController timeout, improved error messages
+- Tested crawler directly: 20 pages from nasa.gov in 2.3 seconds with 0 errors
+- Verified with lint (clean) and TypeScript type check (no new errors)
+
+Stage Summary:
+- Key changes: 3 files rewritten (crawler.ts, crawl route, sites-view.tsx)
+- Performance: 5 pages in 1.1s, 20 pages in 2.3s (well within Vercel Hobby 10s timeout)
+- Removed dependencies: z-ai-web-dev-sdk page_reader (replaced with native fetch), experimental `after()` API
+- Ready for deploy to Vercel

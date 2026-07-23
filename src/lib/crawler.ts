@@ -1,5 +1,3 @@
-import ZAI from "z-ai-web-dev-sdk";
-
 // ── Types ──
 
 export interface CrawledPage {
@@ -15,17 +13,6 @@ export interface CrawlResult {
   pages: CrawledPage[];
   errors: { url: string; error: string }[];
   discoveredUrlCount: number;
-}
-
-// ── Singleton ──
-
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
 }
 
 // ── Helpers ──
@@ -53,8 +40,12 @@ function isInternalLink(link: string, baseUrl: string): boolean {
 function isContentTypeUrl(url: string): boolean {
   const lower = url.toLowerCase();
   // Skip images, videos, PDFs, feeds, assets
-  const skipExts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".mp4", ".mp3", ".pdf", ".xml", ".rss", ".css", ".js", ".ico", ".woff", ".woff2", ".ttf", ".eot"];
-  return skipExts.some((ext) => lower.includes(ext));
+  const skipExts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".mp4", ".mp3", ".pdf", ".xml", ".rss", ".css", ".js", ".ico", ".woff", ".woff2", ".ttf", ".eot", ".webmanifest", ".json"];
+  if (skipExts.some((ext) => lower.includes(ext))) return true;
+  // Skip common non-content paths
+  const skipPaths = ["/feed", "/wp-json", "/wp-content/plugins", "/wp-content/themes", "/wp-admin", "/wp-login", "/wp-includes", "/api/", "/_static/", "/static/", "/assets/"];
+  if (skipPaths.some((p) => lower.includes(p))) return true;
+  return false;
 }
 
 function stripHtml(html: string): string {
@@ -71,6 +62,10 @@ function stripHtml(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&mdash;/g, "—")
     .replace(/&ndash;/g, "–")
+    .replace(/&rsquo;/g, "'")
+    .replace(/&lsquo;/g, "'")
+    .replace(/&rdquo;/g, '"')
+    .replace(/&ldquo;/g, '"')
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -101,6 +96,11 @@ function extractLinks(html: string, baseUrl: string): string[] {
       continue;
     }
 
+    // Skip URLs with query strings that look like API/embed calls
+    if (href.includes("?") && (href.includes("format=") || href.includes("embed") || href.includes("action="))) {
+      continue;
+    }
+
     // Resolve relative URLs
     try {
       const resolved = new URL(href, baseUrl).toString();
@@ -121,30 +121,58 @@ function countWords(text: string): number {
 
 // ── Core Functions ──
 
-async function fetchPageContent(url: string, timeoutMs: number = 15000): Promise<{ html: string; title: string; text: string } | null> {
+/**
+ * Fetch a page using native fetch() with a timeout.
+ * Returns { html, title, text } or null on failure.
+ */
+async function fetchPageContent(url: string, timeoutMs: number = 10000): Promise<{ html: string; title: string; text: string } | null> {
   try {
-    const zai = await getZAI();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    // Race the page_reader against a timeout to prevent hanging
-    const result = await Promise.race([
-      zai.functions.invoke("page_reader", { url }),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error(`Page reader timed out after ${timeoutMs}ms`)), timeoutMs)
-      ),
-    ]);
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; LinkForgeBot/1.0; +https://linkforge.digital)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+      },
+      redirect: "follow",
+    });
 
-    if (result.code !== 200 || !result.data?.html) {
-      console.log(`[Crawler] Page reader returned ${result.code} for ${url}`);
+    clearTimeout(timer);
+
+    if (!response.ok) {
+      console.log(`[Crawler] fetch returned ${response.status} for ${url}`);
       return null;
     }
 
-    const html = result.data.html;
-    const title = result.data.title || stripHtml(html).slice(0, 80).trim();
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("text/html") && !contentType.includes("application/xhtml")) {
+      console.log(`[Crawler] Skipping non-HTML content (${contentType}) for ${url}`);
+      return null;
+    }
+
+    const html = await response.text();
+
+    if (!html || html.length < 100) {
+      console.log(`[Crawler] Empty/short response for ${url} (${html?.length || 0} chars)`);
+      return null;
+    }
+
+    // Extract <title> tag
+    const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    const title = titleMatch ? stripHtml(titleMatch[1]).trim() : "";
     const text = stripHtml(html);
 
     return { html, title, text };
   } catch (error) {
-    console.error(`[Crawler] Failed to fetch ${url}:`, error instanceof Error ? error.message : "Unknown");
+    const msg = error instanceof Error ? error.message : "Unknown";
+    if (msg.includes("abort") || msg.includes("timeout")) {
+      console.log(`[Crawler] Timeout fetching ${url} after ${timeoutMs}ms`);
+    } else {
+      console.log(`[Crawler] Failed to fetch ${url}: ${msg}`);
+    }
     return null;
   }
 }
@@ -156,10 +184,10 @@ async function discoverUrls(siteUrl: string, maxUrls: number): Promise<string[]>
   const base = normalizeUrl(siteUrl);
   const discovered = new Set<string>();
 
-  // Strategy 1: Try sitemap.xml first (parallel with homepage)
+  // Try sitemap.xml and homepage in parallel
   const [sitemapResult, homeResult] = await Promise.all([
-    fetchPageContent(`${base}/sitemap.xml`, 8000),  // 8s timeout for sitemap
-    fetchPageContent(base, 15000),                 // 15s timeout for homepage
+    fetchPageContent(`${base}/sitemap.xml`, 6000).catch(() => null),
+    fetchPageContent(base, 10000).catch(() => null),
   ]);
 
   if (sitemapResult) {
@@ -193,18 +221,27 @@ async function discoverUrls(siteUrl: string, maxUrls: number): Promise<string[]>
     console.log(`[Crawler] Total discovered: ${discovered.size} URLs`);
   }
 
-  // Add the homepage itself
+  // Add the homepage itself (always first priority)
   discovered.add(base);
 
+  // Prioritize the homepage and common content paths
+  const urlList = Array.from(discovered);
+  // Move homepage to front
+  const idx = urlList.indexOf(base);
+  if (idx > 0) {
+    urlList.splice(idx, 1);
+    urlList.unshift(base);
+  }
+
   // Return up to maxUrls
-  return Array.from(discovered).slice(0, maxUrls);
+  return urlList.slice(0, maxUrls);
 }
 
 /**
  * Fetch and parse a single page
  */
 async function crawlSinglePage(url: string): Promise<CrawledPage | null> {
-  const result = await fetchPageContent(url);
+  const result = await fetchPageContent(url, 8000);
   if (!result) return null;
 
   const textContent = result.text;
@@ -228,9 +265,9 @@ async function crawlSinglePage(url: string): Promise<CrawledPage | null> {
 }
 
 /**
- * Full site crawl — discover URLs then fetch each page
- * Optimized for Vercel Hobby tier (10s timeout): uses higher concurrency, no delays between batches,
- * and limits total pages based on available time budget.
+ * Full site crawl — discover URLs then fetch each page.
+ * Uses native fetch() for speed and reliability (no external SDK dependency).
+ * Optimized for serverless functions: higher concurrency, aggressive timeouts.
  */
 export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise<CrawlResult> {
   const base = normalizeUrl(siteUrl);
@@ -251,9 +288,11 @@ export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise
     return result;
   }
 
-  // Step 2: Fetch pages in larger batches with no inter-batch delay
-  // 6 concurrent to speed things up within the Vercel timeout
-  const CONCURRENCY = 6;
+  console.log(`[Crawler] Crawling ${urls.length} URLs with concurrency 4`);
+
+  // Step 2: Fetch pages in parallel batches
+  const CONCURRENCY = 4;
+  let processedCount = 0;
 
   for (let i = 0; i < urls.length; i += CONCURRENCY) {
     const batch = urls.slice(i, i + CONCURRENCY);
@@ -279,6 +318,7 @@ export async function crawlSite(siteUrl: string, maxPages: number = 30): Promise
         console.log(`[Crawler] ✗ ${url}`);
       }
     }
+    processedCount += batch.length;
 
     // Stop if we have enough pages
     if (result.pages.length >= maxPages) {
