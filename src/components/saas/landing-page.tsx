@@ -573,6 +573,18 @@ function DemoVideoSection() {
             </div>
           </div>
         </FadeIn>
+        {/* Download Link */}
+        <FadeIn delay={0.5}>
+          <div className="mt-6 flex justify-center">
+            <a
+              href="/api/download/video"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+            >
+              <Download className="w-4 h-4 group-hover:text-orange-500 transition-colors" />
+              Download demo video
+            </a>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );
@@ -1017,6 +1029,7 @@ function Footer() {
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
     { label: "Blog", href: "https://linkforge.digital/blog" },
+    { label: "Downloads", href: "/api/download/video" },
   ];
 
   return (
