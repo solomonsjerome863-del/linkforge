@@ -51,6 +51,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAppStore } from "@/lib/store";
 import { useTheme } from "next-themes";
 import { InternalLinkingDemo } from "./interactive-demo";
+import { usePwaInstall } from "@/lib/use-pwa-install";
 
 /* ─── Scroll animation wrapper ─── */
 function FadeIn({
@@ -88,6 +89,7 @@ function scrollToId(id: string) {
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { install: pwaInstall, isInstalled: pwaInstalled } = usePwaInstall();
   const links = [
     { label: "Features", href: "#features" },
     { label: "How It Works", href: "#how-it-works" },
@@ -132,10 +134,10 @@ function Navbar() {
             variant="outline"
             size="sm"
             className="gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 dark:hover:text-emerald-300 hover:border-emerald-500/60"
-            onClick={handleGetStarted}
+            onClick={pwaInstall}
           >
             <Download className="w-3.5 h-3.5" />
-            Install
+            {pwaInstalled ? "Open App" : "Install App"}
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -162,10 +164,10 @@ function Navbar() {
             variant="outline"
             size="sm"
             className="gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 dark:hover:text-emerald-300 hover:border-emerald-500/60"
-            onClick={handleGetStarted}
+            onClick={pwaInstall}
           >
             <Download className="w-3.5 h-3.5" />
-            Install
+            {pwaInstalled ? "Open" : "Install"}
           </Button>
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
@@ -200,10 +202,10 @@ function Navbar() {
                 <Button
                   variant="outline"
                   className="justify-start gap-1.5 text-sm font-semibold border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 dark:hover:text-emerald-300 hover:border-emerald-500/60 w-full"
-                  onClick={handleGetStarted}
+                  onClick={pwaInstall}
                 >
                   <Download className="w-4 h-4" />
-                  Install
+                  {pwaInstalled ? "Open App" : "Install App"}
                 </Button>
                 <Button
                   variant="ghost"
