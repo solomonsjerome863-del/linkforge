@@ -3,8 +3,8 @@ import { promises as fs } from "fs";
 import path from "path";
 
 export async function GET() {
-  const filePath = path.join(process.cwd(), "public", "linkforge-demo.webm");
-  const fileName = "linkforge-demo.webm";
+  const filePath = path.join(process.cwd(), "public", "linkforge-demo.mp4");
+  const fileName = "linkforge-demo.mp4";
 
   try {
     const fileBuffer = await fs.readFile(filePath);
@@ -13,7 +13,7 @@ export async function GET() {
     return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
-        "Content-Type": "video/webm",
+        "Content-Type": "video/mp4",
         "Content-Disposition": `attachment; filename="${fileName}"`,
         "Content-Length": String(fileSize),
         "Cache-Control": "public, max-age=86400",
