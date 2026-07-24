@@ -156,8 +156,17 @@ function Navbar() {
           </Button>
         </div>
 
-        {/* Mobile Menu */}
-        <div className="md:hidden">
+        {/* Mobile Actions */}
+        <div className="md:hidden flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 dark:hover:text-emerald-300 hover:border-emerald-500/60"
+            onClick={handleGetStarted}
+          >
+            <Download className="w-3.5 h-3.5" />
+            Install
+          </Button>
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
