@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -54,6 +54,8 @@ model Site {
   pages       Page[]
   suggestions LinkSuggestion[]
   crawlJobs   CrawlJob[]
+  citationBrands CitationBrand[]
+  citations   Citation[]
 }
 
 model Page {
@@ -120,6 +122,49 @@ model AnalyticsSnapshot {
 
   @@unique([siteId, date])
   @@index([siteId, date])
+}
+
+model CitationBrand {
+  id          String   @id @default(cuid())
+  name        String   // Brand name to track (e.g. "LinkForge", "linkforge.digital")
+  siteId      String
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  isPrimary   Boolean  @default(false)
+  citations   Citation[]
+  lastScanned DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([siteId])
+}
+
+model Citation {
+  id          String   @id @default(cuid())
+  brandId     String
+  brand       CitationBrand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  siteId      String
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  url         String
+  title       String
+  snippet     String
+  sourceType  String   @default("blog") // blog | news | forum | reddit | social | other
+  hostName    String
+  hasBacklink Boolean  @default(false)
+  authorityScore  Float @default(0)    // 0-100 AI-scored authority
+  relevanceScore  Float @default(0)    // 0-100 AI-scored relevance
+  opportunityScore Float @default(0)  // 0-100 composite backlink opportunity
+  sentiment   String   @default("neutral") // positive | neutral | negative
+  status      String   @default("new") // new | reviewed | outreach_sent | converted | dismissed
+  discoveredAt DateTime @default(now())
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([brandId, status])
+  @@index([siteId, sourceType])
+  @@index([siteId, hasBacklink])
+  @@index([siteId, opportunityScore(sort: Desc)])
+  @@unique([brandId, url])
 }
 
 model SubscriptionEvent {

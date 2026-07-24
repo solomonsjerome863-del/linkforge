@@ -19,6 +19,7 @@ import {
   Crown,
   Zap,
   X,
+  Radar,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +53,7 @@ import type { AppView } from "@/lib/types";
 import { DashboardView } from "./dashboard-view";
 import { SitesView } from "./sites-view";
 import { SuggestionsView } from "./suggestions-view";
+import { CitationsView } from "./citations-view";
 import { PagesView } from "./pages-view";
 import { AnalyticsView } from "./analytics-view";
 import { SettingsView } from "./settings-view";
@@ -75,6 +77,7 @@ const BASE_NAV_ITEMS: NavItem[] = [
   { view: "sites", label: "Sites", icon: Globe },
   { view: "pages", label: "Pages", icon: FileText },
   { view: "suggestions", label: "Suggestions", icon: Link2Icon },
+  { view: "citations", label: "Citations", icon: Radar },
   { view: "analytics", label: "Analytics", icon: BarChart3 },
   { view: "settings", label: "Settings", icon: Settings },
 ];
@@ -89,6 +92,7 @@ const VIEW_TITLES: Record<AppView, string> = {
   sites: "Sites",
   pages: "Pages",
   suggestions: "Link Suggestions",
+  citations: "Citations",
   analytics: "Analytics",
   settings: "Settings",
   blueprint: "Technical Blueprint",
@@ -346,6 +350,8 @@ export function AppShell() {
         return <PagesView />;
       case "suggestions":
         return <SuggestionsView />;
+      case "citations":
+        return <CitationsView />;
       case "analytics":
         return <AnalyticsView />;
       case "settings":

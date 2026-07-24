@@ -145,3 +145,51 @@ Stage Summary:
 - Key recommendation: Launch CiteForge as companion to LinkForge with 3 phases (Web Citations → AI Engine Monitor → Cannibalization)
 - Pricing: $49/mo standalone / $25/mo add-on for Pro tier
 - Revenue target: $49 ARPU uplift per LinkForge user, 20% free-to-paid conversion
+
+---
+Task ID: 3-api-routes
+Agent: Backend Agent
+Task: Build CiteForge Phase 1 API routes
+
+Work Log:
+- Read worklog.md for project context, prisma schema for CitationBrand/Citation models
+- Studied existing API patterns from sites/route.ts, suggestions/batch/route.ts, api-auth.ts, db.ts
+- Created 7 API route files under src/app/api/citations/
+- All routes follow existing conventions: userId auth, ownership validation, try/catch error handling
+- Lint passed clean (exit code 0)
+
+Files created:
+1. src/app/api/citations/brands/route.ts — GET (list brands by siteId) + POST (create brand, auto-primary detection)
+2. src/app/api/citations/brands/[id]/route.ts — DELETE (removes brand + cascade citations, promotes next brand to primary)
+3. src/app/api/citations/scan/route.ts — POST (z-ai-web-dev-sdk web_search, source classification, authority/relevance/opportunity scoring, dedup by brandId+url)
+4. src/app/api/citations/route.ts — GET (paginated list with filters: status, sourceType, hasBacklink, unlinkedOnly; sorted by opportunityScore desc)
+5. src/app/api/citations/[id]/route.ts — PATCH (update status/hasBacklink/sentiment) + DELETE (remove citation)
+6. src/app/api/citations/bulk/route.ts — POST (batch status update with ownership validation, max 500)
+7. src/app/api/citations/stats/route.ts — GET (aggregate: total, new, unlinked, linked, bySource, byStatus, avgOpportunityScore)
+
+Key design decisions:
+- Scan route classifies sources by hostname: reddit→reddit, twitter/facebook→social, news domains→news, forums→forum, medium/substack→blog
+- Authority heuristic: TLD trust (.edu/.gov/.org +20), known domains (+25), short domains (+10-15), penalizes long hostnames
+- Relevance heuristic: position-based (position 1 = 50 pts, decreasing) + snippet brand name match (+30) + early position bonus (+10)
+- Opportunity composite: authority×0.4 + relevance×0.6, boosted 1.2× if no backlink
+- Auto-primary: first brand for a site gets isPrimary=true; deleting primary promotes oldest remaining brand
+- Bulk route validates all citation IDs against user's sites before updating (prevents cross-site updates)
+
+Stage Summary:
+- All 7 API routes created and lint-clean at src/app/api/citations/
+- Scan route integrates z-ai-web-dev-sdk for web search (server-side only)
+- Stats route provides dashboard-ready aggregate data
+- Bulk route supports up to 500 citations per batch with ownership guard
+---
+Task ID: 4-frontend-view
+Agent: Frontend Agent
+Task: Build CiteForge citations view and app-shell integration
+
+Work Log:
+- Created citations-view.tsx with dashboard, filters, list
+- Updated app-shell.tsx with Citations nav item
+
+Stage Summary:
+- Citations view at src/components/saas/citations-view.tsx
+- Navigation integrated between Suggestions and Analytics
+

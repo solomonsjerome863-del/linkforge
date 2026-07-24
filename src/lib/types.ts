@@ -3,7 +3,7 @@ export type SiteStatus = "pending" | "crawling" | "ready" | "error";
 export type Platform = "wordpress" | "shopify" | "webflow" | "ghost" | "custom";
 export type SuggestionStatus = "pending" | "approved" | "rejected" | "applied";
 export type CrawlJobStatus = "pending" | "running" | "completed" | "failed";
-export type AppView = "dashboard" | "sites" | "pages" | "suggestions" | "analytics" | "settings" | "blueprint" | "admin";
+export type AppView = "dashboard" | "sites" | "pages" | "suggestions" | "citations" | "analytics" | "settings" | "blueprint" | "admin";
 
 export interface User {
   id: string;
@@ -92,6 +92,39 @@ export interface PlanLimits {
   maxPagesPerSite: number;
   monthlySuggestions: number;
   features: string[];
+}
+
+// ─── CiteForge Types ───
+export type CitationSourceType = "blog" | "news" | "forum" | "reddit" | "social" | "other";
+export type CitationStatus = "new" | "reviewed" | "outreach_sent" | "converted" | "dismissed";
+export type CitationSentiment = "positive" | "neutral" | "negative";
+
+export interface CitationBrand {
+  id: string;
+  name: string;
+  siteId: string;
+  isPrimary: boolean;
+  lastScanned: string | null;
+  createdAt: string;
+}
+
+export interface Citation {
+  id: string;
+  brandId: string;
+  siteId: string;
+  url: string;
+  title: string;
+  snippet: string;
+  sourceType: CitationSourceType;
+  hostName: string;
+  hasBacklink: boolean;
+  authorityScore: number;
+  relevanceScore: number;
+  opportunityScore: number;
+  sentiment: CitationSentiment;
+  status: CitationStatus;
+  discoveredAt: string;
+  reviewedAt: string | null;
 }
 
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
