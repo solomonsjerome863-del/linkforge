@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "postinstall": "prisma generate && node -e \"const fs=require('fs'),p=require('path');[['node_modules/@prisma/client','2c3a283f134fdcb6'],['node_modules/bcryptjs','ee66c2bdc904f2cf']].forEach(([d,h])=>{const t=p.join(process.cwd(),d+'-'+h);if(!fs.existsSync(t))fs.symlinkSync(p.basename(d),t,'junction');})\"",
-    "vercel-build": "if [ -n \"$POSTGRES_PRISMA_URL\" ]; then DATABASE_URL=\"$POSTGRES_PRISMA_URL\" npx prisma db push --skip-generate --accept-data-loss 2>&1 || true; fi && npx prisma generate && npx next build"
+    "vercel-build": "bash scripts/vercel-build.sh"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
