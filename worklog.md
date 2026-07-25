@@ -246,3 +246,34 @@ Stage Summary:
 - Files created: server.mjs (custom HTTP server), watchdog.sh (auto-restart)
 - Files modified: package.json (dev script), Caddyfile (keepalive off)
 - Login verified working: user can sign in, sign up, and access dashboard
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix production login "internal server error" on linkforge.digital (Vercel)
+
+Work Log:
+- User reported "Unable to login, internal server error" on production site linkforge.digital
+- Created /api/health diagnostic endpoint to test database connectivity, bcrypt, and env vars
+- Pushed health endpoint to GitHub, waited for Vercel deployment
+- Health check revealed root cause:
+  - DATABASE_URL on Vercel = PostgreSQL URL (starts with "postgresql:")
+  - schema.prisma declared provider = "sqlite" (requires file: URLs)
+  - Prisma refused to connect: "the URL must start with the protocol `file:`"
+- Fixed by updating scripts/vercel-build.sh to auto-detect PostgreSQL URLs and patch schema:
+  - Detects POSTGRES_PRISMA_URL or DATABASE_URL starting with "postgres"
+  - Runs `sed` to replace `provider = "sqlite"` with `provider = "postgresql"`
+  - Pushes schema to PostgreSQL via `prisma db push`
+  - Generates Prisma client with correct provider
+- Updated package.json vercel-build command to use the bash script
+- Pushed fix to GitHub, Vercel redeployed
+- Verified via health check: prisma_connected=true, user_count=9, bcryptjs_hash=OK
+- Verified via agent-browser: login form shows "Invalid email or password" toast (proper 401)
+- Added improved error reporting in login route (exposes error details in dev mode)
+
+Stage Summary:
+- Root cause: Prisma schema mismatch (sqlite provider) with PostgreSQL DATABASE_URL on Vercel
+- Fix: Auto-patch schema provider in vercel-build.sh based on detected database URL
+- Health endpoint added at /api/health for future diagnostics
+- Login confirmed working on production - returns proper 401 for invalid credentials instead of 500
+- Files modified: scripts/vercel-build.sh, package.json, src/app/api/auth/login/route.ts
+- Files created: src/app/api/health/route.ts
