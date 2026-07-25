@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  serverExternalPackages: ["@prisma/client", "bcryptjs"],
+  allowedDevOrigins: ["*"],
   async headers() {
     return [
       {

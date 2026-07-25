@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase().trim();
 
     const user = await db.user.findFirst({
-      where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+      where: { email: { equals: normalizedEmail } },
     });
 
     if (!user) {

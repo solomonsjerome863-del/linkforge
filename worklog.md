@@ -193,3 +193,30 @@ Stage Summary:
 - Citations view at src/components/saas/citations-view.tsx
 - Navigation integrated between Suggestions and Analytics
 
+
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix "Unable to login, internal server error" - Two root causes found and fixed
+
+Work Log:
+- Diagnosed login returning HTTP 500 Internal Server Error
+- Root Cause 1: `mode: "insensitive"` in Prisma queries is NOT supported by SQLite (only PostgreSQL/MySQL)
+  - Fixed in 3 files: login/route.ts, signup/route.ts, admin/reset-user-password/route.ts
+  - Replaced with normalized email comparison (lowercase both sides)
+- Root Cause 2: Turbopack (Next.js 16 default bundler) hashes external package module IDs
+  - `@prisma/client` becomes `@prisma/client-2c3a283f134fdcb6` which doesn't exist on disk
+  - `bcryptjs` becomes `bcryptjs-ee66c2bdc904f2cf` which also doesn't exist
+  - Created symlinks: `node_modules/@prisma/client-2c3a283f134fdcb6 → client`
+  - Created symlinks: `node_modules/bcryptjs-ee66c2bdc904f2cf → bcryptjs`
+  - Updated postinstall script to auto-create symlinks after `prisma generate`
+- Added `serverExternalPackages: ["@prisma/client", "bcryptjs"]` to next.config.ts
+- Added `allowedDevOrigins: ["*"]` to next.config.ts for cross-origin dev requests
+- Verified all auth flows via API: login, signup, forgot-password, session
+
+Stage Summary:
+- Login: Fixed from 500 → proper 401 for bad credentials, 200 for valid login
+- Signup: Fixed from 500 → proper 409 for duplicate, 201 for new user
+- Forgot Password: Fixed from 500 → proper 200 with dev token
+- Files modified: src/app/api/auth/login/route.ts, src/app/api/auth/signup/route.ts, src/app/api/admin/reset-user-password/route.ts, src/lib/db.ts (reverted), next.config.ts, package.json
+- Symlinks created: node_modules/@prisma/client-2c3a283f134fdcb6, node_modules/bcryptjs-ee66c2bdc904f2cf

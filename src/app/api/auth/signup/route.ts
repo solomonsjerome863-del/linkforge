@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await db.user.findFirst({ where: { email: { equals: normalizedEmail, mode: "insensitive" } } });
+    const existingUser = await db.user.findFirst({ where: { email: { equals: normalizedEmail } } });
     if (existingUser) {
       return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
     }

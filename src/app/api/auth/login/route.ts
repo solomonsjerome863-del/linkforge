@@ -6,8 +6,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
+    const normalizedEmail = (email || "").toLowerCase().trim();
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await db.user.findFirst({
-      where: { email: { equals: email, mode: "insensitive" } },
+      where: { email: { equals: normalizedEmail } },
     });
 
     if (!user || !user.passwordHash) {
