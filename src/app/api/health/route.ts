@@ -47,5 +47,17 @@ export async function GET() {
   results.admin_email_set = !!process.env.ADMIN_EMAIL;
   results.vercel = !!process.env.VERCEL;
 
+  // 6. Check Paystack configuration (key presence only, never expose values)
+  results.paystack_secret_key_set = !!process.env.PAYSTACK_SECRET_KEY;
+  results.paystack_plan_pro_set = !!process.env.PAYSTACK_PLAN_PRO;
+  results.paystack_plan_pro_value = process.env.PAYSTACK_PLAN_PRO ? "configured" : "NOT_SET";
+  results.paystack_plan_business_set = !!process.env.PAYSTACK_PLAN_BUSINESS;
+  results.paystack_plan_business_value = process.env.PAYSTACK_PLAN_BUSINESS ? "configured" : "NOT_SET";
+
+  // 7. Check callback URL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "NOT_SET";
+  results.app_url = appUrl;
+  results.expected_callback_url = `${appUrl}/?checkout=paystack`;
+
   return NextResponse.json(results);
 }
