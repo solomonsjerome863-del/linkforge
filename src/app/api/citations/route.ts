@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
   try {
     const userId = request.nextUrl.searchParams.get("userId");
     const siteId = request.nextUrl.searchParams.get("siteId");
+    const brandId = request.nextUrl.searchParams.get("brandId");
     const status = request.nextUrl.searchParams.get("status");
     const sourceType = request.nextUrl.searchParams.get("sourceType");
     const hasBacklink = request.nextUrl.searchParams.get("hasBacklink");
@@ -78,6 +79,10 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {
       siteId,
     };
+
+    if (brandId) {
+      where.brandId = brandId;
+    }
 
     if (status && VALID_STATUSES.includes(status)) {
       where.status = status;

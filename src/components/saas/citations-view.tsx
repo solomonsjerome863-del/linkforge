@@ -303,8 +303,9 @@ export function CitationsView() {
   }, [citations]);
 
   const fetchBrands = useCallback(async () => {
+    if (!sites.length) return;
     try {
-      const res = await fetch(`/api/citations/brands?userId=${user?.id}`);
+      const res = await fetch(`/api/citations/brands?userId=${user?.id}&siteId=${sites[0].id}`);
       if (res.ok) {
         const data = await res.json();
         setBrands(data.brands ?? []);
@@ -312,15 +313,17 @@ export function CitationsView() {
     } catch {
       // silently fail — empty state will show
     }
-  }, [user?.id]);
+  }, [user?.id, sites]);
 
   const fetchCitations = useCallback(async () => {
+    if (!sites.length) return;
     setIsLoading(true);
     try {
       const params = new URLSearchParams({
-        brandId: currentBrandId,
+        siteId: sites[0].id,
         userId: user?.id ?? "",
       });
+      if (currentBrandId) params.set("brandId", currentBrandId);
       const res = await fetch(`/api/citations?${params}`);
       if (res.ok) {
         const data = await res.json();
@@ -331,13 +334,13 @@ export function CitationsView() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentBrandId, user?.id]);
+  }, [currentBrandId, user?.id, sites]);
 
   // Fetch brands on mount
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || !sites.length) return;
     fetchBrands();
-  }, [user?.id, fetchBrands]);
+  }, [user?.id, sites, fetchBrands]);
 
   // Fetch citations when brand changes
   useEffect(() => {
@@ -365,7 +368,7 @@ export function CitationsView() {
       }
       const data = await res.json();
       toast.success(
-        `Found ${data.count ?? 0} new mentions for ${brands.find((b) => b.id === currentBrandId)?.name ?? "brand"}`
+        `Found ${data.new ?? 0} new mentions for ${brands.find((b) => b.id === currentBrandId)?.name ?? "brand"}`
       );
       await fetchCitations();
       await fetchBrands(); // refresh brand's lastScanned
@@ -407,16 +410,16 @@ export function CitationsView() {
   async function handleMarkReviewed(citationId: string) {
     setActionLoading(citationId);
     try {
-      const res = await fetch(`/api/citations/${citationId}/review`, {
-        method: "POST",
+      const res = await fetch(`/api/citations/${citationId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.id }),
+        body: JSON.stringify({ userId: user?.id, status: "reviewed" }),
       });
       if (!res.ok) throw new Error();
       setCitations((prev) =>
         prev.map((c) =>
           c.id === citationId
-            ? { ...c, status: "reviewed" as CitationStatus }
+            ? { ...c, status: "reviewed" as CitationStatus, reviewedAt: new Date().toISOString() }
             : c
         )
       );
@@ -432,16 +435,16 @@ export function CitationsView() {
   async function handleDismiss(citationId: string) {
     setActionLoading(citationId);
     try {
-      const res = await fetch(`/api/citations/${citationId}/dismiss`, {
-        method: "POST",
+      const res = await fetch(`/api/citations/${citationId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.id }),
+        body: JSON.stringify({ userId: user?.id, status: "dismissed" }),
       });
       if (!res.ok) throw new Error();
       setCitations((prev) =>
         prev.map((c) =>
           c.id === citationId
-            ? { ...c, status: "dismissed" as CitationStatus }
+            ? { ...c, status: "dismissed" as CitationStatus, reviewedAt: new Date().toISOString() }
             : c
         )
       );

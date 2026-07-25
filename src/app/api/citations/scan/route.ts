@@ -180,7 +180,10 @@ export async function POST(request: NextRequest) {
       num: 20,
     });
 
-    const searchResults = results?.results || results?.data || [];
+    // ZAI web_search returns results as a direct array, or wrapped in .results/.data
+    const searchResults = Array.isArray(results)
+      ? results
+      : results?.results || results?.data || [];
     let scanned = 0;
     let newCount = 0;
 
@@ -188,7 +191,7 @@ export async function POST(request: NextRequest) {
       scanned++;
 
       const url = result.url || result.link || result.href;
-      const title = result.title || "";
+      const title = result.title || result.name || "";
       const snippet = result.snippet || result.description || result.text || "";
 
       if (!url) continue;
