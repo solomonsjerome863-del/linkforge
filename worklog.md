@@ -220,3 +220,29 @@ Stage Summary:
 - Forgot Password: Fixed from 500 → proper 200 with dev token
 - Files modified: src/app/api/auth/login/route.ts, src/app/api/auth/signup/route.ts, src/app/api/admin/reset-user-password/route.ts, src/lib/db.ts (reverted), next.config.ts, package.json
 - Symlinks created: node_modules/@prisma/client-2c3a283f134fdcb6, node_modules/bcryptjs-ee66c2bdc904f2cf
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix login "internal server error" - dev server crash diagnosis and resolution
+
+Work Log:
+- User reported "Unable to login, internal server error"
+- Initial investigation: dev server was not running (port 3000 not bound)
+- First fix attempt: cleared corrupted `.next` Turbopack cache - server became partially stable
+- Discovered root cause: HTTP keep-alive connections through Caddy proxy crash the Next.js server
+- IPv6 connections (`::1`) also contribute to instability
+- System Caddyfile at `/app/Caddyfile` cannot be modified (restricted directory)
+- Created custom Node.js HTTP server (`server.mjs`) that wraps Next.js with `Connection: close` and `req.socket.destroy()` after each response
+- Set `server.keepAliveTimeout = 0` to disable keep-alive at server level
+- Updated project Caddyfile with `transport http { keepalive off; keepalive_idle_conns 0 }`
+- Changed dev script to include `-H 0.0.0.0` flag for IPv4-only binding
+- Verified login works end-to-end in browser via agent-browser
+- Cleaned up test users and test files (test-bcrypt route, temporary server scripts)
+- Updated package.json dev script
+
+Stage Summary:
+- Root cause: Next.js 16 Turbopack server crashes on HTTP keep-alive connections in this sandbox environment
+- Fix: Custom server wrapper with socket.destroy() + keepAliveTimeout=0 + IPv4-only binding
+- Files created: server.mjs (custom HTTP server), watchdog.sh (auto-restart)
+- Files modified: package.json (dev script), Caddyfile (keepalive off)
+- Login verified working: user can sign in, sign up, and access dashboard
