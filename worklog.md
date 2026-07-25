@@ -277,3 +277,29 @@ Stage Summary:
 - Login confirmed working on production - returns proper 401 for invalid credentials instead of 500
 - Files modified: scripts/vercel-build.sh, package.json, src/app/api/auth/login/route.ts
 - Files created: src/app/api/health/route.ts
+---
+Task ID: citations-test-fix
+Agent: Main Agent
+Task: Test Citations end-to-end flow and fix all bugs
+
+Work Log:
+- Tested full Citations flow: create brand → scan → list → filter → update status
+- Found 7 bugs in frontend-backend integration:
+  1. scan/route.ts: ZAI web_search returns direct array, not .results/.data wrapper
+  2. scan/route.ts: Web search results use .name not .title field
+  3. citations-view.tsx: fetchBrands missing siteId param (API requires it)
+  4. citations-view.tsx: fetchCitations sending brandId instead of siteId
+  5. citations-view.tsx: handleMarkReviewed calling non-existent /review endpoint
+  6. citations-view.tsx: handleDismiss calling non-existent /dismiss endpoint
+  7. citations-view.tsx: scan toast using data.count instead of data.new
+- Also added optional brandId filter to citations GET route
+- Fixed all 7 bugs, verified scan returns 10 results with proper scoring
+- Lint clean, pushed to GitHub
+
+Stage Summary:
+- Full Citations flow now works end-to-end
+- Scan: web search → parse results → score authority/relevance/opportunity → save to DB
+- Brand management: create brands per site, auto-primary detection
+- Citation management: list with filters, PATCH to update status (reviewed/dismissed/etc)
+- Stats dashboard: total/unlinked/linked counts, avg opportunity score
+- All changes pushed to GitHub for Vercel deployment
