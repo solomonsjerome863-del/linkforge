@@ -53,6 +53,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ user: { ...safeUser, isAdmin } });
   } catch (error: unknown) {
     console.error("Login error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    // In development, expose the error for debugging
+    if (process.env.NODE_ENV === "development") {
+      return NextResponse.json({ error: "Internal server error", details: message }, { status: 500 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
