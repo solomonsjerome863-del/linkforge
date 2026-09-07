@@ -6,7 +6,9 @@
 <meta name="robots" content="noindex, nofollow">
 <title>LinkForge — Growth &amp; Funnel Playbook</title>
 <!-- 
-  LinkForge Funnel Playbook (internal doc)
+  LinkForge Funnel Playbook (internal doc) — v1.1
+  v1.1: merged the Systeme.io international funnel (Stripe via systeme.io for non-SA market)
+        with the in-product Paystack growth engine. One source of truth.
   Edit this file directly: every section is plain HTML, styles live in the <style> block below.
   Served publicly at /LinkForge_Funnel_Playbook.html after deploy (noindex'd, keep it that way).
 -->
@@ -25,7 +27,7 @@
   .hero .kicker{display:inline-block; background:rgba(234,88,12,.15); color:#fb923c; border:1px solid rgba(251,146,60,.35); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:4px 12px; border-radius:999px; margin-bottom:16px;}
   .hero h1{font-size:clamp(28px,5vw,44px); line-height:1.15; font-weight:800; letter-spacing:-.02em;}
   .hero h1 em{color:#fb923c; font-style:normal;}
-  .hero p.sub{color:#cbd5e1; max-width:640px; margin-top:14px; font-size:17px;}
+  .hero p.sub{color:#cbd5e1; max-width:680px; margin-top:14px; font-size:17px;}
   .hero .meta{margin-top:22px; font-size:13px; color:#94a3b8; display:flex; gap:18px; flex-wrap:wrap;}
   nav.toc{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.95); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:10px 0;}
   nav.toc .wrap{display:flex; gap:6px; flex-wrap:wrap;}
@@ -35,7 +37,7 @@
   section{margin-bottom:56px; scroll-margin-top:70px;}
   h2{font-size:26px; font-weight:800; letter-spacing:-.01em; margin-bottom:6px; display:flex; align-items:center; gap:10px;}
   h2 .num{background:var(--orange); color:#fff; font-size:14px; width:30px; height:30px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
-  p.lead{color:var(--muted); margin-bottom:20px; max-width:760px;}
+  p.lead{color:var(--muted); margin-bottom:20px; max-width:780px;}
   h3{font-size:17px; font-weight:700; margin:22px 0 8px;}
   .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px;}
   .grid{display:grid; gap:14px;}
@@ -43,14 +45,12 @@
   .kpi{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px;}
   .kpi .v{font-size:26px; font-weight:800; color:var(--orange);}
   .kpi .l{font-size:12.5px; color:var(--muted); font-weight:600; margin-top:2px;}
-  /* funnel flow */
   .flow{display:flex; align-items:stretch; gap:8px; flex-wrap:wrap;}
   .stage{flex:1 1 150px; background:var(--card); border:1px solid var(--line); border-top:4px solid var(--orange); border-radius:12px; padding:14px; position:relative;}
   .stage h4{font-size:14px; font-weight:800;}
   .stage .conv{font-size:12px; color:var(--muted); margin-top:4px;}
   .stage .target{margin-top:8px; font-size:12px; font-weight:700; color:var(--green); background:var(--green-soft); border-radius:8px; padding:3px 8px; display:inline-block;}
   .arrow{align-self:center; color:var(--muted); font-size:20px; flex:0 0 auto;}
-  /* tables */
   .tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--card);}
   table{width:100%; border-collapse:collapse; font-size:14px; min-width:560px;}
   th{background:var(--bg); text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:10px 14px; border-bottom:1px solid var(--line);}
@@ -68,8 +68,8 @@
   .callout{border-left:4px solid var(--orange); background:var(--orange-soft); border-radius:0 12px 12px 0; padding:14px 18px; font-size:14.5px; margin:16px 0;}
   .callout.green{border-color:var(--green); background:var(--green-soft);}
   .callout.rose{border-color:var(--rose); background:var(--rose-soft);}
+  .callout.blue{border-color:var(--blue); background:var(--blue-soft);}
   .callout b{font-weight:700;}
-  .pill-row{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 16px;}
   .price{font-weight:800;}
   .muted{color:var(--muted);}
   .small{font-size:13px;}
@@ -85,14 +85,14 @@
   <div class="wrap">
     <span class="kicker">Internal · Growth</span>
     <h1>LinkForge <em>Funnel Playbook</em></h1>
-    <p class="sub">How strangers become activated free users, then paying subscribers — stage by stage, with the plays, emails, limits, and numbers that move each step.</p>
-    <div class="meta"><span>Version 1.0 · Sep 2026</span><span>Owner: Jerome</span><span>Product: linkforge.digital</span><span>Review: monthly</span></div>
+    <p class="sub">Two engines, one system: the in-product funnel (free Starter → Paystack Pro) for South Africa, and the Systeme.io + Stripe international funnel for everyone else. Stage by stage — plays, emails, limits, and numbers.</p>
+    <div class="meta"><span>Version 1.1 · Sep 2026</span><span>Owner: Jerome</span><span>Product: linkforge.digital</span><span>Review: monthly</span></div>
   </div>
 </header>
 
 <nav class="toc">
   <div class="wrap">
-    <a href="#overview">Overview</a><a href="#icp">ICP</a><a href="#funnel">Funnel</a><a href="#channels">Channels</a><a href="#activation">Activation</a><a href="#conversion">Conversion</a><a href="#retention">Retention</a><a href="#email">Email</a><a href="#kpis">KPIs</a><a href="#plan">90-Day Plan</a><a href="#objections">Objections</a>
+    <a href="#overview">Overview</a><a href="#icp">ICP</a><a href="#funnel">Funnel</a><a href="#channels">Channels</a><a href="#activation">Activation</a><a href="#conversion">Conversion</a><a href="#intl">Intl Funnel</a><a href="#retention">Retention</a><a href="#email">Email</a><a href="#kpis">KPIs</a><a href="#plan">90-Day Plan</a><a href="#objections">Objections</a>
   </div>
 </nav>
 
@@ -100,28 +100,36 @@
 
 <!-- ══════════ 1. OVERVIEW ══════════ -->
 <section id="overview">
-  <h2><span class="num">1</span> The funnel at a glance</h2>
-  <p class="lead">One sentence of strategy: <b>win the first 10 minutes.</b> LinkForge's demo magic is paste-a-URL → crawl → real AI suggestions. Everything in this playbook is built to get users to that moment fast, then let usage limits and visible value do the selling.</p>
+  <h2><span class="num">1</span> The system at a glance</h2>
+  <p class="lead">One sentence of strategy: <b>win the first 10 minutes.</b> LinkForge's demo magic is paste-a-URL → crawl → real AI suggestions. Everything here is built to get users to that moment fast, then let usage limits and visible value do the selling.</p>
 
   <div class="flow">
-    <div class="stage"><h4>1 · Visitor</h4><div class="conv">Landing page / content / community</div><span class="target">→ 4% signup</span></div>
+    <div class="stage"><h4>1 · Visitor</h4><div class="conv">Landing page / content / funnel opt-in</div><span class="target">→ 4% signup</span></div>
     <div class="arrow">➜</div>
     <div class="stage"><h4>2 · Signup</h4><div class="conv">Free Starter account</div><span class="target">→ 40% activate</span></div>
     <div class="arrow">➜</div>
     <div class="stage"><h4>3 · Activated</h4><div class="conv">Site crawled, suggestions applied</div><span class="target">→ 6% in 30d</span></div>
     <div class="arrow">➜</div>
-    <div class="stage"><h4>4 · Paid</h4><div class="conv">Pro via Paystack</div><span class="target">→ 20% expand</span></div>
+    <div class="stage"><h4>4 · Paid</h4><div class="conv">Paystack (ZA) or Stripe via Systeme.io (intl)</div><span class="target">→ 20% expand</span></div>
     <div class="arrow">➜</div>
     <div class="stage"><h4>5 · Expanded</h4><div class="conv">Business / Enterprise</div><span class="target">LTV focus</span></div>
   </div>
 
+  <h3 style="margin-top:22px;">Dual-market payment architecture</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Rail</th><th>Processor</th><th>Currency</th><th>Plans</th><th>Market</th><th>Provisioning</th></tr></thead>
+    <tbody>
+      <tr><td><b>linkforge.digital</b></td><td>Paystack (in-app checkout)</td><td>ZAR</td><td class="price">R825 / R2,455</td><td>🇿🇦 South Africa</td><td>Automatic (webhooks)</td></tr>
+      <tr><td><b>Systeme.io funnel</b></td><td>Stripe (via systeme.io)</td><td>USD</td><td class="price">$49 / $149</td><td>🌍 International</td><td>Manual via Admin panel (§7)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><b>Why two rails:</b> Stripe doesn't onboard South African merchants directly, so international card payments run through Systeme.io as the funnel + checkout layer. Paystack handles ZAR locally with cards + EFT. Neither cannibalizes the other: local buyers get self-serve in-app upgrades; international buyers get the Systeme.io funnel experience.</div>
+
   <div class="grid g3" style="margin-top:16px;">
     <div class="kpi"><div class="v">Applied suggestions / week</div><div class="l">North-star metric — value delivered, not signups</div></div>
     <div class="kpi"><div class="v">&lt; 10 min</div><div class="l">Target time-to-first-value (paste URL → first suggestion)</div></div>
-    <div class="kpi"><div class="v">R25k MRR</div><div class="l">90-day target (≈ 10 Pro + 2 Business, see §9)</div></div>
+    <div class="kpi"><div class="v">R25k + $1k</div><div class="l">90-day target: ZAR MRR (Paystack) + USD MRR (Stripe)</div></div>
   </div>
-
-  <div class="callout"><b>Rule of the playbook:</b> every campaign, email, and product change must either shorten time-to-first-value or make the paid tier's extra capacity visibly painful to live without. Anything else is a distraction.</div>
 </section>
 
 <!-- ══════════ 2. ICP ══════════ -->
@@ -131,21 +139,22 @@
   <div class="tblwrap"><table>
     <thead><tr><th>Persona</th><th>Profile</th><th>Core pain</th><th>Tier fit</th></tr></thead>
     <tbody>
-      <tr><td><b>Solo SEO / affiliate owner</b></td><td>WordPress, 1–5 content sites, does their own SEO</td><td>Hours lost manually inserting links; orphan pages; money pages under-linked</td><td><span class="tag t-orange">Pro R825/mo</span></td></tr>
-      <tr><td><b>SEO agency</b></td><td>10–50 client sites, retainer model, junior staff do link work</td><td>Link audits don't scale; juniors inconsistent; reporting takes evenings</td><td><span class="tag t-blue">Business R2,455/mo</span></td></tr>
+      <tr><td><b>Solo SEO / affiliate owner</b></td><td>WordPress, 1–5 content sites, does their own SEO</td><td>Hours lost manually inserting links; orphan pages; money pages under-linked</td><td><span class="tag t-orange">Pro $49 / R825</span></td></tr>
+      <tr><td><b>SEO agency</b></td><td>10–50 client sites, retainer model, junior staff do link work</td><td>Link audits don't scale; juniors inconsistent; reporting takes evenings</td><td><span class="tag t-blue">Business $149 / R2,455</span></td></tr>
       <tr><td><b>In-house content lead</b></td><td>SaaS / publisher blog, publishes weekly, cares about AI visibility</td><td>Internal links skipped at publishing speed; unclear presence in AI answers</td><td><span class="tag t-blue">Business</span> → <span class="tag t-slate">Enterprise</span></td></tr>
     </tbody>
   </table></div>
 
   <h3>Positioning statement</h3>
-  <div class="card"><p><i>“LinkForge crawls your site, finds every missed internal link with AI-scored suggestions, and shows where AI assistants already mention — or ignore — your brand. Fix link equity and AI visibility from one dashboard, priced in Rands.”</i></p></div>
+  <div class="card"><p><i>“LinkForge crawls your site, finds every missed internal link with AI-scored suggestions, and shows where AI assistants already mention — or ignore — your brand. Fix link equity and AI visibility from one dashboard.”</i></p></div>
 
-  <h3>Competitor angle</h3>
+  <h3>Competitor angle (price anchors for the international sales page)</h3>
   <div class="tblwrap"><table>
     <thead><tr><th>vs</th><th>They say / do</th><th>Our wedge</th></tr></thead>
     <tbody>
-      <tr><td><b>Link Whisper</b></td><td>Cheap WordPress-only plugin ($77+/yr), suggestions inside WP</td><td>Platform-agnostic (WordPress, Shopify, Webflow, Ghost, custom), AI-scored relevance + opportunity, plus AI citation monitoring they don't have</td></tr>
-      <tr><td><b>LinkBoss</b></td><td>SEOPress-style credits, bulk topical clusters</td><td>Simpler pricing in Rands via Paystack (no forex pain for SA buyers), suggestions + citations in one tool, agency-friendly site limits</td></tr>
+      <tr><td><b>Link Whisper</b></td><td>Cheap WordPress-only plugin ($97+/yr), suggestions inside WP</td><td>Platform-agnostic (WordPress, Shopify, Webflow, Ghost, custom), AI-scored relevance + opportunity, plus AI citation monitoring they don't have</td></tr>
+      <tr><td><b>LinkBoss</b></td><td>Credit-based, bulk topical clusters</td><td>Simpler pricing, suggestions + citations in one tool, agency-friendly site limits</td></tr>
+      <tr><td><b>Ahrefs / Semrush</b></td><td>$99–$129/mo suites; internal linking is manual or secondary</td><td>Specialized at $49/mo — a focused tool that does one job 10× faster</td></tr>
       <tr><td><b>Manual / VA</b></td><td>"I already do this by hand"</td><td>30-second crawl finds what a VA misses; score-ranked so juniors apply the right links first</td></tr>
     </tbody>
   </table></div>
@@ -158,10 +167,10 @@
   <div class="tblwrap"><table>
     <thead><tr><th>Stage</th><th>Definition (event)</th><th>Owner</th><th>Health check</th></tr></thead>
     <tbody>
-      <tr><td><span class="tag t-slate">Visitor</span></td><td>Lands on any marketing page</td><td>Marketing</td><td>Weekly sessions by source</td></tr>
+      <tr><td><span class="tag t-slate">Visitor</span></td><td>Lands on marketing page or funnel opt-in</td><td>Marketing</td><td>Weekly sessions by source</td></tr>
       <tr><td><span class="tag t-blue">Signup</span></td><td>Account created on Starter (free)</td><td>Growth</td><td>Signup rate ≥ 4% of visitors</td></tr>
       <tr><td><span class="tag t-orange">Activated</span></td><td>≥1 site crawled AND ≥10 suggestions reviewed AND ≥1 applied</td><td>Product</td><td>Activation ≥ 40% of signups</td></tr>
-      <tr><td><span class="tag t-green">Paid</span></td><td>Paystack subscription active (Pro/Business)</td><td>Growth</td><td>≥6% of 30-day-old signups</td></tr>
+      <tr><td><span class="tag t-green">Paid</span></td><td>Paystack active (ZA) <i>or</i> Stripe paid + admin-upgraded (intl)</td><td>Growth</td><td>≥6% of 30-day-old signups</td></tr>
       <tr><td><span class="tag t-amber">Expanded</span></td><td>Upgrade to Business/Enterprise or 2nd paid seat</td><td>Founder-led</td><td>≥20% of Pro within 90 days</td></tr>
     </tbody>
   </table></div>
@@ -170,17 +179,18 @@
 <!-- ══════════ 4. CHANNELS ══════════ -->
 <section id="channels">
   <h2><span class="num">4</span> Acquisition channels</h2>
-  <p class="lead">Run few channels properly. Start with ★, measure CAC per channel from day one, kill anything above R600 CAC by day 60.</p>
+  <p class="lead">Run few channels properly. Start with ★, measure CAC per channel from day one, kill anything above R600 / $40 CAC by day 60. <b>Route all cold and social traffic to the Systeme.io opt-in page (§7); route organic/product-intent traffic to linkforge.digital.</b></p>
   <div class="tblwrap"><table>
     <thead><tr><th>Channel</th><th>The play</th><th>Effort</th><th>Payback</th></tr></thead>
     <tbody>
       <tr><td><b>Content SEO</b> ★</td><td>10 programmatic posts: “internal linking for Shopify”, “orphan page finder”, “AI citations guide” — each ends with a free-tier CTA</td><td>High</td><td>Compounding, month 3+</td></tr>
-      <tr><td><b>Communities</b> ★</td><td>r/SEO, r/bigseo, SA SEO Facebook/WhatsApp groups: answer internal-linking questions genuinely; link the tool only when asked</td><td>Medium</td><td>Weeks</td></tr>
-      <tr><td><b>Cold email to agencies</b> ★</td><td>Scrape 200 SA/UK agencies; 3-touch sequence offering a free crawl report of their client's site</td><td>Medium</td><td>Fast (days) — best early MRR source</td></tr>
-      <tr><td><b>Build in public</b></td><td>X + LinkedIn: MRR screenshots, before/after link graphs, citation-monitoring demos</td><td>Low</td><td>Slow burn, credibility</td></tr>
-      <tr><td><b>YouTube demo</b></td><td>One 3-min “fix 100 internal links in 10 minutes” walkthrough, embedded on landing + cold email #2</td><td>Medium</td><td>Evergreen</td></tr>
+      <tr><td><b>Communities</b> ★</td><td>r/SEO, r/bigseo, r/juststart, r/affiliate, SA SEO groups: answer internal-linking questions genuinely; link the tool only when asked</td><td>Medium</td><td>Weeks</td></tr>
+      <tr><td><b>Cold email to agencies</b> ★</td><td>Scrape 200 SA/UK/US agencies; 3-touch sequence offering a free crawl report of their client's site</td><td>Medium</td><td>Fast (days) — best early MRR source</td></tr>
+      <tr><td><b>Build in public</b></td><td>X + LinkedIn: MRR screenshots, before/after link graphs, citation-monitoring demos; opt-in URL in bio</td><td>Low</td><td>Slow burn, credibility</td></tr>
+      <tr><td><b>YouTube demo</b></td><td>One 3-min “fix 100 internal links in 10 minutes” walkthrough, embedded on landing + sales page + cold email #2</td><td>Medium</td><td>Evergreen</td></tr>
       <tr><td><b>Free scanner tool</b></td><td>Public “Internal Link Opportunity Scanner” (URL in → top 10 opportunities out, email-gated) — pure top-of-funnel</td><td>High</td><td>Lead engine</td></tr>
-      <tr><td><b>Launch spikes</b></td><td>Product Hunt / BetaList / SA startup directories once onboarding is tight</td><td>One-off</td><td>Signup spike, week 8-ish</td></tr>
+      <tr><td><b>Launch spikes</b></td><td>Product Hunt / BetaList / Indie Hackers / SA directories once onboarding is tight</td><td>One-off</td><td>Signup spike, week 8-ish</td></tr>
+      <tr><td><b>Paid ads</b></td><td>Only after conversion data exists: Google Ads on “internal linking tool”, “orphan page finder”; Meta retargeting of linkforge.digital visitors</td><td>Budget</td><td>Measured CAC or pause</td></tr>
       <tr><td><b>Partnerships</b></td><td>WP agencies &amp; hosting resellers: 20% recurring rev-share</td><td>Medium</td><td>Month 3+</td></tr>
     </tbody>
   </table></div>
@@ -190,7 +200,7 @@
 <!-- ══════════ 5. ACTIVATION ══════════ -->
 <section id="activation">
   <h2><span class="num">5</span> Activation — win the first 10 minutes</h2>
-  <p class="lead">The single biggest lever in this playbook. A signup who never crawls a site is a number, not a user. Activation = first <b>applied</b> suggestion.</p>
+  <p class="lead">The single biggest lever in this playbook. A signup who never crawls a site is a number, not a user. Activation = first <b>applied</b> suggestion. This applies equally to Systeme.io buyers — they must land in the app and crawl fast (§7 confirmation page promises &lt;5 min).</p>
   <div class="grid g2">
     <div class="card">
       <h3 style="margin-top:0;">First-session checklist (in-app)</h3>
@@ -205,9 +215,9 @@
     <div class="card">
       <h3 style="margin-top:0;">Instrumentation</h3>
       <ul class="clean">
-        <li>Event: <code>site_added</code>, <code>crawl_completed</code>, <code>suggestion_reviewed</code>, <code>suggestion_applied</code></li>
-        <li>Dashboard: activation funnel drop-offs (already partially visible in Admin → Signups/Active Sites)</li>
-        <li>Alert: any user stuck at <code>site_added</code> for 24h → email #2 rescue</li>
+        <li>Events: <code>site_added</code>, <code>crawl_completed</code>, <code>suggestion_reviewed</code>, <code>suggestion_applied</code></li>
+        <li>Dashboard: activation funnel drop-offs (partially visible in Admin → Signups/Active Sites)</li>
+        <li>Alert: any user stuck at <code>site_added</code> for 24h → rescue email</li>
         <li>Weekly review: where do 60% of non-activated signups die?</li>
       </ul>
     </div>
@@ -217,15 +227,15 @@
 
 <!-- ══════════ 6. CONVERSION ══════════ -->
 <section id="conversion">
-  <h2><span class="num">6</span> Conversion — free → Pro (R825/mo)</h2>
-  <p class="lead">Free tier is the demo, not the product. Paid = capacity + citations + scale. The wall must be felt, not slammed.</p>
+  <h2><span class="num">6</span> Conversion — free → Pro</h2>
+  <p class="lead">Free tier is the demo, not the product. Paid = capacity + citations + scale. The wall must be felt, not slammed. South Africa converts in-app; the world converts through §7.</p>
   <div class="tblwrap"><table>
-    <thead><tr><th>Tier</th><th>Price</th><th>Capacity</th><th>Role in funnel</th></tr></thead>
+    <thead><tr><th>Tier</th><th>ZA price (Paystack)</th><th>Intl price (Stripe)</th><th>Capacity</th><th>Role in funnel</th></tr></thead>
     <tbody>
-      <tr><td><span class="tag t-slate">Starter</span></td><td class="price">Free</td><td>1 site · 100 suggestions/mo</td><td>Prove value; strain by week 2–3 for active users</td></tr>
-      <tr><td><span class="tag t-orange">Pro</span></td><td class="price">R825/mo</td><td>5 sites · higher suggestion volume · citations monitoring</td><td>Core MRR engine</td></tr>
-      <tr><td><span class="tag t-blue">Business</span></td><td class="price">R2,455/mo</td><td>Agency capacity, more sites, priority support</td><td>Expansion target for Pro + direct agency close</td></tr>
-      <tr><td><span class="tag t-amber">Enterprise</span></td><td class="price">Custom</td><td>Tailored</td><td>Inbound from content/in-house leads</td></tr>
+      <tr><td><span class="tag t-slate">Starter</span></td><td class="price">Free</td><td class="price">Free</td><td>1 site · 100 suggestions/mo</td><td>Prove value; strain by week 2–3 for active users</td></tr>
+      <tr><td><span class="tag t-orange">Pro</span></td><td class="price">R825/mo</td><td class="price">$49/mo</td><td>5 sites · higher suggestion volume · citations monitoring</td><td>Core MRR engine</td></tr>
+      <tr><td><span class="tag t-blue">Business</span></td><td class="price">R2,455/mo</td><td class="price">$149/mo</td><td>Agency capacity, more sites, priority support</td><td>Expansion target + direct agency close</td></tr>
+      <tr><td><span class="tag t-amber">Enterprise</span></td><td class="price">Custom</td><td class="price">Custom</td><td>Tailored</td><td>Inbound from content/in-house leads</td></tr>
     </tbody>
   </table></div>
   <h3>Upgrade triggers (in order of intent)</h3>
@@ -239,12 +249,84 @@
       <tr><td>Applied ≥25 suggestions on Free</td><td>Founder email</td><td>Personal note + launch offer (below)</td></tr>
     </tbody>
   </table></div>
-  <div class="callout"><b>Launch offer (first 100 customers):</b> 20% off for 3 months (<span class="price">R660/mo</span>) or annual = 2 months free (<span class="price">R8,250/yr</span>). Creates urgency without devaluing list price.</div>
+  <div class="callout"><b>Launch offer (first 100 customers):</b> ZA — 20% off 3 months (<span class="price">R660/mo</span>) or annual = 2 months free (<span class="price">R8,250/yr</span>). International — mirror the same mechanics in Systeme.io ($39/mo intro or $490/yr annual). Creates urgency without devaluing list price.</div>
 </section>
 
-<!-- ══════════ 7. RETENTION ══════════ -->
+<!-- ══════════ 7. INTERNATIONAL FUNNEL ══════════ -->
+<section id="intl">
+  <h2><span class="num">7</span> International funnel — Systeme.io + Stripe (USD)</h2>
+  <p class="lead">Stripe can't onboard SA merchants directly, so international sales run through a Systeme.io funnel with Stripe checkout. Traffic → email lead magnet → sales page → Stripe checkout → upsell → <b>manual provisioning through your own Admin panel (10 seconds per customer)</b>. Recommended custom domain: <code>funnel.linkforge.digital</code>.</p>
+
+  <div class="flow">
+    <div class="stage"><h4>Opt-in</h4><div class="conv">/linkforge-free-checklist — email for lead magnet</div><span class="target">capture</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>Sales page</h4><div class="conv">/linkforge-pro — full Pro pitch</div><span class="target">pitch</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>Checkout</h4><div class="conv">Stripe order form — $49/mo Pro</div><span class="target">payment</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>Upsell</h4><div class="conv">One-time Business offer $149/mo</div><span class="target">+$100</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>Confirmation</h4><div class="conv">Login steps → into the app</div><span class="target">activate</span></div>
+  </div>
+
+  <h3>Lead magnet: “15-Point Internal Link Audit Checklist” (free PDF)</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0;">Opt-in page essentials</h3>
+      <ul class="clean">
+        <li>Hook stat: “47% of your pages are probably invisible to Google” (orphan pages)</li>
+        <li>Five ✅ outcomes: find orphans, find hub pages, spot broken links, prioritize, track link health</li>
+        <li>Form: <b>email only</b> — single opt-in (converts better than double)</li>
+        <li>Button: “Send Me the Free Checklist” → redirect to sales page</li>
+        <li>The PDF itself: 15 bullets + explanations; a Google Doc exported to PDF is fine. Upload to Systeme.io for auto-delivery.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Sales page skeleton (copy beats)</h3>
+      <ul class="clean">
+        <li>“Stop guessing. Start building smart internal links.”</li>
+        <li>Feature blocks: AI semantic suggestions · any CMS · real crawling · orphan detection · bulk operations · analytics</li>
+        <li>Social proof placeholders — <b>replace with real quotes ASAP; never ship invented testimonials</b></li>
+        <li>Comparison table vs LinkWhisper ($97/yr, WP-only) and Ahrefs ($99/mo) → anchor $49/mo as specialized value</li>
+        <li>CTA → checkout. ⚠️ Don't promise a “14-day free trial, no card” in this CTA — the checkout charges immediately. Either route “trial” to the app's free Starter tier, or make the button “Get Pro — $49/mo”.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Fulfillment SOP — after each Stripe payment (uses your Admin panel)</h3>
+  <div class="card">
+    <ol style="padding-left:20px; display:grid; gap:6px;">
+      <li>Stripe payment notification email arrives (tells you which product: $49 = Pro, $149 = Business)</li>
+      <li>Log in to linkforge.digital → <b>Admin</b> in sidebar</li>
+      <li>Search the customer's email</li>
+      <li>Account exists → <b>⋮ → Upgrade to Pro / Business</b>. Done in ~10 seconds.</li>
+      <li>Account doesn't exist yet → they'll create it on first visit; upgrade then (Confirmation page tells them to use the <b>same email they paid with</b>)</li>
+    </ol>
+  </div>
+  <div class="callout rose"><b>Manual fulfillment edge cases — handle these or churn happens silently:</b></div>
+  <ul class="clean" style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:6px 14px 6px 4px; margin-bottom:16px;">
+    <li><b>Email mismatch:</b> customer pays with billing@company.com, signs up with personal@gmail.com → admin search finds nothing. Fix: confirmation page + welcome email both say “sign up with the email you paid with”; support@linkforge.digital catches the rest.</li>
+    <li><b>Cancellations/expiry:</b> Stripe subscription ends → the app plan stays Pro until you notice. Weekly ritual (5 min): reconcile Stripe's active subscriber list against Admin → filter Business/Pro, downgrade ⋮ → Starter lapsed accounts.</li>
+    <li><b>Refunds/disputes:</b> refund in Stripe → downgrade in Admin same day.</li>
+    <li><b>Scale trigger:</b> past ~30 manual customers, automate — webhook from Systeme.io/Stripe → app endpoint (the admin API routes already exist to build on).</li>
+  </ul>
+
+  <h3>⚠️ Align the funnel copy with real product limits before launch</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Claim in funnel copy</th><th>Current app reality</th><th>Action before launch</th></tr></thead>
+    <tbody>
+      <tr><td>Business: 25 websites, 5 team members, priority crawling, white-label reports</td><td>Business limits in <code>PLAN_LIMITS</code> are lower; team seats/white-label not built</td><td>Either raise the product limits or soften the copy — <b>never sell features that don't exist</b></td></tr>
+      <tr><td>Pro: 500 suggestions/mo</td><td>Current config: 100/mo on Starter; Pro volume higher — verify exact number</td><td>Pick the real number, update both the app and this playbook</td></tr>
+      <tr><td>“14-day free trial, no card”</td><td>Free Starter tier exists; no trial mechanism in checkout</td><td>Route “trial” → free Starter, or change CTA to direct purchase (see sales-page skeleton)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout blue"><b>Systeme.io settings checklist:</b> Stripe connected (Settings → Payment) · custom domain funnel.linkforge.digital · email sender name “LinkForge” · reply-to support@linkforge.digital · favicon/logo uploaded · double opt-in OFF.</div>
+</section>
+
+<!-- ══════════ 8. RETENTION ══════════ -->
 <section id="retention">
-  <h2><span class="num">7</span> Retention &amp; expansion</h2>
+  <h2><span class="num">8</span> Retention &amp; expansion</h2>
   <p class="lead">Churn is silent until it isn't. Watch for no-login in 14 days and zero applies in a week — both get automated saves before any human touch.</p>
   <div class="grid g2">
     <div class="card">
@@ -268,55 +350,76 @@
   </div>
 </section>
 
-<!-- ══════════ 8. EMAIL ══════════ -->
+<!-- ══════════ 9. EMAIL ══════════ -->
 <section id="email">
-  <h2><span class="num">8</span> Email sequences</h2>
-  <p class="lead">Short, specific, product-anchored. Every email references the user's actual data (sites, counts) — never generic.</p>
-  <div class="tblwrap"><table>
-    <thead><tr><th>Sequence</th><th>Timing</th><th>Subject line</th><th>Job to be done</th></tr></thead>
-    <tbody>
-      <tr><td rowspan="5"><span class="tag t-blue">Welcome</span></td><td>T+0 (instant)</td><td>“Your first crawl is waiting”</td><td>Drive site_added in session 1</td></tr>
-      <tr><td>T+1</td><td>“How LinkForge scores a link”</td><td>Teach the scoring → trust the suggestions</td></tr>
-      <tr><td>T+3</td><td>“3 links [Site] is missing”</td><td>Use their real data; push review + apply</td></tr>
-      <tr><td>T+5</td><td>“100 free suggestions explained”</td><td>Frame limits as generous preview of Pro</td></tr>
-      <tr><td>T+7</td><td>“Why we built LinkForge”</td><td>Founder story; reply-bait (build relationship)</td></tr>
-      <tr><td><span class="tag t-orange">Upgrade nudge</span></td><td>On limit hit</td><td>“You just used suggestion #100”</td><td>One-click upgrade; launch offer visible</td></tr>
-      <tr><td><span class="tag t-amber">Rescue</span></td><td>24h after site_added, no crawl</td><td>“Your crawl stalled — here's why”</td><td>Unblock activation</td></tr>
-      <tr><td><span class="tag t-rose">Win-back</span></td><td>14d / 30d inactive</td><td>“Your sites have new opportunities” / “Keep your data?”</td><td>Re-engage, then data-deletion deadline creates urgency</td></tr>
-    </tbody>
-  </table></div>
+  <h2><span class="num">9</span> Email sequences</h2>
+  <p class="lead">Two systems send email: Systeme.io runs the international funnel sequence; the app runs in-product sequences for self-serve users. <b>Suppress the in-app welcome series for Systeme.io-sourced customers</b> so nobody gets double-mailed.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0;">In-app sequences (app-driven)</h3>
+      <div class="tblwrap" style="border:none;"><table style="min-width:0;">
+        <thead><tr><th>When</th><th>Subject</th><th>Job</th></tr></thead>
+        <tbody>
+          <tr><td>T+0</td><td>“Your first crawl is waiting”</td><td>Drive site_added in session 1</td></tr>
+          <tr><td>T+1</td><td>“How LinkForge scores a link”</td><td>Trust the scoring</td></tr>
+          <tr><td>T+3</td><td>“3 links [Site] is missing”</td><td>Real data; push apply</td></tr>
+          <tr><td>T+5</td><td>“100 free suggestions explained”</td><td>Frame limits as preview of Pro</td></tr>
+          <tr><td>T+7</td><td>“Why we built LinkForge”</td><td>Founder story, reply-bait</td></tr>
+          <tr><td>On limit hit</td><td>“You just used suggestion #100”</td><td>One-click upgrade + offer</td></tr>
+          <tr><td>14d/30d inactive</td><td>“Your sites have new opportunities”</td><td>Win-back, then data-deletion urgency</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Systeme.io funnel sequence (opt-in triggered)</h3>
+      <div class="tblwrap" style="border:none;"><table style="min-width:0;">
+        <thead><tr><th>Day</th><th>Subject</th><th>Job</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>“✅ Your checklist is here!”</td><td>Deliver PDF + intro + sales link</td></tr>
+          <tr><td>1</td><td>“Found 23 orphan pages on this site…”</td><td>Real example → start free Starter</td></tr>
+          <tr><td>2</td><td>“Why internal links matter more than backlinks”</td><td>Educate; soft pitch</td></tr>
+          <tr><td>3</td><td>“See LinkForge in action (2-min demo)”</td><td>Demo video, strong CTA</td></tr>
+          <tr><td>5</td><td>“Your competitors are optimizing their links…”</td><td>Comparison table, urgency</td></tr>
+          <tr><td>7</td><td>“Last chance — trial ends tomorrow”</td><td>Recap + push to checkout</td></tr>
+          <tr><td>14</td><td>“How's your site's link health?”</td><td>Nurture; keep warm</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small muted" style="margin-top:8px;">⚠️ Day-7 “trial ends” only works if the CTA promised a real trial — if you route trials to the free Starter tier instead, reword to “your free crawl window is closing”. Keep the copy honest.</p>
+    </div>
+  </div>
 </section>
 
-<!-- ══════════ 9. KPIS ══════════ -->
+<!-- ══════════ 10. KPIS ══════════ -->
 <section id="kpis">
-  <h2><span class="num">9</span> KPI targets — first 90 days</h2>
-  <p class="lead">Baselines are TBD until the first month of data lands in the admin dashboard; targets below are the working model — adjust after week 4, not before.</p>
+  <h2><span class="num">10</span> KPI targets — first 90 days</h2>
+  <p class="lead">Baselines are TBD until the first month of data lands in the admin dashboard; targets are the working model — adjust after week 4, not before. Track ZA and Intl MRR separately (Paystack vs Stripe).</p>
   <div class="tblwrap"><table>
     <thead><tr><th>Stage</th><th>Metric</th><th>Baseline</th><th>Day-90 target</th></tr></thead>
     <tbody>
-      <tr><td>Acquisition</td><td>Monthly unique visitors</td><td class="muted">TBD</td><td><b>5,000</b></td></tr>
+      <tr><td>Acquisition</td><td>Monthly unique visitors (site + funnel)</td><td class="muted">TBD</td><td><b>5,000</b></td></tr>
       <tr><td>Signup</td><td>Visitor → signup</td><td class="muted">TBD</td><td><b>4%</b> → 200/mo</td></tr>
       <tr><td>Activation</td><td>Signup → activated (applied ≥1)</td><td class="muted">TBD</td><td><b>40%</b></td></tr>
       <tr><td>Conversion</td><td>Activated → paid in 30d</td><td class="muted">TBD</td><td><b>6%</b> → ~12–15 new paid/mo</td></tr>
-      <tr><td>Revenue</td><td>MRR</td><td class="muted">TBD</td><td><b>R25,000</b> (≈10 Pro + 2 Business)</td></tr>
-      <tr><td>Efficiency</td><td>Blended CAC</td><td class="muted">TBD</td><td><b>≤ R350</b> (LTV:CAC &gt; 10 at 8-mo avg life)</td></tr>
+      <tr><td>Revenue</td><td>MRR — ZA (Paystack) / Intl (Stripe)</td><td class="muted">TBD</td><td><b>R25,000 / $1,000</b></td></tr>
+      <tr><td>Efficiency</td><td>Blended CAC</td><td class="muted">TBD</td><td><b>≤ R350 / $25</b></td></tr>
       <tr><td>Retention</td><td>Monthly logo churn (paid)</td><td class="muted">TBD</td><td><b>&lt; 5%</b></td></tr>
     </tbody>
   </table></div>
 </section>
 
-<!-- ══════════ 10. PLAN ══════════ -->
+<!-- ══════════ 11. PLAN ══════════ -->
 <section id="plan">
-  <h2><span class="num">10</span> 30 / 60 / 90-day action plan</h2>
+  <h2><span class="num">11</span> 30 / 60 / 90-day action plan</h2>
   <div class="grid g3">
     <div class="card">
       <h3 style="margin-top:0;"><span class="tag t-green">Days 0–30</span> Prove it</h3>
       <ul class="clean">
         <li>Instrument funnel events + weekly dashboard review (Mon)</li>
+        <li>Build the Systeme.io funnel: opt-in → sales → checkout → upsell → confirmation (§7)</li>
+        <li>Create the 15-point checklist PDF + confirmation/onboarding emails</li>
         <li>Personal close 10 seed users from own network — founder emails, not ads</li>
-        <li>Communities: 5 genuine answers/week</li>
-        <li>Cold email: 20 agencies/week, track reply rate</li>
-        <li>Ship welcome sequence (§8)</li>
+        <li>Communities: 5 genuine answers/week · cold email: 20 agencies/week</li>
+        <li>Ship in-app welcome sequence (§9)</li>
       </ul>
     </div>
     <div class="card">
@@ -327,44 +430,47 @@
         <li>Record + embed YouTube demo</li>
         <li>Launch (Product Hunt / directories) once activation &gt; 35%</li>
         <li>First case study from a paying user</li>
+        <li>Start the weekly Stripe↔Admin reconciliation ritual (§7)</li>
       </ul>
     </div>
     <div class="card">
       <h3 style="margin-top:0;"><span class="tag t-blue">Days 61–90</span> Compound</h3>
       <ul class="clean">
         <li>Sign 2 partnership deals (WP agencies / hosting)</li>
-        <li>Annual plans live; offer to healthy accounts</li>
+        <li>Annual plans live on both rails; offer to healthy accounts</li>
         <li>Double the best-CAC channel, kill the worst</li>
         <li>Referral program live</li>
-        <li>Review pricing against real usage data</li>
+        <li>Review pricing + real product limits against usage data (close §7 gaps)</li>
+        <li>At ~30 intl customers: automate Stripe → app provisioning</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- ══════════ 11. OBJECTIONS ══════════ -->
+<!-- ══════════ 12. OBJECTIONS ══════════ -->
 <section id="objections">
-  <h2><span class="num">11</span> Objection handling</h2>
+  <h2><span class="num">12</span> Objection handling</h2>
   <div class="tblwrap"><table>
     <thead><tr><th>Objection</th><th>Response</th></tr></thead>
     <tbody>
-      <tr><td>“Link Whisper is cheaper.”</td><td>“It's WordPress-only and suggestion-only. LinkForge covers every platform, ranks fixes by revenue impact, and monitors your AI citations — R825 covers what two tools would.”</td></tr>
+      <tr><td>“Link Whisper is cheaper.”</td><td>“It's WordPress-only and suggestion-only. LinkForge covers every platform, ranks fixes by revenue impact, and monitors your AI citations — one subscription covers what two tools would.”</td></tr>
       <tr><td>“I already do internal links manually.”</td><td>“Great — run one free crawl and compare. If we don't find 20 links you missed, close the tab.”</td></tr>
       <tr><td>“How good are AI suggestions, really?”</td><td>“Every suggestion shows source, target, anchor, and a relevance score before you apply — and you can undo. Judge it on the first 10, not the marketing.”</td></tr>
       <tr><td>“Is my site data safe?”</td><td>“We crawl only pages you add, store content to generate suggestions, and never publish anything. Delete a site and its data goes with it (cascade, confirmed in-app).”</td></tr>
-      <tr><td>“Why Paystack only?”</td><td>“Built for South African businesses — Rands, no forex fees, card + EFT. Enterprise can invoice.”</td></tr>
-      <tr><td>“R825 is expensive.”</td><td>“One hour of your time at even R500/hr costs more than a month of Pro — and it finds links every month, not once.”</td></tr>
+      <tr><td>“What payment methods work?” (intl)</td><td>“All major cards via Stripe checkout — secure, cancel anytime, no contracts.”</td></tr>
+      <tr><td>“Can I pay in Rands?” (ZA)</td><td>“Yes — linkforge.digital bills in Rands via Paystack: card and EFT, no forex fees. Enterprise can invoice.”</td></tr>
+      <tr><td>“R825/$49 is expensive.”</td><td>“One hour of your time at even R500/hr costs more than a month of Pro — and it finds links every month, not once.”</td></tr>
     </tbody>
   </table></div>
 
-  <div class="callout green" style="margin-top:24px;"><b>Next review:</b> end of month 1 — replace every TBD in §9 with real numbers, then re-forecast. Owner: Jerome. Questions → this file's git history has the evolution.</div>
+  <div class="callout green" style="margin-top:24px;"><b>Next review:</b> end of month 1 — replace every TBD in §10 with real numbers, close the copy-vs-limits gaps in §7, then re-forecast. Owner: Jerome.</div>
 </section>
 
 </main>
 
 <footer>
   <div class="wrap">
-    <b>LinkForge Growth &amp; Funnel Playbook</b> — internal document · v1.0 · Sep 2026 · live at /LinkForge_Funnel_Playbook.html (noindex)
+    <b>LinkForge Growth &amp; Funnel Playbook</b> — internal document · v1.1 (merged Systeme.io intl funnel) · Sep 2026 · live at /LinkForge_Funnel_Playbook.html (noindex)
     <div class="small" style="margin-top:6px;">To edit: modify this file in the repo (<code>public/LinkForge_Funnel_Playbook.html</code>) — plain HTML, all styles inline, no dependencies. Redeploy to publish changes.</div>
   </div>
 </footer>
