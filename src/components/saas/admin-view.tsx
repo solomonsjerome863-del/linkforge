@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -246,7 +246,8 @@ function UserActionsMenu({
 
 export function AdminView() {
   const user = useAppStore((s) => s.user);
-  const adminHeaders = { "x-admin-email": user?.email || "" };
+  const userEmail = user?.email || "";
+  const adminHeaders = useMemo(() => ({ "x-admin-email": userEmail }), [userEmail]);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
