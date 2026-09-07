@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>LinkForge — Growth &amp; Funnel Playbook</title>
+<!-- 
+  LinkForge Funnel Playbook (internal doc)
+  Edit this file directly: every section is plain HTML, styles live in the <style> block below.
+  Served publicly at /LinkForge_Funnel_Playbook.html after deploy (noindex'd, keep it that way).
+-->
+<style>
+  :root{
+    --orange:#ea580c; --orange-soft:#fff7ed; --orange-mid:#ffedd5;
+    --ink:#1e293b; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --card:#ffffff;
+    --green:#059669; --green-soft:#ecfdf5; --rose:#e11d48; --rose-soft:#fff1f2;
+    --amber:#b45309; --amber-soft:#fffbeb; --blue:#2563eb; --blue-soft:#eff6ff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); line-height:1.6; font-size:16px;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+  header.hero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); color:#fff; padding:56px 0 48px;}
+  .hero .kicker{display:inline-block; background:rgba(234,88,12,.15); color:#fb923c; border:1px solid rgba(251,146,60,.35); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:4px 12px; border-radius:999px; margin-bottom:16px;}
+  .hero h1{font-size:clamp(28px,5vw,44px); line-height:1.15; font-weight:800; letter-spacing:-.02em;}
+  .hero h1 em{color:#fb923c; font-style:normal;}
+  .hero p.sub{color:#cbd5e1; max-width:640px; margin-top:14px; font-size:17px;}
+  .hero .meta{margin-top:22px; font-size:13px; color:#94a3b8; display:flex; gap:18px; flex-wrap:wrap;}
+  nav.toc{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.95); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:10px 0;}
+  nav.toc .wrap{display:flex; gap:6px; flex-wrap:wrap;}
+  nav.toc a{font-size:13px; font-weight:600; color:var(--muted); text-decoration:none; padding:6px 11px; border-radius:999px; transition:.15s;}
+  nav.toc a:hover{background:var(--orange-soft); color:var(--orange);}
+  main{padding:40px 0 72px;}
+  section{margin-bottom:56px; scroll-margin-top:70px;}
+  h2{font-size:26px; font-weight:800; letter-spacing:-.01em; margin-bottom:6px; display:flex; align-items:center; gap:10px;}
+  h2 .num{background:var(--orange); color:#fff; font-size:14px; width:30px; height:30px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
+  p.lead{color:var(--muted); margin-bottom:20px; max-width:760px;}
+  h3{font-size:17px; font-weight:700; margin:22px 0 8px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px;}
+  .grid{display:grid; gap:14px;}
+  .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:repeat(3,1fr);} .g4{grid-template-columns:repeat(4,1fr);}
+  .kpi{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px;}
+  .kpi .v{font-size:26px; font-weight:800; color:var(--orange);}
+  .kpi .l{font-size:12.5px; color:var(--muted); font-weight:600; margin-top:2px;}
+  /* funnel flow */
+  .flow{display:flex; align-items:stretch; gap:8px; flex-wrap:wrap;}
+  .stage{flex:1 1 150px; background:var(--card); border:1px solid var(--line); border-top:4px solid var(--orange); border-radius:12px; padding:14px; position:relative;}
+  .stage h4{font-size:14px; font-weight:800;}
+  .stage .conv{font-size:12px; color:var(--muted); margin-top:4px;}
+  .stage .target{margin-top:8px; font-size:12px; font-weight:700; color:var(--green); background:var(--green-soft); border-radius:8px; padding:3px 8px; display:inline-block;}
+  .arrow{align-self:center; color:var(--muted); font-size:20px; flex:0 0 auto;}
+  /* tables */
+  .tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--card);}
+  table{width:100%; border-collapse:collapse; font-size:14px; min-width:560px;}
+  th{background:var(--bg); text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:10px 14px; border-bottom:1px solid var(--line);}
+  td{padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  .tag{font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:999px; white-space:nowrap;}
+  .t-green{background:var(--green-soft); color:var(--green);} .t-orange{background:var(--orange-soft); color:var(--orange);}
+  .t-blue{background:var(--blue-soft); color:var(--blue);} .t-rose{background:var(--rose-soft); color:var(--rose);}
+  .t-amber{background:var(--amber-soft); color:var(--amber);} .t-slate{background:#f1f5f9; color:#475569;}
+  ul.clean{list-style:none;}
+  ul.clean li{padding:7px 0 7px 26px; position:relative; border-bottom:1px dashed var(--line);}
+  ul.clean li:last-child{border-bottom:none;}
+  ul.clean li::before{content:"→"; position:absolute; left:2px; color:var(--orange); font-weight:700;}
+  .callout{border-left:4px solid var(--orange); background:var(--orange-soft); border-radius:0 12px 12px 0; padding:14px 18px; font-size:14.5px; margin:16px 0;}
+  .callout.green{border-color:var(--green); background:var(--green-soft);}
+  .callout.rose{border-color:var(--rose); background:var(--rose-soft);}
+  .callout b{font-weight:700;}
+  .pill-row{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 16px;}
+  .price{font-weight:800;}
+  .muted{color:var(--muted);}
+  .small{font-size:13px;}
+  footer{border-top:1px solid var(--line); padding:28px 0 48px; color:var(--muted); font-size:13px;}
+  @media(max-width:760px){ .g3,.g4{grid-template-columns:1fr 1fr;} .g2{grid-template-columns:1fr;} .arrow{display:none;} }
+  @media(max-width:480px){ .g3,.g4{grid-template-columns:1fr;} }
+  @media print{ nav.toc{display:none;} header.hero{padding:24px 0;} body{font-size:12px;} section{page-break-inside:avoid;} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Internal · Growth</span>
+    <h1>LinkForge <em>Funnel Playbook</em></h1>
+    <p class="sub">How strangers become activated free users, then paying subscribers — stage by stage, with the plays, emails, limits, and numbers that move each step.</p>
+    <div class="meta"><span>Version 1.0 · Sep 2026</span><span>Owner: Jerome</span><span>Product: linkforge.digital</span><span>Review: monthly</span></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#overview">Overview</a><a href="#icp">ICP</a><a href="#funnel">Funnel</a><a href="#channels">Channels</a><a href="#activation">Activation</a><a href="#conversion">Conversion</a><a href="#retention">Retention</a><a href="#email">Email</a><a href="#kpis">KPIs</a><a href="#plan">90-Day Plan</a><a href="#objections">Objections</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ══════════ 1. OVERVIEW ══════════ -->
+<section id="overview">
+  <h2><span class="num">1</span> The funnel at a glance</h2>
+  <p class="lead">One sentence of strategy: <b>win the first 10 minutes.</b> LinkForge's demo magic is paste-a-URL → crawl → real AI suggestions. Everything in this playbook is built to get users to that moment fast, then let usage limits and visible value do the selling.</p>
+
+  <div class="flow">
+    <div class="stage"><h4>1 · Visitor</h4><div class="conv">Landing page / content / community</div><span class="target">→ 4% signup</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>2 · Signup</h4><div class="conv">Free Starter account</div><span class="target">→ 40% activate</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>3 · Activated</h4><div class="conv">Site crawled, suggestions applied</div><span class="target">→ 6% in 30d</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>4 · Paid</h4><div class="conv">Pro via Paystack</div><span class="target">→ 20% expand</span></div>
+    <div class="arrow">➜</div>
+    <div class="stage"><h4>5 · Expanded</h4><div class="conv">Business / Enterprise</div><span class="target">LTV focus</span></div>
+  </div>
+
+  <div class="grid g3" style="margin-top:16px;">
+    <div class="kpi"><div class="v">Applied suggestions / week</div><div class="l">North-star metric — value delivered, not signups</div></div>
+    <div class="kpi"><div class="v">&lt; 10 min</div><div class="l">Target time-to-first-value (paste URL → first suggestion)</div></div>
+    <div class="kpi"><div class="v">R25k MRR</div><div class="l">90-day target (≈ 10 Pro + 2 Business, see §9)</div></div>
+  </div>
+
+  <div class="callout"><b>Rule of the playbook:</b> every campaign, email, and product change must either shorten time-to-first-value or make the paid tier's extra capacity visibly painful to live without. Anything else is a distraction.</div>
+</section>
+
+<!-- ══════════ 2. ICP ══════════ -->
+<section id="icp">
+  <h2><span class="num">2</span> Who we sell to (ICP &amp; positioning)</h2>
+  <p class="lead">Three personas, three journeys, one product. The free tier is calibrated for persona 1 to succeed small and strain quickly.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Persona</th><th>Profile</th><th>Core pain</th><th>Tier fit</th></tr></thead>
+    <tbody>
+      <tr><td><b>Solo SEO / affiliate owner</b></td><td>WordPress, 1–5 content sites, does their own SEO</td><td>Hours lost manually inserting links; orphan pages; money pages under-linked</td><td><span class="tag t-orange">Pro R825/mo</span></td></tr>
+      <tr><td><b>SEO agency</b></td><td>10–50 client sites, retainer model, junior staff do link work</td><td>Link audits don't scale; juniors inconsistent; reporting takes evenings</td><td><span class="tag t-blue">Business R2,455/mo</span></td></tr>
+      <tr><td><b>In-house content lead</b></td><td>SaaS / publisher blog, publishes weekly, cares about AI visibility</td><td>Internal links skipped at publishing speed; unclear presence in AI answers</td><td><span class="tag t-blue">Business</span> → <span class="tag t-slate">Enterprise</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Positioning statement</h3>
+  <div class="card"><p><i>“LinkForge crawls your site, finds every missed internal link with AI-scored suggestions, and shows where AI assistants already mention — or ignore — your brand. Fix link equity and AI visibility from one dashboard, priced in Rands.”</i></p></div>
+
+  <h3>Competitor angle</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>vs</th><th>They say / do</th><th>Our wedge</th></tr></thead>
+    <tbody>
+      <tr><td><b>Link Whisper</b></td><td>Cheap WordPress-only plugin ($77+/yr), suggestions inside WP</td><td>Platform-agnostic (WordPress, Shopify, Webflow, Ghost, custom), AI-scored relevance + opportunity, plus AI citation monitoring they don't have</td></tr>
+      <tr><td><b>LinkBoss</b></td><td>SEOPress-style credits, bulk topical clusters</td><td>Simpler pricing in Rands via Paystack (no forex pain for SA buyers), suggestions + citations in one tool, agency-friendly site limits</td></tr>
+      <tr><td><b>Manual / VA</b></td><td>"I already do this by hand"</td><td>30-second crawl finds what a VA misses; score-ranked so juniors apply the right links first</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 3. FUNNEL STAGES ══════════ -->
+<section id="funnel">
+  <h2><span class="num">3</span> Stage definitions &amp; gates</h2>
+  <p class="lead">Precise definitions keep the numbers honest in the admin dashboard (Total Users, Active Sites, Conversion card already track the top of this).</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Stage</th><th>Definition (event)</th><th>Owner</th><th>Health check</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-slate">Visitor</span></td><td>Lands on any marketing page</td><td>Marketing</td><td>Weekly sessions by source</td></tr>
+      <tr><td><span class="tag t-blue">Signup</span></td><td>Account created on Starter (free)</td><td>Growth</td><td>Signup rate ≥ 4% of visitors</td></tr>
+      <tr><td><span class="tag t-orange">Activated</span></td><td>≥1 site crawled AND ≥10 suggestions reviewed AND ≥1 applied</td><td>Product</td><td>Activation ≥ 40% of signups</td></tr>
+      <tr><td><span class="tag t-green">Paid</span></td><td>Paystack subscription active (Pro/Business)</td><td>Growth</td><td>≥6% of 30-day-old signups</td></tr>
+      <tr><td><span class="tag t-amber">Expanded</span></td><td>Upgrade to Business/Enterprise or 2nd paid seat</td><td>Founder-led</td><td>≥20% of Pro within 90 days</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 4. CHANNELS ══════════ -->
+<section id="channels">
+  <h2><span class="num">4</span> Acquisition channels</h2>
+  <p class="lead">Run few channels properly. Start with ★, measure CAC per channel from day one, kill anything above R600 CAC by day 60.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Channel</th><th>The play</th><th>Effort</th><th>Payback</th></tr></thead>
+    <tbody>
+      <tr><td><b>Content SEO</b> ★</td><td>10 programmatic posts: “internal linking for Shopify”, “orphan page finder”, “AI citations guide” — each ends with a free-tier CTA</td><td>High</td><td>Compounding, month 3+</td></tr>
+      <tr><td><b>Communities</b> ★</td><td>r/SEO, r/bigseo, SA SEO Facebook/WhatsApp groups: answer internal-linking questions genuinely; link the tool only when asked</td><td>Medium</td><td>Weeks</td></tr>
+      <tr><td><b>Cold email to agencies</b> ★</td><td>Scrape 200 SA/UK agencies; 3-touch sequence offering a free crawl report of their client's site</td><td>Medium</td><td>Fast (days) — best early MRR source</td></tr>
+      <tr><td><b>Build in public</b></td><td>X + LinkedIn: MRR screenshots, before/after link graphs, citation-monitoring demos</td><td>Low</td><td>Slow burn, credibility</td></tr>
+      <tr><td><b>YouTube demo</b></td><td>One 3-min “fix 100 internal links in 10 minutes” walkthrough, embedded on landing + cold email #2</td><td>Medium</td><td>Evergreen</td></tr>
+      <tr><td><b>Free scanner tool</b></td><td>Public “Internal Link Opportunity Scanner” (URL in → top 10 opportunities out, email-gated) — pure top-of-funnel</td><td>High</td><td>Lead engine</td></tr>
+      <tr><td><b>Launch spikes</b></td><td>Product Hunt / BetaList / SA startup directories once onboarding is tight</td><td>One-off</td><td>Signup spike, week 8-ish</td></tr>
+      <tr><td><b>Partnerships</b></td><td>WP agencies &amp; hosting resellers: 20% recurring rev-share</td><td>Medium</td><td>Month 3+</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout green"><b>Sequencing:</b> days 1–30 = communities + cold email + seed users. Days 31–60 = content + launch. Days 61–90 = partnerships + double down on whatever CAC'd best.</div>
+</section>
+
+<!-- ══════════ 5. ACTIVATION ══════════ -->
+<section id="activation">
+  <h2><span class="num">5</span> Activation — win the first 10 minutes</h2>
+  <p class="lead">The single biggest lever in this playbook. A signup who never crawls a site is a number, not a user. Activation = first <b>applied</b> suggestion.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0;">First-session checklist (in-app)</h3>
+      <ul class="clean">
+        <li>Add site URL (no plugin needed — crawler handles WP/Shopify/Webflow/Ghost)</li>
+        <li>Crawl starts immediately, progress visible</li>
+        <li>Top 5 suggestions pre-sorted by score, one-click preview of source → target</li>
+        <li>Apply first suggestion with undo available (kill fear)</li>
+        <li>Confetti + “X more opportunities found” → invites second session</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Instrumentation</h3>
+      <ul class="clean">
+        <li>Event: <code>site_added</code>, <code>crawl_completed</code>, <code>suggestion_reviewed</code>, <code>suggestion_applied</code></li>
+        <li>Dashboard: activation funnel drop-offs (already partially visible in Admin → Signups/Active Sites)</li>
+        <li>Alert: any user stuck at <code>site_added</code> for 24h → email #2 rescue</li>
+        <li>Weekly review: where do 60% of non-activated signups die?</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout rose"><b>Kill friction ruthlessly:</b> every field removed from signup, every minute cut from crawl time, and every default (pre-selected site type, sample suggestions) is worth more than any ad spend this quarter.</div>
+</section>
+
+<!-- ══════════ 6. CONVERSION ══════════ -->
+<section id="conversion">
+  <h2><span class="num">6</span> Conversion — free → Pro (R825/mo)</h2>
+  <p class="lead">Free tier is the demo, not the product. Paid = capacity + citations + scale. The wall must be felt, not slammed.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Tier</th><th>Price</th><th>Capacity</th><th>Role in funnel</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-slate">Starter</span></td><td class="price">Free</td><td>1 site · 100 suggestions/mo</td><td>Prove value; strain by week 2–3 for active users</td></tr>
+      <tr><td><span class="tag t-orange">Pro</span></td><td class="price">R825/mo</td><td>5 sites · higher suggestion volume · citations monitoring</td><td>Core MRR engine</td></tr>
+      <tr><td><span class="tag t-blue">Business</span></td><td class="price">R2,455/mo</td><td>Agency capacity, more sites, priority support</td><td>Expansion target for Pro + direct agency close</td></tr>
+      <tr><td><span class="tag t-amber">Enterprise</span></td><td class="price">Custom</td><td>Tailored</td><td>Inbound from content/in-house leads</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Upgrade triggers (in order of intent)</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Trigger</th><th>Surface</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr><td>100th suggestion viewed on Free</td><td>Soft wall modal</td><td>“You've seen the value — 12 more suggestions are waiting. Unlock Pro.”</td></tr>
+      <tr><td>Attempts to add 2nd site</td><td>Inline upgrade</td><td>“Pro unlocks 5 sites. Your crawl is ready the moment you upgrade.”</td></tr>
+      <tr><td>Weekly digest email</td><td>Email</td><td>“14 new suggestions found this week — 10 locked on Free”</td></tr>
+      <tr><td>Citations tab teaser</td><td>Locked feature view</td><td>“See where ChatGPT &amp; Google AI mention your brand — Pro feature”</td></tr>
+      <tr><td>Applied ≥25 suggestions on Free</td><td>Founder email</td><td>Personal note + launch offer (below)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><b>Launch offer (first 100 customers):</b> 20% off for 3 months (<span class="price">R660/mo</span>) or annual = 2 months free (<span class="price">R8,250/yr</span>). Creates urgency without devaluing list price.</div>
+</section>
+
+<!-- ══════════ 7. RETENTION ══════════ -->
+<section id="retention">
+  <h2><span class="num">7</span> Retention &amp; expansion</h2>
+  <p class="lead">Churn is silent until it isn't. Watch for no-login in 14 days and zero applies in a week — both get automated saves before any human touch.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0;">Keep delivering between visits</h3>
+      <ul class="clean">
+        <li>Weekly digest: suggestions found / applied / Est. link equity gained</li>
+        <li>Monthly SEO report PDF (shareable — agencies forward to clients = free marketing)</li>
+        <li>Citation alerts: “Your brand was mentioned on <i>site</i> — no backlink yet”</li>
+        <li>Re-crawl nudge after content updates</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Expansion plays</h3>
+      <ul class="clean">
+        <li>Pro user adding 6th site → Business pitch with price-per-site math</li>
+        <li>Agency digest shows client results → upgrade for white-label</li>
+        <li>Annual plan offer at month 3 of healthy usage</li>
+        <li>Referral: give 1 month, get 1 month (both sides Pro features)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 8. EMAIL ══════════ -->
+<section id="email">
+  <h2><span class="num">8</span> Email sequences</h2>
+  <p class="lead">Short, specific, product-anchored. Every email references the user's actual data (sites, counts) — never generic.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Sequence</th><th>Timing</th><th>Subject line</th><th>Job to be done</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="5"><span class="tag t-blue">Welcome</span></td><td>T+0 (instant)</td><td>“Your first crawl is waiting”</td><td>Drive site_added in session 1</td></tr>
+      <tr><td>T+1</td><td>“How LinkForge scores a link”</td><td>Teach the scoring → trust the suggestions</td></tr>
+      <tr><td>T+3</td><td>“3 links [Site] is missing”</td><td>Use their real data; push review + apply</td></tr>
+      <tr><td>T+5</td><td>“100 free suggestions explained”</td><td>Frame limits as generous preview of Pro</td></tr>
+      <tr><td>T+7</td><td>“Why we built LinkForge”</td><td>Founder story; reply-bait (build relationship)</td></tr>
+      <tr><td><span class="tag t-orange">Upgrade nudge</span></td><td>On limit hit</td><td>“You just used suggestion #100”</td><td>One-click upgrade; launch offer visible</td></tr>
+      <tr><td><span class="tag t-amber">Rescue</span></td><td>24h after site_added, no crawl</td><td>“Your crawl stalled — here's why”</td><td>Unblock activation</td></tr>
+      <tr><td><span class="tag t-rose">Win-back</span></td><td>14d / 30d inactive</td><td>“Your sites have new opportunities” / “Keep your data?”</td><td>Re-engage, then data-deletion deadline creates urgency</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 9. KPIS ══════════ -->
+<section id="kpis">
+  <h2><span class="num">9</span> KPI targets — first 90 days</h2>
+  <p class="lead">Baselines are TBD until the first month of data lands in the admin dashboard; targets below are the working model — adjust after week 4, not before.</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Stage</th><th>Metric</th><th>Baseline</th><th>Day-90 target</th></tr></thead>
+    <tbody>
+      <tr><td>Acquisition</td><td>Monthly unique visitors</td><td class="muted">TBD</td><td><b>5,000</b></td></tr>
+      <tr><td>Signup</td><td>Visitor → signup</td><td class="muted">TBD</td><td><b>4%</b> → 200/mo</td></tr>
+      <tr><td>Activation</td><td>Signup → activated (applied ≥1)</td><td class="muted">TBD</td><td><b>40%</b></td></tr>
+      <tr><td>Conversion</td><td>Activated → paid in 30d</td><td class="muted">TBD</td><td><b>6%</b> → ~12–15 new paid/mo</td></tr>
+      <tr><td>Revenue</td><td>MRR</td><td class="muted">TBD</td><td><b>R25,000</b> (≈10 Pro + 2 Business)</td></tr>
+      <tr><td>Efficiency</td><td>Blended CAC</td><td class="muted">TBD</td><td><b>≤ R350</b> (LTV:CAC &gt; 10 at 8-mo avg life)</td></tr>
+      <tr><td>Retention</td><td>Monthly logo churn (paid)</td><td class="muted">TBD</td><td><b>&lt; 5%</b></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 10. PLAN ══════════ -->
+<section id="plan">
+  <h2><span class="num">10</span> 30 / 60 / 90-day action plan</h2>
+  <div class="grid g3">
+    <div class="card">
+      <h3 style="margin-top:0;"><span class="tag t-green">Days 0–30</span> Prove it</h3>
+      <ul class="clean">
+        <li>Instrument funnel events + weekly dashboard review (Mon)</li>
+        <li>Personal close 10 seed users from own network — founder emails, not ads</li>
+        <li>Communities: 5 genuine answers/week</li>
+        <li>Cold email: 20 agencies/week, track reply rate</li>
+        <li>Ship welcome sequence (§8)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;"><span class="tag t-orange">Days 31–60</span> Scale what worked</h3>
+      <ul class="clean">
+        <li>Publish 4 SEO articles (internal linking cluster)</li>
+        <li>Ship the free scanner tool as lead magnet</li>
+        <li>Record + embed YouTube demo</li>
+        <li>Launch (Product Hunt / directories) once activation &gt; 35%</li>
+        <li>First case study from a paying user</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;"><span class="tag t-blue">Days 61–90</span> Compound</h3>
+      <ul class="clean">
+        <li>Sign 2 partnership deals (WP agencies / hosting)</li>
+        <li>Annual plans live; offer to healthy accounts</li>
+        <li>Double the best-CAC channel, kill the worst</li>
+        <li>Referral program live</li>
+        <li>Review pricing against real usage data</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 11. OBJECTIONS ══════════ -->
+<section id="objections">
+  <h2><span class="num">11</span> Objection handling</h2>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Objection</th><th>Response</th></tr></thead>
+    <tbody>
+      <tr><td>“Link Whisper is cheaper.”</td><td>“It's WordPress-only and suggestion-only. LinkForge covers every platform, ranks fixes by revenue impact, and monitors your AI citations — R825 covers what two tools would.”</td></tr>
+      <tr><td>“I already do internal links manually.”</td><td>“Great — run one free crawl and compare. If we don't find 20 links you missed, close the tab.”</td></tr>
+      <tr><td>“How good are AI suggestions, really?”</td><td>“Every suggestion shows source, target, anchor, and a relevance score before you apply — and you can undo. Judge it on the first 10, not the marketing.”</td></tr>
+      <tr><td>“Is my site data safe?”</td><td>“We crawl only pages you add, store content to generate suggestions, and never publish anything. Delete a site and its data goes with it (cascade, confirmed in-app).”</td></tr>
+      <tr><td>“Why Paystack only?”</td><td>“Built for South African businesses — Rands, no forex fees, card + EFT. Enterprise can invoice.”</td></tr>
+      <tr><td>“R825 is expensive.”</td><td>“One hour of your time at even R500/hr costs more than a month of Pro — and it finds links every month, not once.”</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout green" style="margin-top:24px;"><b>Next review:</b> end of month 1 — replace every TBD in §9 with real numbers, then re-forecast. Owner: Jerome. Questions → this file's git history has the evolution.</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>LinkForge Growth &amp; Funnel Playbook</b> — internal document · v1.0 · Sep 2026 · live at /LinkForge_Funnel_Playbook.html (noindex)
+    <div class="small" style="margin-top:6px;">To edit: modify this file in the repo (<code>public/LinkForge_Funnel_Playbook.html</code>) — plain HTML, all styles inline, no dependencies. Redeploy to publish changes.</div>
+  </div>
+</footer>
+
+</body>
+</html>
