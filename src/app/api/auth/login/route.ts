@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verifyPassword, hashPassword } from "@/lib/password";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +13,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
+      );
+    }
+
+    // Rate limit: 5 attempts per 15 min per IP+email combo
+    const ip = clientIp(request);
+    if (!checkRateLimit(`login:${ip}:${normalizedEmail}`, 5, 900000).ok) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again in a few minutes." },
+        { status: 429 }
       );
     }
 
