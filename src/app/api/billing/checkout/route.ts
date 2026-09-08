@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
     // Check for Paystack env vars — if not configured, return demo URL
     if (!process.env.PAYSTACK_SECRET_KEY || !process.env.PAYSTACK_PLAN_PRO || !process.env.PAYSTACK_PLAN_BUSINESS) {
       console.log(`[Checkout] Demo mode — would create checkout for ${email}, plan: ${plan}`);
-      const demoUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}?checkout=paystack&plan=${plan}`;
+      // Always build an ABSOLUTE demo URL — a relative "?checkout=..." would
+      // redirect the user to /api/billing/checkout?checkout=... (404 JSON).
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+      const demoUrl = `${appUrl}/?checkout=paystack&plan=${plan}`;
       return NextResponse.json({ authorization_url: demoUrl, demo: true });
     }
 
