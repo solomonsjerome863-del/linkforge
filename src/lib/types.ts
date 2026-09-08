@@ -120,7 +120,6 @@ export interface Citation {
   hasBacklink: boolean;
   authorityScore: number;
   relevanceScore: number;
-  opportunityScore: number;
   sentiment: CitationSentiment;
   status: CitationStatus;
   discoveredAt: string;
@@ -133,3 +132,38 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   business: { maxSites: 25, maxPagesPerSite: 5000, monthlySuggestions: 10000, features: ["Everything in Pro", "Bulk actions", "Analytics", "API access", "25 sites"] },
   enterprise: { maxSites: -1, maxPagesPerSite: -1, monthlySuggestions: -1, features: ["Everything in Business", "Unlimited sites", "Dedicated support", "Custom integrations", "SLA"] },
 };
+
+// ─── Limit helpers ──────────────────────────────────────────────────────────
+
+export interface LimitContext {
+  plan: PlanType;
+  subscriptionStatus?: string | null;
+  trialEndsAt?: string | Date | null;
+}
+
+/**
+ * True while the user is inside their trial window.
+ * Detects trials via subscriptionStatus === "on_trial" and/or a
+ * trialEndsAt date that is still in the future.
+ */
+export function isOnTrial(u: LimitContext): boolean {
+  const ends = u.trialEndsAt ? new Date(u.trialEndsAt).getTime() : null;
+  if (ends !== null && Number.isFinite(ends) && ends <= Date.now()) return false; // trial already over
+  if (u.subscriptionStatus === "on_trial") return true;
+  return ends !== null && Number.isFinite(ends);
+}
+
+/**
+ * Effective plan limits for a user.
+ *
+ * TRIAL RULE (product decision): during a trial period the account is
+ * capped at 1 site regardless of the plan being trialed. All other
+ * limits (suggestions, pages, features) still come from the trialed plan.
+ */
+export function getEffectiveLimits(u: LimitContext): PlanLimits {
+  const limits = PLAN_LIMITS[u.plan] ?? PLAN_LIMITS.starter;
+  if (isOnTrial(u)) {
+    return { ...limits, maxSites: 1 };
+  }
+  return limits;
+}
