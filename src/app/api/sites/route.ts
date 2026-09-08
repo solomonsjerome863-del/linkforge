@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { validateUser } from "@/lib/api-auth";
+import { getEffectiveLimits, isOnTrial, type PlanType } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,6 +61,29 @@ export async function POST(request: NextRequest) {
     const user = await validateUser(userId);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });
+    }
+
+    // ─── Site limit enforcement (server-side, authoritative) ────────────────
+    // Trial rule: trial accounts are capped at 1 site regardless of the plan
+    // being trialed. maxSites === -1 means unlimited (Enterprise).
+    const limitCtx = {
+      plan: user.plan as PlanType,
+      subscriptionStatus: user.subscriptionStatus,
+      trialEndsAt: user.trialEndsAt,
+    };
+    const limits = getEffectiveLimits(limitCtx);
+
+    if (limits.maxSites !== -1) {
+      const siteCount = await db.site.count({ where: { userId } });
+      if (siteCount >= limits.maxSites) {
+        const message = isOnTrial(limitCtx)
+          ? "Trial accounts are limited to 1 site. Upgrade your subscription to add more sites."
+          : `Site limit reached (${limits.maxSites} sites on the ${user.plan} plan). Upgrade to add more sites.`;
+        return NextResponse.json(
+          { error: message, code: "SITE_LIMIT_REACHED", maxSites: limits.maxSites, onTrial: true },
+          { status: 403 }
+        );
+      }
     }
 
     const site = await db.site.create({
