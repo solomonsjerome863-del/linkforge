@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import { sendEmail, passwordResetEmail } from "@/lib/email";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +15,17 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Rate limit: 5/hour per IP, 3/hour per email
+    const ip = clientIp(request);
+    const byIp = checkRateLimit(`forgot:${ip}`, 5, 3600000);
+    const byEmail = checkRateLimit(`forgot:${normalizedEmail}`, 3, 3600000);
+    if (!byIp.ok || !byEmail.ok) {
+      return NextResponse.json(
+        { error: "Too many reset requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const user = await db.user.findUnique({
       where: { email: normalizedEmail },
     });
@@ -21,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({
         success: true,
-        message: "If an account exists, a reset link has been generated.",
+        message: "If an account exists, a reset link has been sent.",
       });
     }
 
@@ -34,14 +47,25 @@ export async function POST(request: NextRequest) {
       data: { resetToken: token, resetTokenExpiry: expiry },
     });
 
-    console.log(`[Forgot Password] Reset token generated for: ${user.email}`);
+    // Send the reset email
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    const { subject, html, text } = passwordResetEmail(appUrl, token);
+    const result = await sendEmail({ to: user.email, subject, html, text });
 
-    // In production, send email here. For demo, return token.
+    if (!result.sent) {
+      console.error(
+        `[Forgot Password] Email NOT delivered to ${user.email} (${result.reason}). Token is valid in DB for 1 hour — configure RESEND_API_KEY / EMAIL_FROM.`
+      );
+    } else {
+      console.log(`[Forgot Password] Reset email sent to: ${user.email}`);
+    }
+
     const response: Record<string, unknown> = {
       success: true,
-      message: "If an account exists, a reset link has been generated.",
+      message: "If an account exists, a reset link has been sent.",
     };
 
+    // Dev convenience only — never expose the token in production responses
     if (process.env.NODE_ENV === "development") {
       response.devToken = token;
     }
