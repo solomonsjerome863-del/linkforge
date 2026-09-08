@@ -6,7 +6,9 @@
 <meta name="robots" content="noindex, nofollow">
 <title>LinkForge — Growth &amp; Funnel Playbook</title>
 <!-- 
-  LinkForge Funnel Playbook (internal doc) — v1.1
+  LinkForge Funnel Playbook (internal doc) — v1.2
+  v1.2: Stripe webhook automation is live (/api/billing/stripe-webhook) —
+        international accounts auto-provision once env vars are set.
   v1.1: merged the Systeme.io international funnel (Stripe via systeme.io for non-SA market)
         with the in-product Paystack growth engine. One source of truth.
   Edit this file directly: every section is plain HTML, styles live in the <style> block below.
@@ -86,7 +88,7 @@
     <span class="kicker">Internal · Growth</span>
     <h1>LinkForge <em>Funnel Playbook</em></h1>
     <p class="sub">Two engines, one system: the in-product funnel (free Starter → Paystack Pro) for South Africa, and the Systeme.io + Stripe international funnel for everyone else. Stage by stage — plays, emails, limits, and numbers.</p>
-    <div class="meta"><span>Version 1.1 · Sep 2026</span><span>Owner: Jerome</span><span>Product: linkforge.digital</span><span>Review: monthly</span></div>
+    <div class="meta"><span>Version 1.2 · Sep 2026</span><span>Owner: Jerome</span><span>Product: linkforge.digital</span><span>Review: monthly</span></div>
   </div>
 </header>
 
@@ -120,10 +122,10 @@
     <thead><tr><th>Rail</th><th>Processor</th><th>Currency</th><th>Plans</th><th>Market</th><th>Provisioning</th></tr></thead>
     <tbody>
       <tr><td><b>linkforge.digital</b></td><td>Paystack (in-app checkout)</td><td>ZAR</td><td class="price">R825 / R2,455</td><td>🇿🇦 South Africa</td><td>Automatic (webhooks)</td></tr>
-      <tr><td><b>Systeme.io funnel</b></td><td>Stripe (via systeme.io)</td><td>USD</td><td class="price">$49 / $149</td><td>🌍 International</td><td>Manual via Admin panel (§7)</td></tr>
+      <tr><td><b>Systeme.io funnel</b></td><td>Stripe (via systeme.io)</td><td>USD</td><td class="price">$49 / $149</td><td>🌍 International</td><td>Automatic (Stripe webhook) + manual fallback</td></tr>
     </tbody>
   </table></div>
-  <div class="callout"><b>Why two rails:</b> Stripe doesn't onboard South African merchants directly, so international card payments run through Systeme.io as the funnel + checkout layer. Paystack handles ZAR locally with cards + EFT. Neither cannibalizes the other: local buyers get self-serve in-app upgrades; international buyers get the Systeme.io funnel experience.</div>
+  <div class="callout"><b>Why two rails:</b> Stripe doesn't onboard South African merchants directly, so international card payments run through Systeme.io as the funnel + checkout layer. Paystack handles ZAR locally with cards + EFT. Neither cannibalizes the other: local buyers get self-serve in-app upgrades; international buyers get the Systeme.io funnel experience. Both rails land in the same database — one Admin panel manages everyone.</div>
 
   <div class="grid g3" style="margin-top:16px;">
     <div class="kpi"><div class="v">Applied suggestions / week</div><div class="l">North-star metric — value delivered, not signups</div></div>
@@ -170,7 +172,7 @@
       <tr><td><span class="tag t-slate">Visitor</span></td><td>Lands on marketing page or funnel opt-in</td><td>Marketing</td><td>Weekly sessions by source</td></tr>
       <tr><td><span class="tag t-blue">Signup</span></td><td>Account created on Starter (free)</td><td>Growth</td><td>Signup rate ≥ 4% of visitors</td></tr>
       <tr><td><span class="tag t-orange">Activated</span></td><td>≥1 site crawled AND ≥10 suggestions reviewed AND ≥1 applied</td><td>Product</td><td>Activation ≥ 40% of signups</td></tr>
-      <tr><td><span class="tag t-green">Paid</span></td><td>Paystack active (ZA) <i>or</i> Stripe paid + admin-upgraded (intl)</td><td>Growth</td><td>≥6% of 30-day-old signups</td></tr>
+      <tr><td><span class="tag t-green">Paid</span></td><td>Paystack active (ZA) <i>or</i> Stripe paid + auto-provisioned (intl)</td><td>Growth</td><td>≥6% of 30-day-old signups</td></tr>
       <tr><td><span class="tag t-amber">Expanded</span></td><td>Upgrade to Business/Enterprise or 2nd paid seat</td><td>Founder-led</td><td>≥20% of Pro within 90 days</td></tr>
     </tbody>
   </table></div>
@@ -255,7 +257,7 @@
 <!-- ══════════ 7. INTERNATIONAL FUNNEL ══════════ -->
 <section id="intl">
   <h2><span class="num">7</span> International funnel — Systeme.io + Stripe (USD)</h2>
-  <p class="lead">Stripe can't onboard SA merchants directly, so international sales run through a Systeme.io funnel with Stripe checkout. Traffic → email lead magnet → sales page → Stripe checkout → upsell → <b>manual provisioning through your own Admin panel (10 seconds per customer)</b>. Recommended custom domain: <code>funnel.linkforge.digital</code>.</p>
+  <p class="lead">Stripe can't onboard SA merchants directly, so international sales run through a Systeme.io funnel with Stripe checkout. Traffic → email lead magnet → sales page → Stripe checkout → upsell → <b>automatic provisioning via the app's Stripe webhook</b> (manual Admin-panel upgrade remains as the 10-second fallback). Recommended custom domain: <code>funnel.linkforge.digital</code>.</p>
 
   <div class="flow">
     <div class="stage"><h4>Opt-in</h4><div class="conv">/linkforge-free-checklist — email for lead magnet</div><span class="target">capture</span></div>
@@ -293,8 +295,23 @@
     </div>
   </div>
 
-  <h3>Fulfillment SOP — after each Stripe payment (uses your Admin panel)</h3>
+  <h3>⚡ Automation — how Stripe payments provision accounts</h3>
+  <p class="small" style="margin-bottom:10px;">The app ships a Stripe webhook: <code>POST /api/billing/stripe-webhook</code>. When the setup checklist below is complete, payments through Systeme.io/Stripe provision accounts automatically:</p>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Stripe event</th><th>What the app does</th></tr></thead>
+    <tbody>
+      <tr><td><code>checkout.session.completed</code> / <code>customer.subscription.created|updated</code></td><td>Maps the price ID → plan (Pro/Business), sets <code>plan</code>, <code>subscriptionStatus</code> = active (or on_trial), <code>subscriptionEndsAt</code> from the period end — matched by the customer's <b>email</b></td></tr>
+      <tr><td><code>customer.subscription.deleted</code></td><td>Downgrades to Starter, clears subscription data (same semantics as an admin downgrade)</td></tr>
+      <tr><td><code>invoice.payment_failed</code></td><td>Marks the account <code>unpaid</code></td></tr>
+      <tr><td><code>invoice.paid</code></td><td>Re-activates a previously failed account</td></tr>
+      <tr><td>Any event, account email not found</td><td>Logged unprocessed in the <code>SubscriptionEvent</code> table — weekly reconciliation picks it up</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout rose" style="margin-top:14px;"><b>Security note:</b> until <code>STRIPE_WEBHOOK_SECRET</code> is set, the webhook audit-logs events but <b>refuses to change any account</b> — forged “upgrade me” requests are impossible. Signature + 10-minute replay window enforced once configured.</div>
+
+  <h3>Fulfillment SOP — manual fallback (10 seconds per customer)</h3>
   <div class="card">
+    <p class="small muted" style="margin-bottom:8px;">Use this when the webhook can't match a customer (email mismatch) or before the checklist below is complete:</p>
     <ol style="padding-left:20px; display:grid; gap:6px;">
       <li>Stripe payment notification email arrives (tells you which product: $49 = Pro, $149 = Business)</li>
       <li>Log in to linkforge.digital → <b>Admin</b> in sidebar</li>
@@ -303,12 +320,12 @@
       <li>Account doesn't exist yet → they'll create it on first visit; upgrade then (Confirmation page tells them to use the <b>same email they paid with</b>)</li>
     </ol>
   </div>
-  <div class="callout rose"><b>Manual fulfillment edge cases — handle these or churn happens silently:</b></div>
+  <div class="callout rose"><b>Edge cases — handle these or churn happens silently:</b></div>
   <ul class="clean" style="background:var(--card); border:1px solid var(--line); border-radius:12px; padding:6px 14px 6px 4px; margin-bottom:16px;">
-    <li><b>Email mismatch:</b> customer pays with billing@company.com, signs up with personal@gmail.com → admin search finds nothing. Fix: confirmation page + welcome email both say “sign up with the email you paid with”; support@linkforge.digital catches the rest.</li>
-    <li><b>Cancellations/expiry:</b> Stripe subscription ends → the app plan stays Pro until you notice. Weekly ritual (5 min): reconcile Stripe's active subscriber list against Admin → filter Business/Pro, downgrade ⋮ → Starter lapsed accounts.</li>
-    <li><b>Refunds/disputes:</b> refund in Stripe → downgrade in Admin same day.</li>
-    <li><b>Scale trigger:</b> past ~30 manual customers, automate — webhook from Systeme.io/Stripe → app endpoint (the admin API routes already exist to build on).</li>
+    <li><b>Email mismatch:</b> customer pays with billing@company.com, signs up with personal@gmail.com → webhook and admin search find nothing. Fix: confirmation page + welcome email both say “sign up with the email you paid with”; support@linkforge.digital catches the rest.</li>
+    <li><b>Automation (built):</b> once the checklist below is complete, the webhook auto-upgrades on payment and auto-downgrades on cancellation — the manual panel becomes the fallback and the weekly reconciliation tool.</li>
+    <li><b>Refunds/disputes:</b> refund in Stripe → webhook downgrades automatically; verify in Admin same day.</li>
+    <li><b>Weekly ritual (5 min):</b> reconcile Stripe's active subscriber list against Admin → filter Pro/Business, fix any drift.</li>
   </ul>
 
   <h3>⚠️ Align the funnel copy with real product limits before launch</h3>
@@ -321,7 +338,24 @@
     </tbody>
   </table></div>
 
-  <div class="callout blue"><b>Systeme.io settings checklist:</b> Stripe connected (Settings → Payment) · custom domain funnel.linkforge.digital · email sender name “LinkForge” · reply-to support@linkforge.digital · favicon/logo uploaded · double opt-in OFF.</div>
+  <h3>Systeme.io + Stripe setup checklist</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Setup item</th><th>Where</th><th>Value / notes</th></tr></thead>
+    <tbody>
+      <tr><td>Stripe connected</td><td>Systeme.io → Settings → Payment</td><td>Your own Stripe account (international sales land in it)</td></tr>
+      <tr><td>Products created</td><td>Systeme.io → Products</td><td>LinkForge Pro $49/mo, LinkForge Business $149/mo — recurring</td></tr>
+      <tr><td><b>Webhook endpoint</b></td><td>Stripe Dashboard → Developers → Webhooks</td><td><code>https://linkforge.digital/api/billing/stripe-webhook</code></td></tr>
+      <tr><td><b>Webhook events</b></td><td>Same screen</td><td>checkout.session.completed · customer.subscription.created · customer.subscription.updated · customer.subscription.deleted · invoice.paid · invoice.payment_failed</td></tr>
+      <tr><td><b>STRIPE_WEBHOOK_SECRET</b></td><td>Deployment env vars → redeploy</td><td><code>whsec_...</code> from the webhook endpoint (required for automation)</td></tr>
+      <tr><td><b>STRIPE_SECRET_KEY</b></td><td>Deployment env vars → redeploy</td><td><code>sk_live_...</code> (resolves customer emails from Stripe)</td></tr>
+      <tr><td><b>STRIPE_PRICE_PRO</b></td><td>Deployment env vars → redeploy</td><td><code>price_...</code> of the Pro product</td></tr>
+      <tr><td><b>STRIPE_PRICE_BUSINESS</b></td><td>Deployment env vars → redeploy</td><td><code>price_...</code> of the Business product</td></tr>
+      <tr><td>Email sender name</td><td>Systeme.io → Email</td><td>“LinkForge” · reply-to support@linkforge.digital</td></tr>
+      <tr><td>Custom domain</td><td>Systeme.io → Custom Domain</td><td>funnel.linkforge.digital (recommended)</td></tr>
+      <tr><td>Double opt-in</td><td>Systeme.io → Email</td><td>OFF (single opt-in converts better)</td></tr>
+      <tr><td>Favicon</td><td>Systeme.io → General</td><td>LinkForge logo</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <!-- ══════════ 8. RETENTION ══════════ -->
@@ -417,9 +451,9 @@
         <li>Instrument funnel events + weekly dashboard review (Mon)</li>
         <li>Build the Systeme.io funnel: opt-in → sales → checkout → upsell → confirmation (§7)</li>
         <li>Create the 15-point checklist PDF + confirmation/onboarding emails</li>
+        <li>Complete the Stripe webhook checklist (env vars + endpoint) so provisioning is automatic from sale #1</li>
         <li>Personal close 10 seed users from own network — founder emails, not ads</li>
         <li>Communities: 5 genuine answers/week · cold email: 20 agencies/week</li>
-        <li>Ship in-app welcome sequence (§9)</li>
       </ul>
     </div>
     <div class="card">
@@ -430,7 +464,7 @@
         <li>Record + embed YouTube demo</li>
         <li>Launch (Product Hunt / directories) once activation &gt; 35%</li>
         <li>First case study from a paying user</li>
-        <li>Start the weekly Stripe↔Admin reconciliation ritual (§7)</li>
+        <li>Keep the weekly Stripe↔Admin reconciliation ritual (§7)</li>
       </ul>
     </div>
     <div class="card">
@@ -441,7 +475,6 @@
         <li>Double the best-CAC channel, kill the worst</li>
         <li>Referral program live</li>
         <li>Review pricing + real product limits against usage data (close §7 gaps)</li>
-        <li>At ~30 intl customers: automate Stripe → app provisioning</li>
       </ul>
     </div>
   </div>
@@ -470,7 +503,7 @@
 
 <footer>
   <div class="wrap">
-    <b>LinkForge Growth &amp; Funnel Playbook</b> — internal document · v1.1 (merged Systeme.io intl funnel) · Sep 2026 · live at /LinkForge_Funnel_Playbook.html (noindex)
+    <b>LinkForge Growth &amp; Funnel Playbook</b> — internal document · v1.2 (Stripe webhook automation live) · Sep 2026 · live at /LinkForge_Funnel_Playbook.html (noindex)
     <div class="small" style="margin-top:6px;">To edit: modify this file in the repo (<code>public/LinkForge_Funnel_Playbook.html</code>) — plain HTML, all styles inline, no dependencies. Redeploy to publish changes.</div>
   </div>
 </footer>
