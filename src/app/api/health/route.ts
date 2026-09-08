@@ -21,9 +21,9 @@ export async function GET() {
   }
 
   // 3. Check if we can query the User table
+  //    (boolean only — the public endpoint must not leak user counts)
   try {
-    const count = await db.user.count();
-    results.user_count = count;
+    await db.user.findFirst({ select: { id: true } });
     results.user_query = "OK";
   } catch (err: unknown) {
     results.user_query = "FAILED";
@@ -50,11 +50,17 @@ export async function GET() {
   // 6. Check Paystack configuration (key presence only, never expose values)
   results.paystack_secret_key_set = !!process.env.PAYSTACK_SECRET_KEY;
   results.paystack_plan_pro_set = !!process.env.PAYSTACK_PLAN_PRO;
-  results.paystack_plan_pro_value = process.env.PAYSTACK_PLAN_PRO ? "configured" : "NOT_SET";
   results.paystack_plan_business_set = !!process.env.PAYSTACK_PLAN_BUSINESS;
-  results.paystack_plan_business_value = process.env.PAYSTACK_PLAN_BUSINESS ? "configured" : "NOT_SET";
 
-  // 7. Check callback URL
+  // 7. Check email configuration (Resend)
+  results.email_configured = !!process.env.RESEND_API_KEY;
+
+  // 8. Check Stripe (international rail) configuration
+  results.stripe_webhook_secret_set = !!process.env.STRIPE_WEBHOOK_SECRET;
+  results.stripe_price_pro_set = !!process.env.STRIPE_PRICE_PRO;
+  results.stripe_price_business_set = !!process.env.STRIPE_PRICE_BUSINESS;
+
+  // 9. Check callback URL
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "NOT_SET";
   results.app_url = appUrl;
   results.expected_callback_url = `${appUrl}/?checkout=paystack`;
