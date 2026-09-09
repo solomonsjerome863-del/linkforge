@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
+import { resolveUserId } from "@/lib/session";
 
+/**
+ * GET /api/pages?siteId=xxx
+ *
+ * Lists crawled pages for a site with link counts and orphan detection.
+ * Identity is resolved from the session cookie (transitional
+ * client-supplied fallback is logged), and the target site MUST
+ * belong to the authenticated user.
+ */
 export async function GET(request: NextRequest) {
   try {
     const siteId = request.nextUrl.searchParams.get("siteId");
-    const userId = request.nextUrl.searchParams.get("userId");
 
     if (!siteId) {
       return NextResponse.json(
@@ -14,17 +21,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (userId) {
-      const user = await validateUser(userId);
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 401 });
-      }
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
 
-      // Verify the site belongs to the user
-      const site = await db.site.findUnique({ where: { id: siteId } });
-      if (!site || site.userId !== userId) {
-        return NextResponse.json({ error: "User not found" }, { status: 401 });
-      }
+    // Verify the site belongs to the authenticated user (mandatory)
+    const site = await db.site.findUnique({ where: { id: siteId } });
+    if (!site || site.userId !== userId) {
+      return NextResponse.json({ error: "Site not found" }, { status: 404 });
     }
 
     const pages = await db.page.findMany({
