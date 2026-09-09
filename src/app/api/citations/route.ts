@@ -1,1 +1,140 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmNvbnN0IFZBTElEX1NUQVRVU0VTID0gWwogICJuZXciLAogICJyZXZpZXdlZCIsCiAgIm91dHJlYWNoX3NlbnQiLAogICJjb252ZXJ0ZWQiLAogICJkaXNtaXNzZWQiLApdOwoKY29uc3QgVkFMSURfU09VUkNFX1RZUEVTID0gWwogICJibG9nIiwKICAibmV3cyIsCiAgImZvcnVtIiwKICAicmVkZGl0IiwKICAic29jaWFsIiwKICAib3RoZXIiLApdOwoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIEdFVChyZXF1ZXN0OiBOZXh0UmVxdWVzdCkgewogIHRyeSB7CiAgICBjb25zdCB1c2VySWQgPSByZXNvbHZlVXNlcklkKHJlcXVlc3QsIHJlcXVlc3QubmV4dFVybC5zZWFyY2hQYXJhbXMuZ2V0KCJ1c2VySWQiKSk7CiAgICBjb25zdCBzaXRlSWQgPSByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgic2l0ZUlkIik7CiAgICBjb25zdCBicmFuZElkID0gcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoImJyYW5kSWQiKTsKICAgIGNvbnN0IHN0YXR1cyA9IHJlcXVlc3QubmV4dFVybC5zZWFyY2hQYXJhbXMuZ2V0KCJzdGF0dXMiKTsKICAgIGNvbnN0IHNvdXJjZVR5cGUgPSByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgic291cmNlVHlwZSIpOwogICAgY29uc3QgaGFzQmFja2xpbmsgPSByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgiaGFzQmFja2xpbmsiKTsKICAgIGNvbnN0IHVubGlua2VkT25seSA9IHJlcXVlc3QubmV4dFVybC5zZWFyY2hQYXJhbXMuZ2V0KCJ1bmxpbmtlZE9ubHkiKTsKICAgIGNvbnN0IHBhZ2UgPSBwYXJzZUludCgKICAgICAgcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoInBhZ2UiKSB8fCAiMSIsCiAgICAgIDEwCiAgICApOwogICAgY29uc3QgbGltaXQgPSBwYXJzZUludCgKICAgICAgcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoImxpbWl0IikgfHwgIjIwIiwKICAgICAgMTAKICAgICk7CgogICAgaWYgKCF1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJBdXRoZW50aWNhdGlvbiByZXF1aXJlZC4gUGxlYXNlIGxvZyBpbiBhZ2Fpbi4iIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMSB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKCFzaXRlSWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJzaXRlSWQgcXVlcnkgcGFyYW1ldGVyIGlzIHJlcXVpcmVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDAgfQogICAgICApOwogICAgfQoKICAgIC8vIFZhbGlkYXRlIHBhZ2luYXRpb24gcGFyYW1zCiAgICBpZiAocGFnZSA8IDEpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJwYWdlIG11c3QgYmUgPj0gMSIgfSwKICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgKTsKICAgIH0KICAgIGlmIChsaW1pdCA8IDEgfHwgbGltaXQgPiAxMDApIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJsaW1pdCBtdXN0IGJlIGJldHdlZW4gMSBhbmQgMTAwIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDAgfQogICAgICApOwogICAgfQoKICAgIC8vIFZhbGlkYXRlIHNpdGUgb3duZXJzaGlwCiAgICBjb25zdCBzaXRlID0gYXdhaXQgZGIuc2l0ZS5maW5kVW5pcXVlKHsKICAgICAgd2hlcmU6IHsgaWQ6IHNpdGVJZCB9LAogICAgfSk7CgogICAgaWYgKCFzaXRlIHx8IHNpdGUudXNlcklkICE9PSB1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJTaXRlIG5vdCBmb3VuZCBvciBhY2Nlc3MgZGVuaWVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDMgfQogICAgICApOwogICAgfQoKICAgIC8vIEJ1aWxkIHdoZXJlIGNsYXVzZQogICAgY29uc3Qgd2hlcmU6IFJlY29yZDxzdHJpbmcsIHVua25vd24+ID0gewogICAgICBzaXRlSWQsCiAgICB9OwoKICAgIGlmIChicmFuZElkKSB7CiAgICAgIHdoZXJlLmJyYW5kSWQgPSBicmFuZElkOwogICAgfQoKICAgIGlmIChzdGF0dXMgJiYgVkFMSURfU1RBVFVTRVMuaW5jbHVkZXMoc3RhdHVzKSkgewogICAgICB3aGVyZS5zdGF0dXMgPSBzdGF0dXM7CiAgICB9CgogICAgaWYgKHNvdXJjZVR5cGUgJiYgVkFMSURfU09VUkNFX1RZUEVTLmluY2x1ZGVzKHNvdXJjZVR5cGUpKSB7CiAgICAgIHdoZXJlLnNvdXJjZVR5cGUgPSBzb3VyY2VUeXBlOwogICAgfQoKICAgIGlmIChoYXNCYWNrbGluayA9PT0gInRydWUiKSB7CiAgICAgIHdoZXJlLmhhc0JhY2tsaW5rID0gdHJ1ZTsKICAgIH0gZWxzZSBpZiAoaGFzQmFja2xpbmsgPT09ICJmYWxzZSIpIHsKICAgICAgd2hlcmUuaGFzQmFja2xpbmsgPSBmYWxzZTsKICAgIH0KCiAgICBpZiAodW5saW5rZWRPbmx5ID09PSAidHJ1ZSIpIHsKICAgICAgd2hlcmUuaGFzQmFja2xpbmsgPSBmYWxzZTsKICAgIH0KCiAgICAvLyBGZXRjaCBjaXRhdGlvbnMgd2l0aCBwYWdpbmF0aW9uCiAgICBjb25zdCBbY2l0YXRpb25zLCB0b3RhbF0gPSBhd2FpdCBQcm9taXNlLmFsbChbCiAgICAgIGRiLmNpdGF0aW9uLmZpbmRNYW55KHsKICAgICAgICB3aGVyZSwKICAgICAgICBvcmRlckJ5OiB7IG9wcG9ydHVuaXR5U2NvcmU6ICJkZXNjIiB9LAogICAgICAgIHNraXA6IChwYWdlIC0gMSkgKiBsaW1pdCwKICAgICAgICB0YWtlOiBsaW1pdCwKICAgICAgICBpbmNsdWRlOiB7CiAgICAgICAgICBicmFuZDogewogICAgICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgICAgICBpZDogdHJ1ZSwKICAgICAgICAgICAgICBuYW1lOiB0cnVlLAogICAgICAgICAgICAgIGlzUHJpbWFyeTogdHJ1ZSwKICAgICAgICAgICAgfSwKICAgICAgICAgIH0sCiAgICAgICAgfSwKICAgICAgfSksCiAgICAgIGRiLmNpdGF0aW9uLmNvdW50KHsgd2hlcmUgfSksCiAgICBdKTsKCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oewogICAgICBjaXRhdGlvbnMsCiAgICAgIHRvdGFsLAogICAgICBwYWdlLAogICAgICBsaW1pdCwKICAgIH0pOwogIH0gY2F0Y2ggKGVycm9yOiB1bmtub3duKSB7CiAgICBjb25zb2xlLmVycm9yKCJMaXN0IGNpdGF0aW9ucyBlcnJvcjoiLCBlcnJvcik7CiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgIHsgZXJyb3I6ICJJbnRlcm5hbCBzZXJ2ZXIgZXJyb3IiIH0sCiAgICAgIHsgc3RhdHVzOiA1MDAgfQogICAgKTsKICB9Cn0K
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+const VALID_STATUSES = [
+  "new",
+  "reviewed",
+  "outreach_sent",
+  "converted",
+  "dismissed",
+];
+
+const VALID_SOURCE_TYPES = [
+  "blog",
+  "news",
+  "forum",
+  "reddit",
+  "social",
+  "other",
+];
+
+export async function GET(request: NextRequest) {
+  try {
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    const siteId = request.nextUrl.searchParams.get("siteId");
+    const brandId = request.nextUrl.searchParams.get("brandId");
+    const status = request.nextUrl.searchParams.get("status");
+    const sourceType = request.nextUrl.searchParams.get("sourceType");
+    const hasBacklink = request.nextUrl.searchParams.get("hasBacklink");
+    const unlinkedOnly = request.nextUrl.searchParams.get("unlinkedOnly");
+    const page = parseInt(
+      request.nextUrl.searchParams.get("page") || "1",
+      10
+    );
+    const limit = parseInt(
+      request.nextUrl.searchParams.get("limit") || "20",
+      10
+    );
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!siteId) {
+      return NextResponse.json(
+        { error: "siteId query parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate pagination params
+    if (page < 1) {
+      return NextResponse.json(
+        { error: "page must be >= 1" },
+        { status: 400 }
+      );
+    }
+    if (limit < 1 || limit > 100) {
+      return NextResponse.json(
+        { error: "limit must be between 1 and 100" },
+        { status: 400 }
+      );
+    }
+
+    // Validate site ownership
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site || site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Site not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    // Build where clause
+    const where: Record<string, unknown> = {
+      siteId,
+    };
+
+    if (brandId) {
+      where.brandId = brandId;
+    }
+
+    if (status && VALID_STATUSES.includes(status)) {
+      where.status = status;
+    }
+
+    if (sourceType && VALID_SOURCE_TYPES.includes(sourceType)) {
+      where.sourceType = sourceType;
+    }
+
+    if (hasBacklink === "true") {
+      where.hasBacklink = true;
+    } else if (hasBacklink === "false") {
+      where.hasBacklink = false;
+    }
+
+    if (unlinkedOnly === "true") {
+      where.hasBacklink = false;
+    }
+
+    // Fetch citations with pagination
+    const [citations, total] = await Promise.all([
+      db.citation.findMany({
+        where,
+        orderBy: { opportunityScore: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          brand: {
+            select: {
+              id: true,
+              name: true,
+              isPrimary: true,
+            },
+          },
+        },
+      }),
+      db.citation.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      citations,
+      total,
+      page,
+      limit,
+    });
+  } catch (error: unknown) {
+    console.error("List citations error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
