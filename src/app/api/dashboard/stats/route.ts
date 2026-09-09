@@ -1,1 +1,81 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBHRVQocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICB0cnkgewogICAgY29uc3QgdXNlcklkID0gcmVzb2x2ZVVzZXJJZChyZXF1ZXN0LCByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgidXNlcklkIikpOwoKICAgIGlmICghdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQXV0aGVudGljYXRpb24gcmVxdWlyZWQuIFBsZWFzZSBsb2cgaW4gYWdhaW4uIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDEgfQogICAgICApOwogICAgfQoKICAgIGNvbnN0IFsKICAgICAgdG90YWxTaXRlcywKICAgICAgdG90YWxQYWdlcywKICAgICAgdG90YWxTdWdnZXN0aW9ucywKICAgICAgcGVuZGluZ1N1Z2dlc3Rpb25zLAogICAgICBhcHBsaWVkTGlua3MsCiAgICAgIG9ycGhhblBhZ2VzLAogICAgXSA9IGF3YWl0IFByb21pc2UuYWxsKFsKICAgICAgZGIuc2l0ZS5jb3VudCh7IHdoZXJlOiB7IHVzZXJJZCB9IH0pLAogICAgICBkYi5wYWdlLmNvdW50KHsKICAgICAgICB3aGVyZTogewogICAgICAgICAgc2l0ZTogeyB1c2VySWQgfSwKICAgICAgICAgIHN0YXR1czogImFjdGl2ZSIsCiAgICAgICAgfSwKICAgICAgfSksCiAgICAgIGRiLmxpbmtTdWdnZXN0aW9uLmNvdW50KHsKICAgICAgICB3aGVyZTogewogICAgICAgICAgc2l0ZTogeyB1c2VySWQgfSwKICAgICAgICB9LAogICAgICB9KSwKICAgICAgZGIubGlua1N1Z2dlc3Rpb24uY291bnQoewogICAgICAgIHdoZXJlOiB7CiAgICAgICAgICBzaXRlOiB7IHVzZXJJZCB9LAogICAgICAgICAgc3RhdHVzOiAicGVuZGluZyIsCiAgICAgICAgfSwKICAgICAgfSksCiAgICAgIGRiLmxpbmtTdWdnZXN0aW9uLmNvdW50KHsKICAgICAgICB3aGVyZTogewogICAgICAgICAgc2l0ZTogeyB1c2VySWQgfSwKICAgICAgICAgIHN0YXR1czogeyBpbjogWyJhcHByb3ZlZCIsICJhcHBsaWVkIl0gfSwKICAgICAgICB9LAogICAgICB9KSwKICAgICAgLy8gT3JwaGFuIHBhZ2VzOiBhY3RpdmUgcGFnZXMgbm90IHJlZmVyZW5jZWQgYXMgYSB0YXJnZXQgaW4gYW55IHN1Z2dlc3Rpb24KICAgICAgKGFzeW5jICgpID0+IHsKICAgICAgICBjb25zdCBhbGxBY3RpdmVQYWdlcyA9IGF3YWl0IGRiLnBhZ2UuZmluZE1hbnkoewogICAgICAgICAgd2hlcmU6IHsKICAgICAgICAgICAgc2l0ZTogeyB1c2VySWQgfSwKICAgICAgICAgICAgc3RhdHVzOiAiYWN0aXZlIiwKICAgICAgICAgIH0sCiAgICAgICAgICBzZWxlY3Q6IHsgaWQ6IHRydWUgfSwKICAgICAgICB9KTsKICAgICAgICBjb25zdCByZWZlcmVuY2VkVGFyZ2V0SWRzID0gYXdhaXQgZGIubGlua1N1Z2dlc3Rpb24uZmluZE1hbnkoewogICAgICAgICAgd2hlcmU6IHsgc2l0ZTogeyB1c2VySWQgfSB9LAogICAgICAgICAgc2VsZWN0OiB7IHRhcmdldFBhZ2VJZDogdHJ1ZSB9LAogICAgICAgICAgZGlzdGluY3Q6IFsidGFyZ2V0UGFnZUlkIl0sCiAgICAgICAgfSk7CiAgICAgICAgY29uc3QgcmVmZXJlbmNlZFNldCA9IG5ldyBTZXQocmVmZXJlbmNlZFRhcmdldElkcy5tYXAoKHIpID0+IHIudGFyZ2V0UGFnZUlkKSk7CiAgICAgICAgcmV0dXJuIGFsbEFjdGl2ZVBhZ2VzLmZpbHRlcigocCkgPT4gIXJlZmVyZW5jZWRTZXQuaGFzKHAuaWQpKS5sZW5ndGg7CiAgICAgIH0pKCksCiAgICBdKTsKCiAgICBjb25zdCBzdGF0cyA9IHsKICAgICAgdG90YWxTaXRlcywKICAgICAgdG90YWxQYWdlcywKICAgICAgdG90YWxTdWdnZXN0aW9ucywKICAgICAgcGVuZGluZ1N1Z2dlc3Rpb25zLAogICAgICBhcHBsaWVkTGlua3MsCiAgICAgIG9ycGhhblBhZ2VzLAogICAgfTsKCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oeyBzdGF0cyB9KTsKICB9IGNhdGNoIChlcnJvcjogdW5rbm93bikgewogICAgY29uc29sZS5lcnJvcigiRGFzaGJvYXJkIHN0YXRzIGVycm9yOiIsIGVycm9yKTsKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7IGVycm9yOiAiSW50ZXJuYWwgc2VydmVyIGVycm9yIiB9LCB7IHN0YXR1czogNTAwIH0pOwogIH0KfQo=
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+export async function GET(request: NextRequest) {
+  try {
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    const [
+      totalSites,
+      totalPages,
+      totalSuggestions,
+      pendingSuggestions,
+      appliedLinks,
+      orphanPages,
+    ] = await Promise.all([
+      db.site.count({ where: { userId } }),
+      db.page.count({
+        where: {
+          site: { userId },
+          status: "active",
+        },
+      }),
+      db.linkSuggestion.count({
+        where: {
+          site: { userId },
+        },
+      }),
+      db.linkSuggestion.count({
+        where: {
+          site: { userId },
+          status: "pending",
+        },
+      }),
+      db.linkSuggestion.count({
+        where: {
+          site: { userId },
+          status: { in: ["approved", "applied"] },
+        },
+      }),
+      // Orphan pages: active pages not referenced as a target in any suggestion
+      (async () => {
+        const allActivePages = await db.page.findMany({
+          where: {
+            site: { userId },
+            status: "active",
+          },
+          select: { id: true },
+        });
+        const referencedTargetIds = await db.linkSuggestion.findMany({
+          where: { site: { userId } },
+          select: { targetPageId: true },
+          distinct: ["targetPageId"],
+        });
+        const referencedSet = new Set(referencedTargetIds.map((r) => r.targetPageId));
+        return allActivePages.filter((p) => !referencedSet.has(p.id)).length;
+      })(),
+    ]);
+
+    const stats = {
+      totalSites,
+      totalPages,
+      totalSuggestions,
+      pendingSuggestions,
+      appliedLinks,
+      orphanPages,
+    };
+
+    return NextResponse.json({ stats });
+  } catch (error: unknown) {
+    console.error("Dashboard stats error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
