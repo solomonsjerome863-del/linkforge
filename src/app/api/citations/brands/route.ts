@@ -1,1 +1,131 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBHRVQocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICB0cnkgewogICAgY29uc3QgdXNlcklkID0gcmVzb2x2ZVVzZXJJZChyZXF1ZXN0LCByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgidXNlcklkIikpOwogICAgY29uc3Qgc2l0ZUlkID0gcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoInNpdGVJZCIpOwoKICAgIGlmICghdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQXV0aGVudGljYXRpb24gcmVxdWlyZWQuIFBsZWFzZSBsb2cgaW4gYWdhaW4uIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDEgfQogICAgICApOwogICAgfQoKICAgIGlmICghc2l0ZUlkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAic2l0ZUlkIHF1ZXJ5IHBhcmFtZXRlciBpcyByZXF1aXJlZCIgfSwKICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgKTsKICAgIH0KCiAgICBjb25zdCBzaXRlID0gYXdhaXQgZGIuc2l0ZS5maW5kVW5pcXVlKHsKICAgICAgd2hlcmU6IHsgaWQ6IHNpdGVJZCB9LAogICAgfSk7CgogICAgaWYgKCFzaXRlIHx8IHNpdGUudXNlcklkICE9PSB1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJTaXRlIG5vdCBmb3VuZCBvciBhY2Nlc3MgZGVuaWVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDMgfQogICAgICApOwogICAgfQoKICAgIGNvbnN0IGJyYW5kcyA9IGF3YWl0IGRiLmNpdGF0aW9uQnJhbmQuZmluZE1hbnkoewogICAgICB3aGVyZTogeyBzaXRlSWQgfSwKICAgICAgb3JkZXJCeTogW3sgaXNQcmltYXJ5OiAiZGVzYyIgfSwgeyBjcmVhdGVkQXQ6ICJkZXNjIiB9XSwKICAgICAgaW5jbHVkZTogewogICAgICAgIF9jb3VudDogewogICAgICAgICAgc2VsZWN0OiB7IGNpdGF0aW9uczogdHJ1ZSB9LAogICAgICAgIH0sCiAgICAgIH0sCiAgICB9KTsKCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oeyBicmFuZHMgfSk7CiAgfSBjYXRjaCAoZXJyb3I6IHVua25vd24pIHsKICAgIGNvbnNvbGUuZXJyb3IoIkxpc3QgY2l0YXRpb24gYnJhbmRzIGVycm9yOiIsIGVycm9yKTsKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgeyBlcnJvcjogIkludGVybmFsIHNlcnZlciBlcnJvciIgfSwKICAgICAgeyBzdGF0dXM6IDUwMCB9CiAgICApOwogIH0KfQoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIFBPU1QocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICB0cnkgewogICAgY29uc3QgYm9keSA9IGF3YWl0IHJlcXVlc3QuanNvbigpOwogICAgY29uc3QgeyBzaXRlSWQsIG5hbWUsIGlzUHJpbWFyeSB9ID0gYm9keTsKICAgIGNvbnN0IHVzZXJJZCA9IHJlc29sdmVVc2VySWQoCiAgICAgIHJlcXVlc3QsCiAgICAgIHR5cGVvZiBib2R5LnVzZXJJZCA9PT0gInN0cmluZyIgPyBib2R5LnVzZXJJZCA6IG51bGwKICAgICk7CgogICAgaWYgKCF1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJBdXRoZW50aWNhdGlvbiByZXF1aXJlZC4gUGxlYXNlIGxvZyBpbiBhZ2Fpbi4iIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMSB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKCFzaXRlSWQgfHwgIW5hbWUpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJzaXRlSWQgYW5kIG5hbWUgYXJlIHJlcXVpcmVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDAgfQogICAgICApOwogICAgfQoKICAgIGlmICghbmFtZS50cmltKCkgfHwgbmFtZS50cmltKCkubGVuZ3RoID4gMjAwKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQnJhbmQgbmFtZSBtdXN0IGJlIDEtMjAwIGNoYXJhY3RlcnMiIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMCB9CiAgICAgICk7CiAgICB9CgogICAgY29uc3Qgc2l0ZSA9IGF3YWl0IGRiLnNpdGUuZmluZFVuaXF1ZSh7CiAgICAgIHdoZXJlOiB7IGlkOiBzaXRlSWQgfSwKICAgIH0pOwoKICAgIGlmICghc2l0ZSB8fCBzaXRlLnVzZXJJZCAhPT0gdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiU2l0ZSBub3QgZm91bmQgb3IgYWNjZXNzIGRlbmllZCIgfSwKICAgICAgICB7IHN0YXR1czogNDAzIH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBDaGVjayBpZiBicmFuZCB3aXRoIHNhbWUgbmFtZSBhbHJlYWR5IGV4aXN0cyBmb3IgdGhpcyBzaXRlCiAgICBjb25zdCBleGlzdGluZ0JyYW5kID0gYXdhaXQgZGIuY2l0YXRpb25CcmFuZC5maW5kRmlyc3QoewogICAgICB3aGVyZTogeyBzaXRlSWQsIG5hbWU6IG5hbWUudHJpbSgpIH0sCiAgICB9KTsKCiAgICBpZiAoZXhpc3RpbmdCcmFuZCkgewogICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgeyBlcnJvcjogIkEgYnJhbmQgd2l0aCB0aGlzIG5hbWUgYWxyZWFkeSBleGlzdHMgZm9yIHRoaXMgc2l0ZSIgfSwKICAgICAgICB7IHN0YXR1czogNDA5IH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBDb3VudCBleGlzdGluZyBicmFuZHMgdG8gYXV0by1kZXRlY3QgZmlyc3QgYnJhbmQKICAgIGNvbnN0IGJyYW5kQ291bnQgPSBhd2FpdCBkYi5jaXRhdGlvbkJyYW5kLmNvdW50KHsKICAgICAgd2hlcmU6IHsgc2l0ZUlkIH0sCiAgICB9KTsKCiAgICBjb25zdCBzaG91bGRTZXRQcmltYXJ5ID0gaXNQcmltYXJ5ID09PSB0cnVlIHx8IGJyYW5kQ291bnQgPT09IDA7CgogICAgY29uc3QgYnJhbmQgPSBhd2FpdCBkYi5jaXRhdGlvbkJyYW5kLmNyZWF0ZSh7CiAgICAgIGRhdGE6IHsKICAgICAgICBuYW1lOiBuYW1lLnRyaW0oKSwKICAgICAgICBzaXRlSWQsCiAgICAgICAgaXNQcmltYXJ5OiBzaG91bGRTZXRQcmltYXJ5LAogICAgICB9LAogICAgfSk7CgogICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKHsgYnJhbmQgfSwgeyBzdGF0dXM6IDIwMSB9KTsKICB9IGNhdGNoIChlcnJvcjogdW5rbm93bikgewogICAgY29uc29sZS5lcnJvcigiQ3JlYXRlIGNpdGF0aW9uIGJyYW5kIGVycm9yOiIsIGVycm9yKTsKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgeyBlcnJvcjogIkludGVybmFsIHNlcnZlciBlcnJvciIgfSwKICAgICAgeyBzdGF0dXM6IDUwMCB9CiAgICApOwogIH0KfQo=
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+export async function GET(request: NextRequest) {
+  try {
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    const siteId = request.nextUrl.searchParams.get("siteId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!siteId) {
+      return NextResponse.json(
+        { error: "siteId query parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site || site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Site not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    const brands = await db.citationBrand.findMany({
+      where: { siteId },
+      orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      include: {
+        _count: {
+          select: { citations: true },
+        },
+      },
+    });
+
+    return NextResponse.json({ brands });
+  } catch (error: unknown) {
+    console.error("List citation brands error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { siteId, name, isPrimary } = body;
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!siteId || !name) {
+      return NextResponse.json(
+        { error: "siteId and name are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!name.trim() || name.trim().length > 200) {
+      return NextResponse.json(
+        { error: "Brand name must be 1-200 characters" },
+        { status: 400 }
+      );
+    }
+
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site || site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Site not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    // Check if brand with same name already exists for this site
+    const existingBrand = await db.citationBrand.findFirst({
+      where: { siteId, name: name.trim() },
+    });
+
+    if (existingBrand) {
+      return NextResponse.json(
+        { error: "A brand with this name already exists for this site" },
+        { status: 409 }
+      );
+    }
+
+    // Count existing brands to auto-detect first brand
+    const brandCount = await db.citationBrand.count({
+      where: { siteId },
+    });
+
+    const shouldSetPrimary = isPrimary === true || brandCount === 0;
+
+    const brand = await db.citationBrand.create({
+      data: {
+        name: name.trim(),
+        siteId,
+        isPrimary: shouldSetPrimary,
+      },
+    });
+
+    return NextResponse.json({ brand }, { status: 201 });
+  } catch (error: unknown) {
+    console.error("Create citation brand error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
