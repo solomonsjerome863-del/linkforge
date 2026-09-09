@@ -1,1 +1,103 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmNvbnN0IFZBTElEX1NUQVRVU0VTID0gWwogICJuZXciLAogICJyZXZpZXdlZCIsCiAgIm91dHJlYWNoX3NlbnQiLAogICJjb252ZXJ0ZWQiLAogICJkaXNtaXNzZWQiLApdOwoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIFBPU1QocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICB0cnkgewogICAgY29uc3QgYm9keSA9IGF3YWl0IHJlcXVlc3QuanNvbigpOwogICAgY29uc3QgeyBpZHMsIHN0YXR1cyB9ID0gYm9keTsKICAgIGNvbnN0IHVzZXJJZCA9IHJlc29sdmVVc2VySWQoCiAgICAgIHJlcXVlc3QsCiAgICAgIHR5cGVvZiBib2R5LnVzZXJJZCA9PT0gInN0cmluZyIgPyBib2R5LnVzZXJJZCA6IG51bGwKICAgICk7CgogICAgaWYgKCF1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJBdXRoZW50aWNhdGlvbiByZXF1aXJlZC4gUGxlYXNlIGxvZyBpbiBhZ2Fpbi4iIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMSB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKCFpZHMgfHwgIXN0YXR1cykgewogICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgeyBlcnJvcjogImlkcyBhbmQgc3RhdHVzIGFyZSByZXF1aXJlZCIgfSwKICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgKTsKICAgIH0KCiAgICBpZiAoIUFycmF5LmlzQXJyYXkoaWRzKSB8fCBpZHMubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiaWRzIG11c3QgYmUgYSBub24tZW1wdHkgYXJyYXkiIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMCB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKGlkcy5sZW5ndGggPiA1MDApIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJCYXRjaCBzaXplIGV4Y2VlZHMgbWF4aW11bSBvZiA1MDAiIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMCB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKCFWQUxJRF9TVEFUVVNFUy5pbmNsdWRlcyhzdGF0dXMpKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiBgSW52YWxpZCBzdGF0dXMuIE11c3QgYmUgb25lIG9mOiAke1ZBTElEX1NUQVRVU0VTLmpvaW4oIiwgIil9YCB9LAogICAgICAgIHsgc3RhdHVzOiA0MDAgfQogICAgICApOwogICAgfQoKICAgIC8vIFZlcmlmeSBhbGwgY2l0YXRpb25zIGJlbG9uZyB0byBzaXRlcyBvd25lZCBieSB0aGUgdXNlcgogICAgY29uc3QgdXNlclNpdGVzID0gYXdhaXQgZGIuc2l0ZS5maW5kTWFueSh7CiAgICAgIHdoZXJlOiB7IHVzZXJJZCB9LAogICAgICBzZWxlY3Q6IHsgaWQ6IHRydWUgfSwKICAgIH0pOwoKICAgIGNvbnN0IHVzZXJTaXRlSWRzID0gbmV3IFNldCh1c2VyU2l0ZXMubWFwKChzKSA9PiBzLmlkKSk7CgogICAgY29uc3QgdGFyZ2V0Q2l0YXRpb25zID0gYXdhaXQgZGIuY2l0YXRpb24uZmluZE1hbnkoewogICAgICB3aGVyZTogeyBpZDogeyBpbjogaWRzIH0gfSwKICAgICAgc2VsZWN0OiB7IGlkOiB0cnVlLCBzaXRlSWQ6IHRydWUgfSwKICAgIH0pOwoKICAgIC8vIEZpbHRlciB0byBvbmx5IElEcyB0aGF0IGJlbG9uZyB0byB1c2VyJ3Mgc2l0ZXMKICAgIGNvbnN0IHZhbGlkSWRzID0gdGFyZ2V0Q2l0YXRpb25zCiAgICAgIC5maWx0ZXIoKGMpID0+IHVzZXJTaXRlSWRzLmhhcyhjLnNpdGVJZCkpCiAgICAgIC5tYXAoKGMpID0+IGMuaWQpOwoKICAgIGlmICh2YWxpZElkcy5sZW5ndGggPT09IDApIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJObyB2YWxpZCBjaXRhdGlvbnMgZm91bmQgdG8gdXBkYXRlIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDMgfQogICAgICApOwogICAgfQoKICAgIGNvbnN0IHVwZGF0ZURhdGE6IFJlY29yZDxzdHJpbmcsIHVua25vd24+ID0geyBzdGF0dXMgfTsKICAgIGlmIChzdGF0dXMgIT09ICJuZXciKSB7CiAgICAgIHVwZGF0ZURhdGEucmV2aWV3ZWRBdCA9IG5ldyBEYXRlKCk7CiAgICB9CgogICAgY29uc3QgcmVzdWx0ID0gYXdhaXQgZGIuY2l0YXRpb24udXBkYXRlTWFueSh7CiAgICAgIHdoZXJlOiB7IGlkOiB7IGluOiB2YWxpZElkcyB9IH0sCiAgICAgIGRhdGE6IHVwZGF0ZURhdGEsCiAgICB9KTsKCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oewogICAgICB1cGRhdGVkOiByZXN1bHQuY291bnQsCiAgICAgIHN0YXR1cywKICAgIH0pOwogIH0gY2F0Y2ggKGVycm9yOiB1bmtub3duKSB7CiAgICBjb25zb2xlLmVycm9yKCJCdWxrIHVwZGF0ZSBjaXRhdGlvbnMgZXJyb3I6IiwgZXJyb3IpOwogICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICB7IGVycm9yOiAiSW50ZXJuYWwgc2VydmVyIGVycm9yIiB9LAogICAgICB7IHN0YXR1czogNTAwIH0KICAgICk7CiAgfQp9Cg==
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+const VALID_STATUSES = [
+  "new",
+  "reviewed",
+  "outreach_sent",
+  "converted",
+  "dismissed",
+];
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { ids, status } = body;
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!ids || !status) {
+      return NextResponse.json(
+        { error: "ids and status are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { error: "ids must be a non-empty array" },
+        { status: 400 }
+      );
+    }
+
+    if (ids.length > 500) {
+      return NextResponse.json(
+        { error: "Batch size exceeds maximum of 500" },
+        { status: 400 }
+      );
+    }
+
+    if (!VALID_STATUSES.includes(status)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    // Verify all citations belong to sites owned by the user
+    const userSites = await db.site.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+
+    const userSiteIds = new Set(userSites.map((s) => s.id));
+
+    const targetCitations = await db.citation.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, siteId: true },
+    });
+
+    // Filter to only IDs that belong to user's sites
+    const validIds = targetCitations
+      .filter((c) => userSiteIds.has(c.siteId))
+      .map((c) => c.id);
+
+    if (validIds.length === 0) {
+      return NextResponse.json(
+        { error: "No valid citations found to update" },
+        { status: 403 }
+      );
+    }
+
+    const updateData: Record<string, unknown> = { status };
+    if (status !== "new") {
+      updateData.reviewedAt = new Date();
+    }
+
+    const result = await db.citation.updateMany({
+      where: { id: { in: validIds } },
+      data: updateData,
+    });
+
+    return NextResponse.json({
+      updated: result.count,
+      status,
+    });
+  } catch (error: unknown) {
+    console.error("Bulk update citations error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
