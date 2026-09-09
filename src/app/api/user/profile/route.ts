@@ -1,1 +1,54 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCi8qKgogKiBQQVRDSCAvYXBpL3VzZXIvcHJvZmlsZQogKiBVcGRhdGUgdXNlciBwcm9maWxlIGZpZWxkcyAobmFtZSwgZXRjLikKICogSWRlbnRpdHkgZnJvbSB0aGUgc2Vzc2lvbiBjb29raWUgKHRyYW5zaXRpb25hbCBib2R5IGZhbGxiYWNrIGlzCiAqIGxvZ2dlZCkg4oCUIGEgdXNlciBjYW4gb25seSBldmVyIHVwZGF0ZSB0aGVpciBvd24gcHJvZmlsZS4KICovCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBQQVRDSChyZXE6IE5leHRSZXF1ZXN0KSB7CiAgdHJ5IHsKICAgIGNvbnN0IGJvZHkgPSBhd2FpdCByZXEuanNvbigpOwogICAgY29uc3QgdXNlcklkID0gcmVzb2x2ZVVzZXJJZCgKICAgICAgcmVxLAogICAgICB0eXBlb2YgYm9keS51c2VySWQgPT09ICJzdHJpbmciID8gYm9keS51c2VySWQgOiBudWxsCiAgICApOwogICAgY29uc3QgeyBuYW1lIH0gPSBib2R5OwoKICAgIGlmICghdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQXV0aGVudGljYXRpb24gcmVxdWlyZWQuIFBsZWFzZSBsb2cgaW4gYWdhaW4uIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDEgfQogICAgICApOwogICAgfQoKICAgIGNvbnN0IHVwZGF0ZURhdGE6IFJlY29yZDxzdHJpbmcsIHN0cmluZz4gPSB7fTsKICAgIGlmIChuYW1lICE9PSB1bmRlZmluZWQpIHsKICAgICAgY29uc3QgdHJpbW1lZCA9IFN0cmluZyhuYW1lKS50cmltKCk7CiAgICAgIGlmICghdHJpbW1lZCkgewogICAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7IGVycm9yOiAiTmFtZSBjYW5ub3QgYmUgZW1wdHkiIH0sIHsgc3RhdHVzOiA0MDAgfSk7CiAgICAgIH0KICAgICAgdXBkYXRlRGF0YS5uYW1lID0gdHJpbW1lZDsKICAgIH0KCiAgICBpZiAoT2JqZWN0LmtleXModXBkYXRlRGF0YSkubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7IGVycm9yOiAiTm8gZmllbGRzIHRvIHVwZGF0ZSIgfSwgeyBzdGF0dXM6IDQwMCB9KTsKICAgIH0KCiAgICBjb25zdCB1c2VyID0gYXdhaXQgZGIudXNlci51cGRhdGUoewogICAgICB3aGVyZTogeyBpZDogdXNlcklkIH0sCiAgICAgIGRhdGE6IHVwZGF0ZURhdGEsCiAgICAgIHNlbGVjdDogeyBpZDogdHJ1ZSwgbmFtZTogdHJ1ZSwgZW1haWw6IHRydWUgfSwKICAgIH0pOwoKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7IHVzZXIgfSk7CiAgfSBjYXRjaCAoZXJyb3IpIHsKICAgIGNvbnNvbGUuZXJyb3IoIltQcm9maWxlXSBVcGRhdGUgZXJyb3I6IiwgZXJyb3IpOwogICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICB7IGVycm9yOiAiRmFpbGVkIHRvIHVwZGF0ZSBwcm9maWxlIiB9LAogICAgICB7IHN0YXR1czogNTAwIH0KICAgICk7CiAgfQp9Cg==
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+/**
+ * PATCH /api/user/profile
+ * Update user profile fields (name, etc.)
+ * Identity from the session cookie (transitional body fallback is
+ * logged) — a user can only ever update their own profile.
+ */
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const userId = resolveUserId(
+      req,
+      typeof body.userId === "string" ? body.userId : null
+    );
+    const { name } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    const updateData: Record<string, string> = {};
+    if (name !== undefined) {
+      const trimmed = String(name).trim();
+      if (!trimmed) {
+        return NextResponse.json({ error: "Name cannot be empty" }, { status: 400 });
+      }
+      updateData.name = trimmed;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+    }
+
+    const user = await db.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: { id: true, name: true, email: true },
+    });
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error("[Profile] Update error:", error);
+    return NextResponse.json(
+      { error: "Failed to update profile" },
+      { status: 500 }
+    );
+  }
+}
