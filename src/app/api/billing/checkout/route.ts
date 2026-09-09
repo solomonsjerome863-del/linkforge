@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       console.warn("[Checkout] PAYSTACK_SECRET_KEY not set — returning demo checkout URL");
       const demoUrl = `${appUrl}/?checkout=paystack&plan=${plan}`;
       return NextResponse.json({
-        url: demoUrl,
-        demoMode: true,
+        authorization_url: demoUrl,
+        demo: true,
         message: "Demo checkout — set PAYSTACK_SECRET_KEY to enable real payments.",
       });
     }
@@ -113,7 +113,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ url: initResult.data.authorization_url });
+    return NextResponse.json({
+      authorization_url: initResult.data.authorization_url,
+      reference: initResult.data.reference,
+    });
   } catch (error) {
     console.error("[Checkout] Error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
