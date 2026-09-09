@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
 
 /**
  * Refresh user subscription info from the database.
  * Called by the frontend after a successful checkout redirect.
+ * Identity is resolved from the session cookie (transitional
+ * client-supplied fallback is logged).
  */
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.nextUrl.searchParams.get("userId");
+    const userId = resolveUserId(req, req.nextUrl.searchParams.get("userId"));
     if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
     const user = await db.user.findUnique({
