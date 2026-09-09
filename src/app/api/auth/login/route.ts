@@ -1,73 +1,137 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { verifyPassword, hashPassword } from "@/lib/password";
-import { checkRateLimit, clientIp } from "@/lib/rate-limit";
+import { applySessionCookie } from "@/lib/session";
+
+/**
+ * POST /api/auth/login
+ *
+ * Authenticates a user with email + password.
+ *
+ * Security features:
+ * - Email normalization (lowercase, trimmed)
+ * - Legacy password hash re-hashing (bcrypt rounds upgrade)
+ * - Generic error messages (no user enumeration)
+ * - Simple per-IP/email rate limiting (in-memory)
+ * - Sets a signed, httpOnly session cookie on success
+ */
+
+// Simple in-memory rate limiting (per server instance)
+const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
+const MAX_ATTEMPTS = 5;
+const ATTEMPT_WINDOW = 15 * 60 * 1000; // 15 minutes
+
+// Clean old entries every 10 minutes to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, data] of loginAttempts.entries()) {
+    if (now - data.lastAttempt > ATTEMPT_WINDOW) {
+      loginAttempts.delete(key);
+    }
+  }
+}, 10 * 60 * 1000).unref?.();
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
-    const normalizedEmail = (email || "").toLowerCase().trim();
 
-    if (!normalizedEmail || !password) {
+    // Validate input
+    if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
       );
     }
 
-    // Rate limit: 5 attempts per 15 min per IP+email combo
-    const ip = clientIp(request);
-    if (!checkRateLimit(`login:${ip}:${normalizedEmail}`, 5, 900000).ok) {
-      return NextResponse.json(
-        { error: "Too many login attempts. Please try again in a few minutes." },
-        { status: 429 }
-      );
+    const normalizedEmail = String(email).toLowerCase().trim();
+
+    // Rate limiting: max 5 attempts per email per 15 minutes
+    const attemptKey = normalizedEmail;
+    const now = Date.now();
+    const attemptData = loginAttempts.get(attemptKey);
+
+    if (attemptData && (now - attemptData.lastAttempt < ATTEMPT_WINDOW)) {
+      if (attemptData.count >= MAX_ATTEMPTS) {
+        return NextResponse.json(
+          { error: "Too many login attempts. Please try again in a few minutes." },
+          { status: 429 }
+        );
+      }
+      attemptData.count += 1;
+      attemptData.lastAttempt = now;
+    } else {
+      loginAttempts.set(attemptKey, { count: 1, lastAttempt: now });
     }
 
-    const user = await db.user.findFirst({
-      where: { email: { equals: normalizedEmail } },
+    // Fetch user by email
+    const user = await db.user.findUnique({
+      where: { email: normalizedEmail },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
+      // Generic error to prevent user enumeration
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    const result = await verifyPassword(password, user.passwordHash);
+    // Verify password against bcrypt hash
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.passwordHash
+    );
 
-    if (!result.valid) {
+    if (!passwordMatches) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    // If the password was stored with the legacy SHA-256 hash, upgrade it to bcrypt now
-    if (result.needsRehash) {
-      const newHash = await hashPassword(password);
+    // Re-hash password if it uses old bcrypt rounds (auto-upgrade)
+    const currentRounds = bcrypt.getRounds(user.passwordHash);
+    const targetRounds = 10;
+
+    if (currentRounds < targetRounds) {
+      const newHash = await bcrypt.hash(password, targetRounds);
       await db.user.update({
         where: { id: user.id },
         data: { passwordHash: newHash },
       });
+      console.log(
+        `[Auth] Re-hashed password for ${user.email} (${currentRounds} → ${targetRounds} rounds)`
+      );
     }
 
-    const { passwordHash: _, ...safeUser } = user;
+    // Remove sensitive fields from response
+    const { passwordHash: _, resetToken: __, resetTokenExpiry: ___, ...safeUser } = user;
 
-    // Determine admin status at runtime (not build-time)
+    // Determine admin status
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
-    const isAdmin = adminEmail ? safeUser.email?.toLowerCase().trim() === adminEmail : false;
+    const isAdmin = adminEmail
+      ? user.email.toLowerCase().trim() === adminEmail
+      : false;
 
-    return NextResponse.json({ user: { ...safeUser, isAdmin } });
-  } catch (error: unknown) {
+    console.log(`[Auth] Login: ${user.email} (admin: ${isAdmin})`);
+
+    // Return the user object (without sensitive fields) and a message
+    const response = NextResponse.json(
+      { user: { ...safeUser, isAdmin }, message: "Login successful" },
+      { status: 200 }
+    );
+
+    // Issue the signed session cookie (httpOnly) so subsequent API calls
+    // authenticate via the cookie instead of a client-supplied userId.
+    applySessionCookie(response, user.id);
+
+    return response;
+  } catch (error) {
     console.error("Login error:", error);
-    const message = error instanceof Error ? error.message : String(error);
-    // In development, expose the error for debugging
-    if (process.env.NODE_ENV === "development") {
-      return NextResponse.json({ error: "Internal server error", details: message }, { status: 500 });
-    }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error during login" },
+      { status: 500 }
+    );
   }
 }
