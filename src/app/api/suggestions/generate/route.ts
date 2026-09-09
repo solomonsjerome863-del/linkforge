@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
+import { resolveUserId } from "@/lib/session";
 import { generateAnchorTextWithLLM } from "@/lib/llm-anchor";
 
 const STOP_WORDS = new Set([
@@ -31,14 +31,6 @@ function extractKeywords(text: string): string[] {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
     .map(([w]) => w);
-}
-
-function keywordOverlap(kw1: string[], kw2: string[]): number {
-  const set1 = new Set(kw1);
-  const set2 = new Set(kw2);
-  const common = [...set1].filter((w) => set2.has(w));
-  const allUnique = new Set([...set1, ...set2]);
-  return allUnique.size > 0 ? common.length / allUnique.size : 0;
 }
 
 function pickAnchorText(targetTitle: string, targetHeadings: string[]): string {
@@ -75,29 +67,39 @@ function generateSurroundingText(textContent: string): string {
   return (start > 0 ? "..." : "") + sentence.slice(start, end) + (end < sentence.length ? "..." : "");
 }
 
+/**
+ * POST /api/suggestions/generate
+ * Generates internal-link suggestions for a site (TF-overlap scoring +
+ * LLM anchor enhancement for the top candidates). Consumes AI resources,
+ * so identity from the session cookie (transitional body fallback is
+ * logged) and site ownership are MANDATORY.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { siteId, userId } = body;
+    const { siteId } = body;
 
     if (!siteId) {
       return NextResponse.json({ error: "siteId is required" }, { status: 400 });
     }
 
-    if (userId) {
-      const user = await validateUser(userId);
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 401 });
-      }
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
-    const site = await db.site.findUnique({ where: { id: siteId } });
-    if (!site) {
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+      select: { userId: true },
+    });
+    if (!site || site.userId !== userId) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
-    }
-
-    if (userId && site.userId !== userId) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     const pages = await db.page.findMany({
