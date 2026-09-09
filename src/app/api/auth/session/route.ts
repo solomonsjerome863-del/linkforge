@@ -1,37 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
+import { resolveUserId } from "@/lib/session";
 
+/**
+ * GET /api/session
+ *
+ * Returns the full user data for the authenticated user.
+ * Used by the client to restore session state on page load.
+ *
+ * User identity: resolved from the httpOnly session cookie first
+ * (transitional fallback to client-supplied userId is logged).
+ */
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId");
+    const { searchParams } = new URL(request.url);
+    const userId = resolveUserId(request, searchParams.get("userId"));
 
     if (!userId) {
-      return NextResponse.json({ error: "userId query parameter is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
-    const user = await validateUser(userId);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
-    const userWithSites = await db.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: userId },
-      include: {
-        sites: {
-          orderBy: { createdAt: "desc" },
-        },
-      },
+      include: { sites: { include: { pages: true } } },
     });
 
-    if (!userWithSites) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const { passwordHash: _, ...safeUser } = userWithSites;
-    return NextResponse.json({ user: safeUser });
-  } catch (error: unknown) {
-    console.error("Session error:", error);
+    // Remove sensitive fields
+    const { passwordHash: _, resetToken: __, resetTokenExpiry: ___, ...safeUser } = user;
+
+    return NextResponse.json({ user: safeUser }, { status: 200 });
+  } catch (error) {
+    console.error("Session fetch error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
