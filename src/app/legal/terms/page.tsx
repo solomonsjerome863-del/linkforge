@@ -6,7 +6,7 @@ const sections: { title: string; body: string[] }[] = [
   {
     title: "1. About these Terms",
     body: [
-      "These Terms of Service (\"Terms\") govern your use of LinkForge, an AI-powered internal linking and citation monitoring service provided through linkforge.digital (the \"Service\"), operated by LinkForge (\"we\", \"us\", \"our\").",
+      "These Terms of Service (\"Terms\") govern your use of LinkForge, an AI-powered internal linking and citation monitoring service provided through linkforge.digital (the \"Service\"), operated by Jerome Solomon as a sole proprietor in South Africa (\"we\", \"us\", \"our\").",
       "By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.",
     ],
   },
@@ -68,9 +68,11 @@ const sections: { title: string; body: string[] }[] = [
     ],
   },
   {
-    title: "10. Governing law",
+    title: "10. Governing law and disputes",
     body: [
-      "These Terms are governed by the laws of South Africa. Disputes will be handled in the courts of South Africa, unless mandatory consumer-protection law in your country gives you a different forum.",
+      "These Terms are governed by the laws of South Africa, applied without regard to conflict-of-law principles.",
+      "If you reside in the EU, UK, US or anywhere else and mandatory consumer-protection law in your country gives you rights that cannot be waived by agreement, those rights are unaffected — in all other respects these Terms apply as written.",
+      "We will first attempt to resolve any dispute informally by email. Any dispute that cannot be resolved may be brought before the courts of South Africa, except where your local consumer law gives you the right to bring proceedings in your own jurisdiction.",
     ],
   },
   {
