@@ -1,81 +1,106 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { hashPassword } from "@/lib/password";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
+import { applySessionCookie } from "@/lib/session";
 
-function stripPasswordHash<T extends { passwordHash?: string | null }>(obj: T): Omit<T, "passwordHash"> {
-  const { passwordHash: _, ...rest } = obj;
-  return rest;
-}
-
+/**
+ * POST /api/auth/signup
+ *
+ * Creates a new user account.
+ *
+ * - Normalizes email (lowercase/trim) and rejects duplicates
+ * - Hashes the password with bcrypt (10 rounds)
+ * - Marks the account email-verified (verification emails not yet wired)
+ * - Applies simple per-IP rate limiting
+ * - Issues a signed, httpOnly session cookie on success
+ *
+ * NOTE: no demo data is seeded anymore — new users start clean and the
+ * onboarding wizard drives their first real site.
+ */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, name, password } = body;
-    const normalizedEmail = email.toLowerCase().trim();
-
     // Rate limit: 5 signups per hour per IP
     const ip = clientIp(request);
-    if (!checkRateLimit(`signup:${ip}`, 5, 3600000).ok) {
+    const limit = checkRateLimit(`signup:${ip}`, 5, 60 * 60 * 1000);
+    if (!limit.ok) {
       return NextResponse.json(
-        { error: "Too many sign-up attempts. Please try again later." },
+        { error: `Too many signup attempts. Please try again in ${Math.ceil(limit.retryAfterSeconds / 60)} minutes.` },
         { status: 429 }
       );
     }
 
-    // Validate inputs
-    if (!normalizedEmail || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    const body = await request.json();
+    const { name, email, password } = body;
+
+    // Validate input
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { error: "Name, email and password are required" },
+        { status: 400 }
+      );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(normalizedEmail)) {
-      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+    if (typeof password !== "string" || password.length < 6) {
+      return NextResponse.json(
+        { error: "Password must be at least 6 characters" },
+        { status: 400 }
+      );
     }
 
-    if (password.length < 6) {
-      return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
-    }
+    // Normalize email
+    const normalizedEmail = String(email).toLowerCase().trim();
 
-    if (password.length > 128) {
-      return NextResponse.json({ error: "Password is too long" }, { status: 400 });
-    }
+    // Prevent duplicate accounts
+    const existingUser = await db.user.findUnique({
+      where: { email: normalizedEmail },
+    });
 
-    if (name && name.length > 200) {
-      return NextResponse.json({ error: "Name is too long" }, { status: 400 });
-    }
-
-    // Check if user already exists
-    const existingUser = await db.user.findFirst({ where: { email: { equals: normalizedEmail } } });
     if (existingUser) {
-      return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
+      return NextResponse.json(
+        { error: "An account with this email already exists. Please log in instead." },
+        { status: 409 }
+      );
     }
 
-    // Create user
-    // Note: accounts are auto-verified for now — email verification is a
-    // separate work item once the transactional email provider is live.
-    // No demo data is seeded: the onboarding wizard drives the user's real
-    // first site, and demo sites would consume the Starter 1-site allowance.
+    // Hash password and create the account
+    const passwordHash = await bcrypt.hash(password, 10);
+
     const user = await db.user.create({
       data: {
+        name: String(name).trim().slice(0, 100),
         email: normalizedEmail,
-        name: name || null,
-        passwordHash: await hashPassword(password),
-        emailVerified: true,
+        passwordHash,
+        plan: "starter",
+        emailVerified: true, // auto-verified for now (no verification email service yet)
       },
     });
 
-    const safeUser = stripPasswordHash(user);
+    // Remove sensitive fields from response
+    const { passwordHash: _, ...safeUser } = user;
 
-    // Determine admin status at runtime (not build-time)
+    // Determine admin status
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
-    const isAdmin = adminEmail ? safeUser.email?.toLowerCase().trim() === adminEmail : false;
+    const isAdmin = adminEmail
+      ? user.email.toLowerCase().trim() === adminEmail
+      : false;
 
-    return NextResponse.json({
-      user: { ...safeUser, isAdmin },
-    }, { status: 201 });
-  } catch (error: unknown) {
+    console.log(`[Auth] New signup: ${user.email} (admin: ${isAdmin})`);
+
+    const response = NextResponse.json(
+      { user: { ...safeUser, isAdmin } },
+      { status: 200 }
+    );
+
+    // Issue the signed session cookie so the user is immediately logged in
+    applySessionCookie(response, user.id);
+
+    return response;
+  } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error during signup" },
+      { status: 500 }
+    );
   }
 }
