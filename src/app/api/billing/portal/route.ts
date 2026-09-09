@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { disableSubscription } from "@/lib/paystack";
+import { resolveUserId } from "@/lib/session";
 
 /**
- * GET /api/billing/portal?userId=xxx
- * Returns the user's current subscription info
+ * GET /api/billing/portal
+ * Returns the user's current subscription info.
+ * Identity is resolved from the session cookie (transitional
+ * client-supplied fallback is logged).
  */
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId");
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
     if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
     const user = await db.user.findUnique({
@@ -50,13 +56,23 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/billing/portal
- * Cancel the user's subscription (disable auto-renewal)
+ * Cancel the user's subscription (disable auto-renewal).
+ * Identity is resolved from the session cookie (transitional
+ * client-supplied fallback is logged).
  */
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json();
+    const body = await request.json();
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
+
     if (!userId) {
-      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
     const user = await db.user.findUnique({ where: { id: userId } });
