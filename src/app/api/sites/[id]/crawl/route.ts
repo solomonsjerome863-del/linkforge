@@ -1,25 +1,28 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
+import { resolveUserId } from "@/lib/session";
 
 // Vercel Hobby caps at 10s regardless, but after() gets the remaining budget
 export const maxDuration = 60;
 
+/**
+ * POST /api/sites/[id]/crawl
+ * Starts a background crawl for a site. Consumes server resources,
+ * so identity from the session cookie (transitional query fallback is
+ * logged) and site ownership are MANDATORY.
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const userId = request.nextUrl.searchParams.get("userId");
 
     // ── Auth ──
-    if (userId) {
-      const user = await validateUser(userId);
-      if (!user) {
-        console.error(`[Crawl] Auth failed: user ${userId} not found`);
-        return NextResponse.json({ error: "User not found" }, { status: 401 });
-      }
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    if (!userId) {
+      console.error(`[Crawl] Auth failed: no valid session`);
+      return NextResponse.json({ error: "Authentication required. Please log in again." }, { status: 401 });
     }
 
     // ── Find site ──
@@ -28,8 +31,8 @@ export async function POST(
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
     }
 
-    // ── Ownership check ──
-    if (userId && site.userId !== userId) {
+    // ── Ownership check (mandatory) ──
+    if (site.userId !== userId) {
       return NextResponse.json({ error: "You do not have permission to crawl this site" }, { status: 403 });
     }
 
