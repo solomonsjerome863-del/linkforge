@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { resolveUserId } from "@/lib/session";
-import { isOnTrial, getEffectiveLimits } from "@/lib/types";
+import { isOnTrial, getEffectiveLimits, type PlanType } from "@/lib/types";
 
 /**
  * GET /api/sites — list a user's sites (cookie-authenticated)
  * POST /api/sites — create a new site with server-side plan-limit checks
+ *
+ * GET response contract (client reads data.sites): { sites: [...] }
+ * POST response contract (client reads data.site): { site: {...} }
  *
  * User identity: resolved from the httpOnly session cookie first
  * (transitional fallback to client-supplied userId is logged).
@@ -25,29 +28,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const user = await db.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        plan: true,
-        subscriptionStatus: true,
-        trialEndsAt: true,
-        usageLinks: true,
-        usageQueries: true,
-        sites: {
-          orderBy: { createdAt: "desc" },
-          include: { pages: { select: { id: true, status: true } } },
-        },
-      },
+    const sites = await db.site.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ user }, { status: 200 });
+    return NextResponse.json({ sites }, { status: 200 });
   } catch (error) {
     console.error("Sites fetch error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -65,7 +51,6 @@ export async function POST(request: NextRequest) {
       typeof body.userId === "string" ? body.userId : null
     );
 
-    // ── Validation ──
     if (!userId) {
       return NextResponse.json(
         { error: "Authentication required. Please log in again." },
@@ -111,8 +96,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const onTrial = isOnTrial(user.subscriptionStatus, user.trialEndsAt);
-    const effectiveLimits = getEffectiveLimits(user.plan, user.subscriptionStatus, user.trialEndsAt);
+    const limitContext = {
+      plan: user.plan as PlanType,
+      subscriptionStatus: user.subscriptionStatus,
+      trialEndsAt: user.trialEndsAt,
+    };
+    const onTrial = isOnTrial(limitContext);
+    const effectiveLimits = getEffectiveLimits(limitContext);
     const siteCount = user._count.sites;
 
     if (effectiveLimits.maxSites !== -1 && siteCount >= effectiveLimits.maxSites) {
@@ -135,7 +125,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(`[Sites] ${user.email} added site ${normalizedUrl} (${onTrial ? "trial" : user.plan} plan)`);
+    console.log(`[Sites] ${user.email} added site ${normalizedUrl}`);
 
     return NextResponse.json({ site }, { status: 201 });
   } catch (error) {
