@@ -1,1 +1,1 @@
-Deploy retry at 2026-09-09T18:47:21.5921902+02:00 (UTC). Latest main includes sites + checkout contract fixes.
+Deploy retry 2026-09-09T19:09:17.5309863+02:00 (UTC) - attempt via REST
