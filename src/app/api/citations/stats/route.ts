@@ -1,1 +1,89 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBHRVQocmVxdWVzdDogTmV4dFJlcXVlc3QpIHsKICB0cnkgewogICAgY29uc3QgdXNlcklkID0gcmVzb2x2ZVVzZXJJZChyZXF1ZXN0LCByZXF1ZXN0Lm5leHRVcmwuc2VhcmNoUGFyYW1zLmdldCgidXNlcklkIikpOwogICAgY29uc3Qgc2l0ZUlkID0gcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoInNpdGVJZCIpOwoKICAgIGlmICghdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQXV0aGVudGljYXRpb24gcmVxdWlyZWQuIFBsZWFzZSBsb2cgaW4gYWdhaW4uIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDEgfQogICAgICApOwogICAgfQoKICAgIGlmICghc2l0ZUlkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAic2l0ZUlkIHF1ZXJ5IHBhcmFtZXRlciBpcyByZXF1aXJlZCIgfSwKICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBWYWxpZGF0ZSBzaXRlIG93bmVyc2hpcAogICAgY29uc3Qgc2l0ZSA9IGF3YWl0IGRiLnNpdGUuZmluZFVuaXF1ZSh7CiAgICAgIHdoZXJlOiB7IGlkOiBzaXRlSWQgfSwKICAgIH0pOwoKICAgIGlmICghc2l0ZSB8fCBzaXRlLnVzZXJJZCAhPT0gdXNlcklkKSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiU2l0ZSBub3QgZm91bmQgb3IgYWNjZXNzIGRlbmllZCIgfSwKICAgICAgICB7IHN0YXR1czogNDAzIH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBSdW4gYWdncmVnYXRlIHF1ZXJpZXMgaW4gcGFyYWxsZWwKICAgIGNvbnN0IFt0b3RhbCwgbmV3Q291bnQsIHVubGlua2VkLCBsaW5rZWQsIGF2Z1Njb3JlUmVzdWx0LCBjaXRhdGlvbnNdID0KICAgICAgYXdhaXQgUHJvbWlzZS5hbGwoWwogICAgICAgIGRiLmNpdGF0aW9uLmNvdW50KHsgd2hlcmU6IHsgc2l0ZUlkIH0gfSksCiAgICAgICAgZGIuY2l0YXRpb24uY291bnQoeyB3aGVyZTogeyBzaXRlSWQsIHN0YXR1czogIm5ldyIgfSB9KSwKICAgICAgICBkYi5jaXRhdGlvbi5jb3VudCh7IHdoZXJlOiB7IHNpdGVJZCwgaGFzQmFja2xpbms6IGZhbHNlIH0gfSksCiAgICAgICAgZGIuY2l0YXRpb24uY291bnQoeyB3aGVyZTogeyBzaXRlSWQsIGhhc0JhY2tsaW5rOiB0cnVlIH0gfSksCiAgICAgICAgZGIuY2l0YXRpb24uYWdncmVnYXRlKHsKICAgICAgICAgIHdoZXJlOiB7IHNpdGVJZCB9LAogICAgICAgICAgX2F2ZzogeyBvcHBvcnR1bml0eVNjb3JlOiB0cnVlIH0sCiAgICAgICAgfSksCiAgICAgICAgZGIuY2l0YXRpb24uZmluZE1hbnkoewogICAgICAgICAgd2hlcmU6IHsgc2l0ZUlkIH0sCiAgICAgICAgICBzZWxlY3Q6IHsKICAgICAgICAgICAgc291cmNlVHlwZTogdHJ1ZSwKICAgICAgICAgICAgc3RhdHVzOiB0cnVlLAogICAgICAgICAgfSwKICAgICAgICB9KSwKICAgICAgXSk7CgogICAgLy8gR3JvdXAgYnkgc291cmNlIHR5cGUKICAgIGNvbnN0IGJ5U291cmNlOiBSZWNvcmQ8c3RyaW5nLCBudW1iZXI+ID0ge307CiAgICBmb3IgKGNvbnN0IGNpdGF0aW9uIG9mIGNpdGF0aW9ucykgewogICAgICBjb25zdCBzdCA9IGNpdGF0aW9uLnNvdXJjZVR5cGUgfHwgIm90aGVyIjsKICAgICAgYnlTb3VyY2Vbc3RdID0gKGJ5U291cmNlW3N0XSB8fCAwKSArIDE7CiAgICB9CgogICAgLy8gR3JvdXAgYnkgc3RhdHVzCiAgICBjb25zdCBieVN0YXR1czogUmVjb3JkPHN0cmluZywgbnVtYmVyPiA9IHt9OwogICAgZm9yIChjb25zdCBjaXRhdGlvbiBvZiBjaXRhdGlvbnMpIHsKICAgICAgY29uc3QgcyA9IGNpdGF0aW9uLnN0YXR1cyB8fCAibmV3IjsKICAgICAgYnlTdGF0dXNbc10gPSAoYnlTdGF0dXNbc10gfHwgMCkgKyAxOwogICAgfQoKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7CiAgICAgIHRvdGFsLAogICAgICBuZXc6IG5ld0NvdW50LAogICAgICB1bmxpbmtlZCwKICAgICAgbGlua2VkLAogICAgICBieVNvdXJjZSwKICAgICAgYnlTdGF0dXMsCiAgICAgIGF2Z09wcG9ydHVuaXR5U2NvcmU6CiAgICAgICAgYXZnU2NvcmVSZXN1bHQuX2F2Zy5vcHBvcnR1bml0eVNjb3JlICE9IG51bGwKICAgICAgICAgID8gTWF0aC5yb3VuZChhdmdTY29yZVJlc3VsdC5fYXZnLm9wcG9ydHVuaXR5U2NvcmUgKiAxMCkgLyAxMAogICAgICAgICAgOiAwLAogICAgfSk7CiAgfSBjYXRjaCAoZXJyb3I6IHVua25vd24pIHsKICAgIGNvbnNvbGUuZXJyb3IoIkNpdGF0aW9uIHN0YXRzIGVycm9yOiIsIGVycm9yKTsKICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgeyBlcnJvcjogIkludGVybmFsIHNlcnZlciBlcnJvciIgfSwKICAgICAgeyBzdGF0dXM6IDUwMCB9CiAgICApOwogIH0KfQo=
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+export async function GET(request: NextRequest) {
+  try {
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    const siteId = request.nextUrl.searchParams.get("siteId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!siteId) {
+      return NextResponse.json(
+        { error: "siteId query parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate site ownership
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+    });
+
+    if (!site || site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Site not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    // Run aggregate queries in parallel
+    const [total, newCount, unlinked, linked, avgScoreResult, citations] =
+      await Promise.all([
+        db.citation.count({ where: { siteId } }),
+        db.citation.count({ where: { siteId, status: "new" } }),
+        db.citation.count({ where: { siteId, hasBacklink: false } }),
+        db.citation.count({ where: { siteId, hasBacklink: true } }),
+        db.citation.aggregate({
+          where: { siteId },
+          _avg: { opportunityScore: true },
+        }),
+        db.citation.findMany({
+          where: { siteId },
+          select: {
+            sourceType: true,
+            status: true,
+          },
+        }),
+      ]);
+
+    // Group by source type
+    const bySource: Record<string, number> = {};
+    for (const citation of citations) {
+      const st = citation.sourceType || "other";
+      bySource[st] = (bySource[st] || 0) + 1;
+    }
+
+    // Group by status
+    const byStatus: Record<string, number> = {};
+    for (const citation of citations) {
+      const s = citation.status || "new";
+      byStatus[s] = (byStatus[s] || 0) + 1;
+    }
+
+    return NextResponse.json({
+      total,
+      new: newCount,
+      unlinked,
+      linked,
+      bySource,
+      byStatus,
+      avgOpportunityScore:
+        avgScoreResult._avg.opportunityScore != null
+          ? Math.round(avgScoreResult._avg.opportunityScore * 10) / 10
+          : 0,
+    });
+  } catch (error: unknown) {
+    console.error("Citation stats error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
