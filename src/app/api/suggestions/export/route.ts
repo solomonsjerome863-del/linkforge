@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
+import { resolveUserId } from "@/lib/session";
 
+/**
+ * GET /api/suggestions/export?siteId=xxx[&format=csv|json]
+ * Exports a site's suggestions as CSV or JSON.
+ * Identity from the session cookie (transitional query fallback is
+ * logged); the target site MUST belong to the authenticated user.
+ */
 export async function GET(request: NextRequest) {
   try {
     const siteId = request.nextUrl.searchParams.get("siteId");
-    const userId = request.nextUrl.searchParams.get("userId");
     const format = request.nextUrl.searchParams.get("format") || "csv";
 
     if (!siteId) {
@@ -15,14 +20,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (userId) {
-      const user = await validateUser(userId);
-      if (!user) {
-        return NextResponse.json(
-          { error: "User not found" },
-          { status: 401 }
-        );
-      }
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    // Verify the site belongs to the authenticated user (mandatory)
+    const site = await db.site.findUnique({
+      where: { id: siteId },
+      select: { userId: true },
+    });
+    if (!site || site.userId !== userId) {
+      return NextResponse.json({ error: "Site not found" }, { status: 404 });
     }
 
     const suggestions = await db.linkSuggestion.findMany({
