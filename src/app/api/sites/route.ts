@@ -1,104 +1,145 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { validateUser } from "@/lib/api-auth";
-import { getEffectiveLimits, isOnTrial, type PlanType } from "@/lib/types";
+import { resolveUserId } from "@/lib/session";
+import { isOnTrial, getEffectiveLimits } from "@/lib/types";
+
+/**
+ * GET /api/sites — list a user's sites (cookie-authenticated)
+ * POST /api/sites — create a new site with server-side plan-limit checks
+ *
+ * User identity: resolved from the httpOnly session cookie first
+ * (transitional fallback to client-supplied userId is logged).
+ */
+
+// ─── GET ────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get("userId");
+    const { searchParams } = new URL(request.url);
+    const userId = resolveUserId(request, searchParams.get("userId"));
 
     if (!userId) {
-      return NextResponse.json({ error: "userId query parameter is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
-    const user = await validateUser(userId);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
-    const sites = await db.site.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        _count: {
-          select: { pages: true, suggestions: true },
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        plan: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        usageLinks: true,
+        usageQueries: true,
+        sites: {
+          orderBy: { createdAt: "desc" },
+          include: { pages: { select: { id: true, status: true } } },
         },
       },
     });
 
-    return NextResponse.json({ sites });
-  } catch (error: unknown) {
-    console.error("List sites error:", error);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user }, { status: 200 });
+  } catch (error) {
+    console.error("Sites fetch error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
+// ─── POST ───────────────────────────────────────────────────────────
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, name, url, platform } = body;
+    const { siteUrl, siteName } = body;
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
 
-    if (!userId || !name || !url) {
-      return NextResponse.json({ error: "userId, name, and url are required" }, { status: 400 });
+    // ── Validation ──
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
     }
 
-    // Validate URL format
-    if (url.length > 2048) {
-      return NextResponse.json({ error: "URL is too long" }, { status: 400 });
+    if (!siteUrl) {
+      return NextResponse.json(
+        { error: "Missing required field: siteUrl" },
+        { status: 400 }
+      );
     }
 
-    let parsedUrl: URL;
+    let normalizedUrl: string;
     try {
-      parsedUrl = new URL(url);
-    } catch {
-      return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
-    }
-
-    if (parsedUrl.protocol !== "https:") {
-      return NextResponse.json({ error: "URL must start with https://" }, { status: 400 });
-    }
-
-    const user = await validateUser(userId);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
-    }
-
-    // ─── Site limit enforcement (server-side, authoritative) ────────────────
-    // Trial rule: trial accounts are capped at 1 site regardless of the plan
-    // being trialed. maxSites === -1 means unlimited (Enterprise).
-    const limitCtx = {
-      plan: user.plan as PlanType,
-      subscriptionStatus: user.subscriptionStatus,
-      trialEndsAt: user.trialEndsAt,
-    };
-    const limits = getEffectiveLimits(limitCtx);
-
-    if (limits.maxSites !== -1) {
-      const siteCount = await db.site.count({ where: { userId } });
-      if (siteCount >= limits.maxSites) {
-        const message = isOnTrial(limitCtx)
-          ? "Trial accounts are limited to 1 site. Upgrade your subscription to add more sites."
-          : `Site limit reached (${limits.maxSites} sites on the ${user.plan} plan). Upgrade to add more sites.`;
-        return NextResponse.json(
-          { error: message, code: "SITE_LIMIT_REACHED", maxSites: limits.maxSites, onTrial: true },
-          { status: 403 }
-        );
+      const parsed = new URL(siteUrl);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        throw new Error("Unsupported protocol");
       }
+      normalizedUrl = parsed.origin;
+    } catch {
+      return NextResponse.json(
+        { error: "Please enter a valid website URL (e.g., https://example.com)" },
+        { status: 400 }
+      );
     }
 
+    // ── Plan / trial limit enforcement ──
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        plan: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        _count: { select: { sites: true } },
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const onTrial = isOnTrial(user.subscriptionStatus, user.trialEndsAt);
+    const effectiveLimits = getEffectiveLimits(user.plan, user.subscriptionStatus, user.trialEndsAt);
+    const siteCount = user._count.sites;
+
+    if (effectiveLimits.maxSites !== -1 && siteCount >= effectiveLimits.maxSites) {
+      const message = onTrial
+        ? "Trial accounts are limited to 1 site. Upgrade your subscription to add more sites."
+        : `Site limit reached (${siteCount} of ${effectiveLimits.maxSites} sites on the ${user.plan} plan). Upgrade to add more sites.`;
+      return NextResponse.json(
+        { error: message, code: "SITE_LIMIT_REACHED" },
+        { status: 403 }
+      );
+    }
+
+    // ── Create the site ──
     const site = await db.site.create({
       data: {
         userId,
-        name,
-        url,
-        platform: ["wordpress", "shopify", "webflow", "ghost", "custom"].includes(platform) ? platform : "wordpress",
+        url: normalizedUrl,
+        name: siteName ? String(siteName).trim().slice(0, 100) : normalizedUrl,
         status: "pending",
       },
     });
 
+    console.log(`[Sites] ${user.email} added site ${normalizedUrl} (${onTrial ? "trial" : user.plan} plan)`);
+
     return NextResponse.json({ site }, { status: 201 });
-  } catch (error: unknown) {
-    console.error("Create site error:", error);
+  } catch (error) {
+    console.error("Site create error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
