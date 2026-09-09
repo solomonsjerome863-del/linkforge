@@ -1,1 +1,155 @@
-aW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gIm5leHQvc2VydmVyIjsKaW1wb3J0IHsgZGIgfSBmcm9tICJAL2xpYi9kYiI7CmltcG9ydCB7IHJlc29sdmVVc2VySWQgfSBmcm9tICJAL2xpYi9zZXNzaW9uIjsKCmNvbnN0IFZBTElEX1NUQVRVU0VTID0gWwogICJuZXciLAogICJyZXZpZXdlZCIsCiAgIm91dHJlYWNoX3NlbnQiLAogICJjb252ZXJ0ZWQiLAogICJkaXNtaXNzZWQiLApdOwoKY29uc3QgVkFMSURfU0VOVElNRU5UUyA9IFsicG9zaXRpdmUiLCAibmV1dHJhbCIsICJuZWdhdGl2ZSJdOwoKZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIFBBVENIKAogIHJlcXVlc3Q6IE5leHRSZXF1ZXN0LAogIHsgcGFyYW1zIH06IHsgcGFyYW1zOiBQcm9taXNlPHsgaWQ6IHN0cmluZyB9PiB9CikgewogIHRyeSB7CiAgICBjb25zdCB7IGlkIH0gPSBhd2FpdCBwYXJhbXM7CiAgICBjb25zdCBib2R5ID0gYXdhaXQgcmVxdWVzdC5qc29uKCk7CiAgICBjb25zdCB7IHN0YXR1cywgaGFzQmFja2xpbmssIHNlbnRpbWVudCB9ID0gYm9keTsKICAgIGNvbnN0IHVzZXJJZCA9IHJlc29sdmVVc2VySWQoCiAgICAgIHJlcXVlc3QsCiAgICAgIHR5cGVvZiBib2R5LnVzZXJJZCA9PT0gInN0cmluZyIgPyBib2R5LnVzZXJJZCA6IG51bGwKICAgICk7CgogICAgaWYgKCF1c2VySWQpIHsKICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgIHsgZXJyb3I6ICJBdXRoZW50aWNhdGlvbiByZXF1aXJlZC4gUGxlYXNlIGxvZyBpbiBhZ2Fpbi4iIH0sCiAgICAgICAgeyBzdGF0dXM6IDQwMSB9CiAgICAgICk7CiAgICB9CgogICAgaWYgKCFzdGF0dXMgJiYgaGFzQmFja2xpbmsgPT09IHVuZGVmaW5lZCAmJiAhc2VudGltZW50KSB7CiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbigKICAgICAgICB7IGVycm9yOiAiQXQgbGVhc3Qgb25lIGZpZWxkIHRvIHVwZGF0ZSBpcyByZXF1aXJlZCAoc3RhdHVzLCBoYXNCYWNrbGluaywgc2VudGltZW50KSIgfSwKICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBWYWxpZGF0ZSBvd25lcnNoaXAgdGhyb3VnaCBjaXRhdGlvbiAtPiBicmFuZCAtPiBzaXRlIC0+IHVzZXIKICAgIGNvbnN0IGNpdGF0aW9uID0gYXdhaXQgZGIuY2l0YXRpb24uZmluZFVuaXF1ZSh7CiAgICAgIHdoZXJlOiB7IGlkIH0sCiAgICAgIGluY2x1ZGU6IHsKICAgICAgICBicmFuZDogewogICAgICAgICAgaW5jbHVkZTogeyBzaXRlOiB7IHNlbGVjdDogeyB1c2VySWQ6IHRydWUgfSB9IH0sCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0pOwoKICAgIGlmICghY2l0YXRpb24gfHwgY2l0YXRpb24uYnJhbmQuc2l0ZS51c2VySWQgIT09IHVzZXJJZCkgewogICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgeyBlcnJvcjogIkNpdGF0aW9uIG5vdCBmb3VuZCBvciBhY2Nlc3MgZGVuaWVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDMgfQogICAgICApOwogICAgfQoKICAgIC8vIEJ1aWxkIHVwZGF0ZSBkYXRhIHdpdGggdmFsaWRhdGlvbgogICAgY29uc3QgZGF0YTogUmVjb3JkPHN0cmluZywgdW5rbm93bj4gPSB7fTsKCiAgICBpZiAoc3RhdHVzICE9PSB1bmRlZmluZWQpIHsKICAgICAgaWYgKCFWQUxJRF9TVEFUVVNFUy5pbmNsdWRlcyhzdGF0dXMpKSB7CiAgICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICAgICAgeyBlcnJvcjogYEludmFsaWQgc3RhdHVzLiBNdXN0IGJlIG9uZSBvZjogJHtWQUxJRF9TVEFUVVNFUy5qb2luKCIsICIpfWAgfSwKICAgICAgICAgIHsgc3RhdHVzOiA0MDAgfQogICAgICAgICk7CiAgICAgIH0KICAgICAgZGF0YS5zdGF0dXMgPSBzdGF0dXM7CiAgICAgIC8vIEF1dG8tc2V0IHJldmlld2VkQXQgd2hlbiBzdGF0dXMgY2hhbmdlcwogICAgICBpZiAoc3RhdHVzICE9PSAibmV3IikgewogICAgICAgIGRhdGEucmV2aWV3ZWRBdCA9IG5ldyBEYXRlKCk7CiAgICAgIH0KICAgIH0KCiAgICBpZiAoaGFzQmFja2xpbmsgIT09IHVuZGVmaW5lZCkgewogICAgICBpZiAodHlwZW9mIGhhc0JhY2tsaW5rICE9PSAiYm9vbGVhbiIpIHsKICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgICB7IGVycm9yOiAiaGFzQmFja2xpbmsgbXVzdCBiZSBhIGJvb2xlYW4iIH0sCiAgICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgICApOwogICAgICB9CiAgICAgIGRhdGEuaGFzQmFja2xpbmsgPSBoYXNCYWNrbGluazsKICAgIH0KCiAgICBpZiAoc2VudGltZW50ICE9PSB1bmRlZmluZWQpIHsKICAgICAgaWYgKCFWQUxJRF9TRU5USU1FTlRTLmluY2x1ZGVzKHNlbnRpbWVudCkpIHsKICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgICB7IGVycm9yOiBgSW52YWxpZCBzZW50aW1lbnQuIE11c3QgYmUgb25lIG9mOiAke1ZBTElEX1NFTlRJTUVOVFMuam9pbigiLCAiKX1gIH0sCiAgICAgICAgICB7IHN0YXR1czogNDAwIH0KICAgICAgICApOwogICAgICB9CiAgICAgIGRhdGEuc2VudGltZW50ID0gc2VudGltZW50OwogICAgfQoKICAgIGNvbnN0IHVwZGF0ZWQgPSBhd2FpdCBkYi5jaXRhdGlvbi51cGRhdGUoewogICAgICB3aGVyZTogeyBpZCB9LAogICAgICBkYXRhLAogICAgfSk7CgogICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKHsgY2l0YXRpb246IHVwZGF0ZWQgfSk7CiAgfSBjYXRjaCAoZXJyb3I6IHVua25vd24pIHsKICAgIGNvbnNvbGUuZXJyb3IoIlVwZGF0ZSBjaXRhdGlvbiBlcnJvcjoiLCBlcnJvcik7CiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgIHsgZXJyb3I6ICJJbnRlcm5hbCBzZXJ2ZXIgZXJyb3IiIH0sCiAgICAgIHsgc3RhdHVzOiA1MDAgfQogICAgKTsKICB9Cn0KCmV4cG9ydCBhc3luYyBmdW5jdGlvbiBERUxFVEUoCiAgcmVxdWVzdDogTmV4dFJlcXVlc3QsCiAgeyBwYXJhbXMgfTogeyBwYXJhbXM6IFByb21pc2U8eyBpZDogc3RyaW5nIH0+IH0KKSB7CiAgdHJ5IHsKICAgIGNvbnN0IHsgaWQgfSA9IGF3YWl0IHBhcmFtczsKICAgIGNvbnN0IHVzZXJJZCA9IHJlc29sdmVVc2VySWQocmVxdWVzdCwgcmVxdWVzdC5uZXh0VXJsLnNlYXJjaFBhcmFtcy5nZXQoInVzZXJJZCIpKTsKCiAgICBpZiAoIXVzZXJJZCkgewogICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgeyBlcnJvcjogIkF1dGhlbnRpY2F0aW9uIHJlcXVpcmVkLiBQbGVhc2UgbG9nIGluIGFnYWluLiIgfSwKICAgICAgICB7IHN0YXR1czogNDAxIH0KICAgICAgKTsKICAgIH0KCiAgICAvLyBWYWxpZGF0ZSBvd25lcnNoaXAgdGhyb3VnaCBjaXRhdGlvbiAtPiBicmFuZCAtPiBzaXRlIC0+IHVzZXIKICAgIGNvbnN0IGNpdGF0aW9uID0gYXdhaXQgZGIuY2l0YXRpb24uZmluZFVuaXF1ZSh7CiAgICAgIHdoZXJlOiB7IGlkIH0sCiAgICAgIGluY2x1ZGU6IHsKICAgICAgICBicmFuZDogewogICAgICAgICAgaW5jbHVkZTogeyBzaXRlOiB7IHNlbGVjdDogeyB1c2VySWQ6IHRydWUgfSB9IH0sCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0pOwoKICAgIGlmICghY2l0YXRpb24gfHwgY2l0YXRpb24uYnJhbmQuc2l0ZS51c2VySWQgIT09IHVzZXJJZCkgewogICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oCiAgICAgICAgeyBlcnJvcjogIkNpdGF0aW9uIG5vdCBmb3VuZCBvciBhY2Nlc3MgZGVuaWVkIiB9LAogICAgICAgIHsgc3RhdHVzOiA0MDMgfQogICAgICApOwogICAgfQoKICAgIGF3YWl0IGRiLmNpdGF0aW9uLmRlbGV0ZSh7CiAgICAgIHdoZXJlOiB7IGlkIH0sCiAgICB9KTsKCiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oeyBkZWxldGVkOiB0cnVlIH0pOwogIH0gY2F0Y2ggKGVycm9yOiB1bmtub3duKSB7CiAgICBjb25zb2xlLmVycm9yKCJEZWxldGUgY2l0YXRpb24gZXJyb3I6IiwgZXJyb3IpOwogICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKAogICAgICB7IGVycm9yOiAiSW50ZXJuYWwgc2VydmVyIGVycm9yIiB9LAogICAgICB7IHN0YXR1czogNTAwIH0KICAgICk7CiAgfQp9Cg==
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { resolveUserId } from "@/lib/session";
+
+const VALID_STATUSES = [
+  "new",
+  "reviewed",
+  "outreach_sent",
+  "converted",
+  "dismissed",
+];
+
+const VALID_SENTIMENTS = ["positive", "neutral", "negative"];
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { status, hasBacklink, sentiment } = body;
+    const userId = resolveUserId(
+      request,
+      typeof body.userId === "string" ? body.userId : null
+    );
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    if (!status && hasBacklink === undefined && !sentiment) {
+      return NextResponse.json(
+        { error: "At least one field to update is required (status, hasBacklink, sentiment)" },
+        { status: 400 }
+      );
+    }
+
+    // Validate ownership through citation -> brand -> site -> user
+    const citation = await db.citation.findUnique({
+      where: { id },
+      include: {
+        brand: {
+          include: { site: { select: { userId: true } } },
+        },
+      },
+    });
+
+    if (!citation || citation.brand.site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Citation not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    // Build update data with validation
+    const data: Record<string, unknown> = {};
+
+    if (status !== undefined) {
+      if (!VALID_STATUSES.includes(status)) {
+        return NextResponse.json(
+          { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+          { status: 400 }
+        );
+      }
+      data.status = status;
+      // Auto-set reviewedAt when status changes
+      if (status !== "new") {
+        data.reviewedAt = new Date();
+      }
+    }
+
+    if (hasBacklink !== undefined) {
+      if (typeof hasBacklink !== "boolean") {
+        return NextResponse.json(
+          { error: "hasBacklink must be a boolean" },
+          { status: 400 }
+        );
+      }
+      data.hasBacklink = hasBacklink;
+    }
+
+    if (sentiment !== undefined) {
+      if (!VALID_SENTIMENTS.includes(sentiment)) {
+        return NextResponse.json(
+          { error: `Invalid sentiment. Must be one of: ${VALID_SENTIMENTS.join(", ")}` },
+          { status: 400 }
+        );
+      }
+      data.sentiment = sentiment;
+    }
+
+    const updated = await db.citation.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json({ citation: updated });
+  } catch (error: unknown) {
+    console.error("Update citation error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const userId = resolveUserId(request, request.nextUrl.searchParams.get("userId"));
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required. Please log in again." },
+        { status: 401 }
+      );
+    }
+
+    // Validate ownership through citation -> brand -> site -> user
+    const citation = await db.citation.findUnique({
+      where: { id },
+      include: {
+        brand: {
+          include: { site: { select: { userId: true } } },
+        },
+      },
+    });
+
+    if (!citation || citation.brand.site.userId !== userId) {
+      return NextResponse.json(
+        { error: "Citation not found or access denied" },
+        { status: 403 }
+      );
+    }
+
+    await db.citation.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ deleted: true });
+  } catch (error: unknown) {
+    console.error("Delete citation error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
