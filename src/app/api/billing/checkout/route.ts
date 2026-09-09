@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { initializeTransaction } from "@/lib/paystack";
+import { initializeCheckout } from "@/lib/paystack";
 import { resolveUserId } from "@/lib/session";
 
 /**
@@ -87,35 +87,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const metadata = {
-      userId: user.id,
-      plan,
-      custom_fields: [
-        { display_name: "Plan", variable_name: "plan", value: plan },
-        { display_name: "User", variable_name: "user_email", value: user.email },
-      ],
-    };
-
-    const initResult = await initializeTransaction({
+    const initResult = await initializeCheckout({
       email: user.email,
       amount,
       plan: planCode,
-      callback_url: `${appUrl}/?checkout=paystack`,
-      metadata,
-      channels: ["card", "bank_transfer", "ussd"],
+      userId: user.id,
+      userName: user.name || "",
+      internalPlan: plan as "pro" | "business",
     });
 
-    if (!initResult.status) {
-      console.error("[Checkout] Paystack init failed:", initResult);
-      return NextResponse.json(
-        { error: initResult.message || "Could not start checkout. Please try again." },
-        { status: 400 }
-      );
-    }
-
     return NextResponse.json({
-      authorization_url: initResult.data.authorization_url,
-      reference: initResult.data.reference,
+      authorization_url: initResult.authorization_url,
+      reference: initResult.reference,
     });
   } catch (error) {
     console.error("[Checkout] Error:", error);
