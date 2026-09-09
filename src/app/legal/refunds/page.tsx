@@ -18,9 +18,9 @@ const sections: { title: string; body: string[] }[] = [
     ],
   },
   {
-    title: "3. 14-day satisfaction guarantee",
+    title: "3. 7-day satisfaction guarantee",
     body: [
-      "If a paid subscription does not work for you, contact us within 14 days of your first payment and we will refund it in full — no questions asked. This guarantee applies to your first subscription payment only.",
+      "If a paid subscription does not work for you, contact us within 7 days of your first payment and we will refund it in full — no questions asked. This guarantee applies to your first subscription payment only.",
     ],
   },
   {
