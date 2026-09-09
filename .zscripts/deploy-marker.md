@@ -1,1 +1,1 @@
-Last deploy trigger: 2026-09-09T18:27:36.4915384+02:00 (UTC). Triggered to re-deploy the latest main (sites + checkout contract fixes).
+Deploy retry at 2026-09-09T18:47:21.5921902+02:00 (UTC). Latest main includes sites + checkout contract fixes.
