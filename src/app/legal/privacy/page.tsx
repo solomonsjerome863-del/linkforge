@@ -66,8 +66,9 @@ const sections: { title: string; body: string[] }[] = [
     ],
   },
   {
-    title: "9. Contact",
+    title: "9. Data controller and contact",
     body: [
+      "Data controller: LinkForge, operated by Jerome Solomon (sole proprietor), South Africa.",
       "Privacy questions or requests: support@linkforge.digital.",
     ],
   },
