@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link2, Mail, Lock, User, Loader2, ArrowRight, KeyRound, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -543,7 +544,14 @@ export function AuthView() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
+          By continuing, you agree to our{" "}
+          <Link href="/legal/terms" className="underline underline-offset-2 hover:text-foreground">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/legal/privacy" className="underline underline-offset-2 hover:text-foreground">
+            Privacy Policy
+          </Link>.
         </p>
       </motion.div>
     </div>
