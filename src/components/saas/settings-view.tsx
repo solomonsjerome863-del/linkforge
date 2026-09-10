@@ -726,6 +726,19 @@ export function SettingsView() {
           </motion.div>
         </TabsContent>
       </Tabs>
+
+      {/* Legal */}
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <h3 className="text-sm font-semibold mb-3">Legal</h3>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <a href="/legal/terms" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700 dark:text-orange-400 hover:underline">Terms of Service</a>
+            <a href="/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700 dark:text-orange-400 hover:underline">Privacy Policy</a>
+            <a href="/legal/refunds" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-700 dark:text-orange-400 hover:underline">Refund Policy</a>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Last updated: September 2026 · Questions: support@linkforge.digital</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
