@@ -72,7 +72,7 @@ function generateSurroundingText(textContent: string): string {
  * Generates internal-link suggestions for a site (TF-overlap scoring +
  * LLM anchor enhancement for the top candidates). Consumes AI resources,
  * so identity from the session cookie (transitional body fallback is
- * logged) and site ownership are MANDATORY.
+ * logged), site ownership, and a VERIFIED email are MANDATORY.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -100,6 +100,22 @@ export async function POST(request: NextRequest) {
     });
     if (!site || site.userId !== userId) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
+    }
+
+    // ── Email verification gate (mandatory — this endpoint consumes AI resources) ──
+    const owner = await db.user.findUnique({
+      where: { id: userId },
+      select: { emailVerified: true },
+    });
+    if (!owner?.emailVerified) {
+      return NextResponse.json(
+        {
+          error:
+            "Please verify your email address before generating suggestions. Check your inbox for the verification link.",
+          code: "EMAIL_NOT_VERIFIED",
+        },
+        { status: 403 }
+      );
     }
 
     const pages = await db.page.findMany({
