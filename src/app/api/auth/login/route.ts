@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { db } from "@/lib/db";
 import { applySessionCookie } from "@/lib/session";
+import { verificationEmail, sendEmail } from "@/lib/email";
 
 /**
  * POST /api/auth/login
@@ -14,6 +16,7 @@ import { applySessionCookie } from "@/lib/session";
  * - Generic error messages (no user enumeration)
  * - Simple per-IP/email rate limiting (in-memory)
  * - Sets a signed, httpOnly session cookie on success
+ * - Auto-resends the verification email for unverified accounts (throttled by token expiry)
  */
 
 // Simple in-memory rate limiting (per server instance)
@@ -105,8 +108,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Unverified account: auto-resend the verification email (throttled by token expiry)
+    if (!user.emailVerified) {
+      try {
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+        let verifyToken = user.verifyToken;
+        if (!verifyToken || !user.verifyTokenExpiry || user.verifyTokenExpiry < new Date()) {
+          verifyToken = crypto.randomBytes(32).toString("hex");
+          await db.user.update({
+            where: { id: user.id },
+            data: {
+              verifyToken,
+              verifyTokenExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            },
+          });
+        }
+        const ve = verificationEmail(appUrl, verifyToken);
+        const mailResult = await sendEmail({ to: user.email, subject: ve.subject, html: ve.html, text: ve.text });
+        console.log(
+          `[Auth] Unverified login for ${user.email} — verification email ${mailResult.sent ? "resent" : "NOT sent (" + mailResult.reason + ")"}`
+        );
+      } catch (mailErr) {
+        console.error("[Auth] Verification resend failed:", mailErr);
+      }
+    }
+
     // Remove sensitive fields from response
-    const { passwordHash: _, resetToken: __, resetTokenExpiry: ___, ...safeUser } = user;
+    const { passwordHash: _, resetToken: __, resetTokenExpiry: ___, verifyToken: ____, verifyTokenExpiry: _____, ...safeUser } = user;
 
     // Determine admin status
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim();
@@ -114,7 +142,7 @@ export async function POST(request: NextRequest) {
       ? user.email.toLowerCase().trim() === adminEmail
       : false;
 
-    console.log(`[Auth] Login: ${user.email} (admin: ${isAdmin})`);
+    console.log(`[Auth] Login: ${user.email} (admin: ${isAdmin}, verified: ${user.emailVerified})`);
 
     // Return the user object (without sensitive fields) and a message
     const response = NextResponse.json(
