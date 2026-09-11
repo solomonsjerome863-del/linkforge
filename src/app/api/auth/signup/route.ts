@@ -3,15 +3,19 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { applySessionCookie } from "@/lib/session";
+import { isValidEmail, getPasswordError } from "@/lib/validation";
+import { verificationEmail, sendEmail } from "@/lib/email";
+import crypto from "crypto";
 
 /**
  * POST /api/auth/signup
  *
  * Creates a new user account.
  *
+ * - Server-side validation: email format, disposable-domain blocklist, password policy
  * - Normalizes email (lowercase/trim) and rejects duplicates
  * - Hashes the password with bcrypt (10 rounds)
- * - Marks the account email-verified (verification emails not yet wired)
+ * - Creates the account as UNVERIFIED and emails a verification link (24h token)
  * - Applies simple per-IP rate limiting
  * - Issues a signed, httpOnly session cookie on success
  *
@@ -41,11 +45,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (typeof password !== "string" || password.length < 6) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Please enter a valid email address (e.g., name@example.com). Disposable email providers are not accepted." },
         { status: 400 }
       );
+    }
+
+    const passwordError = getPasswordError(password);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
     }
 
     // Normalize email
@@ -63,8 +72,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password and create the account
+    // Hash password and create the account (UNVERIFIED until the email link is clicked)
     const passwordHash = await bcrypt.hash(password, 10);
+    const verifyToken = crypto.randomBytes(32).toString("hex");
+    const verifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const user = await db.user.create({
       data: {
@@ -72,9 +83,19 @@ export async function POST(request: NextRequest) {
         email: normalizedEmail,
         passwordHash,
         plan: "starter",
-        emailVerified: true, // auto-verified for now (no verification email service yet)
+        emailVerified: false,
+        verifyToken,
+        verifyTokenExpiry,
       },
     });
+
+    // Send the verification email (best-effort — never blocks signup)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    const ve = verificationEmail(appUrl, verifyToken);
+    const mailResult = await sendEmail({ to: user.email, subject: ve.subject, html: ve.html, text: ve.text });
+    if (!mailResult.sent) {
+      console.error(`[Signup] Verification email NOT delivered to ${user.email}: ${mailResult.reason}`);
+    }
 
     // Remove sensitive fields from response
     const { passwordHash: _, ...safeUser } = user;
@@ -85,7 +106,7 @@ export async function POST(request: NextRequest) {
       ? user.email.toLowerCase().trim() === adminEmail
       : false;
 
-    console.log(`[Auth] New signup: ${user.email} (admin: ${isAdmin})`);
+    console.log(`[Auth] New signup: ${user.email} (admin: ${isAdmin}, verified: false)`);
 
     const response = NextResponse.json(
       { user: { ...safeUser, isAdmin } },
