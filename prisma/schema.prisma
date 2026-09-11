@@ -19,6 +19,8 @@ model User {
   emailVerified Boolean   @default(false)
   resetToken    String?
   resetTokenExpiry DateTime?
+  verifyToken    String?
+  verifyTokenExpiry DateTime?
   // Paystack billing
   paystackCustomerId       String?
   paystackSubscriptionCode String?
