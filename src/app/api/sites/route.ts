@@ -10,6 +10,9 @@ import { isOnTrial, getEffectiveLimits, type PlanType } from "@/lib/types";
  * GET response contract (client reads data.sites): { sites: [...] }
  * POST response contract (client reads data.site): { site: {...} }
  *
+ * POST additionally requires a VERIFIED email — unverified accounts can
+ * browse but cannot add websites until they confirm their address.
+ *
  * User identity: resolved from the httpOnly session cookie first
  * (transitional fallback to client-supplied userId is logged).
  */
@@ -51,6 +54,7 @@ export async function POST(request: NextRequest) {
       typeof body.userId === "string" ? body.userId : null
     );
 
+    // ── Validation ──
     if (!userId) {
       return NextResponse.json(
         { error: "Authentication required. Please log in again." },
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Plan / trial limit enforcement ──
+    // ── Plan / trial limit enforcement + verification gate ──
     const user = await db.user.findUnique({
       where: { id: userId },
       select: {
@@ -88,12 +92,24 @@ export async function POST(request: NextRequest) {
         plan: true,
         subscriptionStatus: true,
         trialEndsAt: true,
+        emailVerified: true,
         _count: { select: { sites: true } },
       },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        {
+          error:
+            "Please verify your email address before adding websites. Check your inbox for the verification link (log in again to receive a fresh one).",
+          code: "EMAIL_NOT_VERIFIED",
+        },
+        { status: 403 }
+      );
     }
 
     const limitContext = {
@@ -125,7 +141,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(`[Sites] ${user.email} added site ${normalizedUrl}`);
+    console.log(`[Sites] ${user.email} added site ${normalizedUrl} (${onTrial ? "trial" : user.plan} plan)`);
 
     return NextResponse.json({ site }, { status: 201 });
   } catch (error) {
