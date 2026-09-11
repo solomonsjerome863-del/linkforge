@@ -1,26 +1,10 @@
 /**
- * Transactional email — Resend HTTP API (no SDK dependency).
- *
- * Setup:
- *   1. Create a Resend account, verify your sending domain (or start with
- *      the sandbox address onboarding@resend.dev while testing).
- *   2. Set env vars on the deployment:
- *        RESEND_API_KEY = re_...
- *        EMAIL_FROM     = "LinkForge <noreply@linkforge.digital>"
- *
- * Every caller must degrade gracefully when email is not configured —
- * this app previously had NO email capability, so callers log clearly
- * and keep working.
+ * Transactional email via Resend's REST API.
+ * Zero dependencies: uses fetch, so it works in any Next.js runtime.
+ * No tokens or API keys are stored in this file — everything comes from env vars.
  */
 
 const RESEND_API = "https://api.resend.com/emails";
-
-export interface SendEmailOptions {
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
-}
 
 export interface SendEmailResult {
   sent: boolean;
@@ -31,11 +15,16 @@ export function isEmailConfigured(): boolean {
   return !!process.env.RESEND_API_KEY;
 }
 
-export async function sendEmail(opts: SendEmailOptions): Promise<SendEmailResult> {
+export async function sendEmail(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}): Promise<SendEmailResult> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
-    console.warn("[Email] RESEND_API_KEY not configured — email not sent");
-    return { sent: false, reason: "email not configured" };
+    console.warn("[Email] RESEND_API_KEY not set — email not sent");
+    return { sent: false, reason: "RESEND_API_KEY not configured" };
   }
 
   const from = process.env.EMAIL_FROM || "LinkForge <onboarding@resend.dev>";
@@ -52,7 +41,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<SendEmailResult
         to: [opts.to],
         subject: opts.subject,
         html: opts.html,
-        ...(opts.text ? { text: opts.text } : {}),
+        text: opts.text,
       }),
     });
 
@@ -69,44 +58,64 @@ export async function sendEmail(opts: SendEmailOptions): Promise<SendEmailResult
   }
 }
 
-/**
- * Branded password reset email. Returns subject/html/text plus the reset link.
- */
-export function passwordResetEmail(appUrl: string, token: string): {
-  subject: string;
-  html: string;
-  text: string;
-  link: string;
-} {
+export function passwordResetEmail(appUrl: string, token: string) {
   const link = `${appUrl}/reset-password?token=${token}`;
-  const subject = "Reset your LinkForge password";
+
   const html = `
-<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b;">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;">
-    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#f97316,#f59e0b);display:inline-flex;align-items:center;justify-content:center;">
-      <span style="color:#fff;font-weight:800;font-size:16px;">L</span>
+  <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f4f5f7; padding:32px;">
+    <div style="max-width:520px; margin:0 auto; background:#ffffff; border-radius:12px; padding:32px;">
+      <div style="font-size:22px; font-weight:800; color:#ea580c; margin-bottom:20px;">🔥 LinkForge</div>
+      <h1 style="font-size:20px; margin:0 0 12px; color:#111827;">Reset your password</h1>
+      <p style="font-size:14px; color:#374151; margin:0 0 20px;">
+        You (or someone else) requested a password reset for your LinkForge account.
+        Click the button below to choose a new password. This link expires in 1 hour.
+      </p>
+      <a href="${link}" style="display:inline-block; background:#ea580c; color:#ffffff; text-decoration:none; font-weight:700; font-size:14px; padding:12px 24px; border-radius:8px;">
+        Choose a new password
+      </a>
+      <p style="font-size:12px; color:#6b7280; margin:24px 0 0;">
+        If the button doesn't work, paste this link into your browser:<br>
+        <span style="color:#9ca3af;">${link}</span>
+      </p>
+      <p style="font-size:12px; color:#6b7280; margin:16px 0 0;">
+        Didn't request this? You can safely ignore this email — your password won't change.
+      </p>
+      <p style="font-size:12px; color:#9ca3af; margin:24px 0 0;">— The LinkForge team</p>
     </div>
-    <span style="font-size:20px;font-weight:800;">Link<span style="color:#f97316;">Forge</span></span>
-  </div>
-  <h1 style="font-size:22px;margin:0 0 12px;">Reset your password</h1>
-  <p style="font-size:15px;line-height:1.6;color:#475569;margin:0 0 20px;">
-    We received a request to reset the password for your LinkForge account.
-    Click the button below to choose a new one. This link expires in <b>1 hour</b>.
-  </p>
-  <p style="margin:0 0 24px;">
-    <a href="${link}" style="display:inline-block;background:linear-gradient(90deg,#f97316,#f59e0b);color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:12px 28px;border-radius:10px;">
-      Choose a new password
-    </a>
-  </p>
-  <p style="font-size:13px;color:#64748b;line-height:1.6;margin:0 0 8px;">
-    Or paste this link into your browser:<br>
-    <a href="${link}" style="color:#f97316;word-break:break-all;">${link}</a>
-  </p>
-  <p style="font-size:13px;color:#64748b;line-height:1.6;margin:24px 0 0;">
-    Didn't request this? You can safely ignore this email — your password stays unchanged.
-  </p>
-  <p style="font-size:12px;color:#94a3b8;margin:24px 0 0;">— The LinkForge team</p>
-</div>`;
-  const text = `Reset your LinkForge password (valid 1 hour): ${link}\n\nDidn't request this? Ignore this email.`;
-  return { subject, html, text, link };
+  </div>`;
+
+  const text = `Reset your LinkForge password: ${link} (valid 1 hour). If you didn't request this, ignore this email.`;
+
+  return { subject: "Reset your LinkForge password", html, text, link };
+}
+
+export function verificationEmail(appUrl: string, token: string) {
+  const link = `${appUrl}/verify-email?token=${token}`;
+
+  const html = `
+  <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f4f5f7; padding:32px;">
+    <div style="max-width:520px; margin:0 auto; background:#ffffff; border-radius:12px; padding:32px;">
+      <div style="font-size:22px; font-weight:800; color:#ea580c; margin-bottom:20px;">🔥 LinkForge</div>
+      <h1 style="font-size:20px; margin:0 0 12px; color:#111827;">Verify your email address</h1>
+      <p style="font-size:14px; color:#374151; margin:0 0 20px;">
+        Welcome to LinkForge! One quick step left: confirm this email address so we know
+        it's really you. Verification unlocks crawling and AI link suggestions on your account.
+      </p>
+      <a href="${link}" style="display:inline-block; background:#ea580c; color:#ffffff; text-decoration:none; font-weight:700; font-size:14px; padding:12px 24px; border-radius:8px;">
+        Verify my email
+      </a>
+      <p style="font-size:12px; color:#6b7280; margin:24px 0 0;">
+        If the button doesn't work, paste this link into your browser:<br>
+        <span style="color:#9ca3af;">${link}</span>
+      </p>
+      <p style="font-size:12px; color:#6b7280; margin:16px 0 0;">
+        Didn't create a LinkForge account? You can safely ignore this email.
+      </p>
+      <p style="font-size:12px; color:#9ca3af; margin:24px 0 0;">— The LinkForge team</p>
+    </div>
+  </div>`;
+
+  const text = `Welcome to LinkForge! Verify your email address: ${link} (valid 24 hours). If you didn't sign up, ignore this email.`;
+
+  return { subject: "Verify your email — LinkForge", html, text, link };
 }
