@@ -9,7 +9,7 @@ export const maxDuration = 60;
  * POST /api/sites/[id]/crawl
  * Starts a background crawl for a site. Consumes server resources,
  * so identity from the session cookie (transitional query fallback is
- * logged) and site ownership are MANDATORY.
+ * logged), site ownership, and a VERIFIED email are MANDATORY.
  */
 export async function POST(
   request: NextRequest,
@@ -34,6 +34,22 @@ export async function POST(
     // ── Ownership check (mandatory) ──
     if (site.userId !== userId) {
       return NextResponse.json({ error: "You do not have permission to crawl this site" }, { status: 403 });
+    }
+
+    // ── Email verification gate (mandatory) ──
+    const owner = await db.user.findUnique({
+      where: { id: userId },
+      select: { emailVerified: true },
+    });
+    if (!owner?.emailVerified) {
+      return NextResponse.json(
+        {
+          error:
+            "Please verify your email address before starting crawls. Check your inbox for the verification link.",
+          code: "EMAIL_NOT_VERIFIED",
+        },
+        { status: 403 }
+      );
     }
 
     // ── SSRF prevention ──
