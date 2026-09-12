@@ -69,10 +69,13 @@ function generateSurroundingText(textContent: string): string {
 
 /**
  * POST /api/suggestions/generate
- * Generates internal-link suggestions for a site (TF-overlap scoring +
- * LLM anchor enhancement for the top candidates). Consumes AI resources,
- * so identity from the session cookie (transitional body fallback is
- * logged), site ownership, and a VERIFIED email are MANDATORY.
+ * Generates internal-link suggestions for a site with a composite
+ * OPPORTUNITY SCORE (0-100) that prioritizes SEO decisions:
+ *   40% semantic overlap + 25% target underlinkedness +
+ *   20% source authority + 15% target importance.
+ * Consumes AI resources, so identity from the session cookie
+ * (transitional body fallback is logged), site ownership, and a
+ * VERIFIED email are MANDATORY.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -138,15 +141,14 @@ export async function POST(request: NextRequest) {
       keywords: extractKeywords(p.title + " " + p.headings + " " + p.textContent.slice(0, 500)),
     }));
 
-    // Compute pairwise TF-overlap scores
-    const suggestions: {
+    // Compute pairwise TF-overlap candidates
+    const candidates: {
       siteId: string;
       sourcePageId: string;
       targetPageId: string;
       anchorText: string;
       surroundingText: string;
       score: number;
-      status: string;
     }[] = [];
 
     for (let i = 0; i < pageKeywords.length; i++) {
@@ -163,22 +165,54 @@ export async function POST(request: NextRequest) {
           const anchorText = pickAnchorText(pageKeywords[j].title, pageKeywords[j].parsedHeadings);
           const surroundingText = generateSurroundingText(pageKeywords[i].textContent);
 
-          suggestions.push({
+          candidates.push({
             siteId,
             sourcePageId: pageKeywords[i].id,
             targetPageId: pageKeywords[j].id,
             anchorText,
             surroundingText,
             score: Math.round(overlap * 100) / 100,
-            status: "pending",
           });
         }
       }
     }
 
-    // Sort by score desc, cap at 30
-    suggestions.sort((a, b) => b.score - a.score);
-    const capped = suggestions.slice(0, 30);
+    // ── Opportunity Score (0-100 composite) ──
+    // How in-demand is each page as a TARGET within this candidate set?
+    const inboundCount: Record<string, number> = {};
+    for (const c of candidates) {
+      inboundCount[c.targetPageId] = (inboundCount[c.targetPageId] || 0) + 1;
+    }
+    const maxInbound = Math.max(1, ...Object.values(inboundCount));
+
+    const wordCountById: Record<string, number> = {};
+    for (const p of pageKeywords) {
+      wordCountById[p.id] = p.wordCount || 0;
+    }
+
+    const scored = candidates.map((c) => {
+      const overlap01 = Math.min(1, c.score);
+      const targetInbound = inboundCount[c.targetPageId] || 0;
+      const sourceInbound = inboundCount[c.sourcePageId] || 0;
+      const targetUnderlinked = 1 - targetInbound / maxInbound; // few candidates targeting it = bigger need
+      const sourceStrength = sourceInbound / maxInbound; // hubs pass more authority
+      const targetWords = wordCountById[c.targetPageId] || 0;
+      const targetImportance = Math.min(1, targetWords / 1500); // cornerstone content matters more
+
+      const opportunityScore = Math.round(
+        100 *
+          (0.4 * overlap01 +
+            0.25 * targetUnderlinked +
+            0.2 * sourceStrength +
+            0.15 * targetImportance)
+      );
+
+      return { ...c, opportunityScore };
+    });
+
+    // Sort by opportunity (highest-impact decisions first), cap at 30
+    scored.sort((a, b) => b.opportunityScore - a.opportunityScore);
+    const capped = scored.slice(0, 30);
 
     // Enhance top suggestions with LLM-generated anchor text
     const topForLLM = capped.slice(0, 10);
@@ -231,10 +265,10 @@ export async function POST(request: NextRequest) {
       data: { linksCount: capped.length },
     });
 
-    // Fetch the created suggestions with page info
+    // Fetch the created suggestions with page info, ordered by OPPORTUNITY
     const created = await db.linkSuggestion.findMany({
       where: { siteId },
-      orderBy: { score: "desc" },
+      orderBy: [{ opportunityScore: "desc" }, { score: "desc" }],
       include: {
         sourcePage: { select: { id: true, title: true, url: true } },
         targetPage: { select: { id: true, title: true, url: true } },
