@@ -254,9 +254,9 @@ function HeroSection() {
           {/* Headline */}
           <FadeIn delay={0.1}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight max-w-3xl leading-tight">
-              Smart Internal Linking{" "}
+              Turn Hidden Link Gaps Into{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                for Any Website
+                Compounding Rankings
               </span>
             </h1>
           </FadeIn>
@@ -264,8 +264,9 @@ function HeroSection() {
           {/* Subheadline */}
           <FadeIn delay={0.2}>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-              Automatically crawl your site, discover orphan pages, and get
-              AI-powered link suggestions. Works with WordPress, Shopify,
+              LinkForge audits your entire site, finds every orphan page and missed
+              internal-linking opportunity, and hands you the exact fixes — prioritized by
+              impact. Built for SEO teams and agencies managing WordPress, Shopify,
               Webflow, or any website.
             </p>
           </FadeIn>
@@ -397,14 +398,14 @@ function FeaturesSection() {
         <FadeIn>
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Everything You Need to Master{" "}
+              Everything You Need to Run{" "}
               <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                Internal Linking
+                Client-Ready Internal Linking
               </span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Powerful tools designed to help SEO professionals, agencies, and
-              website owners build smarter internal link structures.
+              Built for SEO professionals and agencies: audit, prioritize, fix, and
+              report on internal-linking opportunities across every site you manage.
             </p>
           </div>
         </FadeIn>
@@ -1045,7 +1046,7 @@ function Footer() {
               </span>
             </a>
             <p className="text-sm text-muted-foreground">
-              AI-powered internal linking for better SEO.
+              The fastest way to audit, prioritize, and fix internal-linking opportunities.
             </p>
           </div>
 
