@@ -89,6 +89,7 @@ model LinkSuggestion {
   anchorText    String
   surroundingText String?
   score         Float    @default(0)
+  opportunityScore Int  @default(0) // 0-100 composite priority (semantic + authority + need)
   status        String   @default("pending") // pending | approved | rejected | applied
   appliedAt     DateTime?
   createdAt     DateTime @default(now())
